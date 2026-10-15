@@ -13,8 +13,9 @@ export async function POST(request: Request, { params }: RouteContext<"/api/e/[s
 
   const session = await getGuestSession();
   const guestId = ensureGuestId(session);
+  const clientKey = `${clientIp(request)}:${guestId}`;
 
-  const attempt = limiters.unlock.consume(`${clientIp(request)}:${guestId}`);
+  const attempt = limiters.unlock.consume(clientKey);
   if (!attempt.allowed) return rateLimited(attempt.retryAfterMs);
   if (limiters.unlockFailures.isLimited(event.id)) return rateLimited(60_000);
 

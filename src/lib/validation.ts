@@ -58,9 +58,9 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
 
   if (has("accessCode")) {
     if (src.accessCode === null || src.accessCode === "") out.accessCode = null;
-    else if (typeof src.accessCode === "string" && src.accessCode.trim().length >= 4 && src.accessCode.length <= 64) {
+    else if (typeof src.accessCode === "string" && src.accessCode.trim().length >= 6 && src.accessCode.length <= 64) {
       out.accessCode = src.accessCode.trim();
-    } else errors.accessCode = "Between 4 and 64 characters";
+    } else errors.accessCode = "Between 6 and 64 characters";
   }
 
   if (has("uploadsCloseAt")) {
