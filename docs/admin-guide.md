@@ -70,6 +70,12 @@ and photos per challenge.
   *Stats* counts the photos of each. The guest's phone remembers the last place
   scanned for that event. Renaming a place keeps its code; deleting it keeps
   its photos, untagged. A duplicated event gets the same places with new codes.
+- **Photo booth**: a link to open on a tablet on a stand. It shows the live
+  front camera full screen, one big button and a 3-2-1 countdown; the photo
+  goes into the album with the event's frame, is shown for five seconds, and
+  the booth is ready for the next group. It keeps the screen on, has no
+  per-guest limit, and needs HTTPS for the camera. *New link* replaces it (the
+  booth set up with the old one stops), *Turn off* disables it.
 - **Printable poster**: an A4 card with the event name, date and QR code.
 - **Slideshow video**: an MP4 of the visible photos (or the favorites) in the
   order they were taken, with a title card, slow zooms and crossfades, 16:9 or

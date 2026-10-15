@@ -53,6 +53,8 @@ export const events = sqliteTable("events", {
    * event has ended). Never pending or hidden ones, never others' originals.
    */
   sharedAlbum: text("shared_album", { enum: ["off", "during", "after"] }).notNull().default("off"),
+  /** Secret of the photo booth link (`/e/<slug>/booth?key=`); null when the booth is off. A new one revokes the old link. */
+  boothKey: text("booth_key"),
   /** Set once the end-of-event automation ran: it never runs twice for the same event. */
   endedAt: integer("ended_at"),
   createdAt: integer("created_at").notNull().default(now),

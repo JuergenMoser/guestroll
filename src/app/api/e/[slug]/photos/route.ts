@@ -27,6 +27,7 @@ import {
 } from "@/lib/security/request";
 import { storageFull } from "@/lib/storage";
 import { getSpot } from "@/lib/spots";
+import { isBooth } from "@/lib/booth";
 import { deletePhotoFiles, writePhotoFiles } from "@/lib/storage/files";
 
 // Multipart framing around a single file stays far below this.
@@ -75,10 +76,12 @@ export async function POST(
   if (uploadLocks.has(guestId)) return rateLimited(1_000);
   uploadLocks.add(guestId);
   try {
+    // The photo booth takes the whole party's photos: no per-guest limit for it.
+    const booth = isBooth(event, session);
     const state = uploadState(
       event,
       viewer,
-      countGuestPhotos(event.id, guestId),
+      booth ? 0 : countGuestPhotos(event.id, guestId),
     );
     if (!state.open) {
       return apiError(
@@ -177,7 +180,7 @@ async function store(
       id,
       eventId: event.id,
       guestId,
-      guestName: event.askGuestName ? (session.name ?? null) : null,
+      guestName: event.askGuestName && !isBooth(event, session) ? (session.name ?? null) : null,
       width: processed.width,
       height: processed.height,
       bytes: processed.files.original.length,

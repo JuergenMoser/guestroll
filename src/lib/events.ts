@@ -242,7 +242,8 @@ export async function duplicateEvent(source: EventRow, name: string): Promise<Ev
   const copy = getDb().transaction(() => {
     const row = getDb()
       .insert(events)
-      .values({ ...settings, id: newId(), slug: eventSlug(name), name, uploadsOpen: true, uploadsCloseAt: null, endedAt: null, logoVersion: null })
+      // No booth key: the old booth link must not open the copy.
+      .values({ ...settings, id: newId(), slug: eventSlug(name), name, uploadsOpen: true, uploadsCloseAt: null, endedAt: null, logoVersion: null, boothKey: null })
       .returning()
       .get();
     const organizers = getDb().select({ accountId: accountEvents.accountId }).from(accountEvents).where(eq(accountEvents.eventId, source.id)).all();

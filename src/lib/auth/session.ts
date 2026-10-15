@@ -18,6 +18,8 @@ export interface GuestSession {
   name?: string;
   /** Events whose access code this browser has entered. */
   unlocked?: string[];
+  /** Event id → booth key this device was set up with; only valid while it is still the event's key. */
+  booths?: Record<string, string>;
 }
 
 export interface ShareSession {

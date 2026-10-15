@@ -42,6 +42,16 @@ links unchanged.
   deleting one removes its files, from the album, the gallery links and the
   wall. Only the browser that sent it can (same guest cookie).
 
+## Photo booth
+
+- The booth link carries a 24-character random key (about 118 bits). Whoever
+  has it can send photos to the event, without its access code and without the
+  per-guest limit: keep it on the booth's device.
+- The key is checked in constant time, and again on every photo: a new link or
+  *Turn off* stops a device set up with the old one at once (its later photos
+  count as an ordinary guest's). A duplicated event never inherits it.
+- The page is `noindex` and sends no referrer.
+
 ## Gallery links
 
 - A link is a 32-character random token **plus** a password (bcrypt). The

@@ -85,6 +85,13 @@
       "when": 1792093224955,
       "tag": "0011_spots",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1792093596502,
+      "tag": "0012_photo_booth",
+      "breakpoints": true
     }
   ]
 }

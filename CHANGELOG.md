@@ -19,6 +19,9 @@ always run on their own at startup; take a backup first all the same
 - QR codes per table or place: each with the event's design and the place's
   name, photos sent after scanning one are tagged with it, with a filter in the
   Photos tab and a count per place in Stats.
+- Photo booth: a link for a tablet on a stand, with the live camera full
+  screen, a countdown and the event's frame; the photo goes straight into the
+  album. Revocable, no per-guest limit.
 
 ## [0.4.0] - 2026-10-15
 

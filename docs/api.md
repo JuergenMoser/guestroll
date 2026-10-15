@@ -28,6 +28,7 @@ Authenticated by the `gr_guest` cookie.
 | `POST /api/e/:slug/join` | none | `{ ok }`. Events without an access code only. |
 | `POST /api/e/:slug/unlock` | `{ code }` | `{ ok }` |
 | `POST /api/e/:slug/guest` | `{ name }` | `{ name }`. Stored in the cookie. |
+| `POST /api/e/:slug/booth` | `{ key }` | `{ ok }`: sets this device up as the event's booth; `403` for a wrong or replaced key |
 | `POST /api/e/:slug/photos?at=<spot id>` | multipart, field `photo`, optional `challenge` (a challenge id) | `201 { photo: PhotoDto }`; an unknown challenge, or a place of another event, is ignored |
 | `DELETE /api/e/:slug/photos/:id` | | `{ ok }`: the guest's own photo, files included; `404` otherwise |
 | `GET /api/e/:slug/photos?before=<ms>&scope=all` | | `{ photos: PhotoDto[], nextCursor }`: the guest's own photos; with `scope=all` and a shared album, the others' approved ones too |
@@ -97,6 +98,8 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | `POST /api/admin/events/:id/logo` | multipart, field `logo` | `{ event }` |
 | `DELETE /api/admin/events/:id/logo` | | `{ event }` |
 | `GET /api/admin/events/:id/qr?format=svg\|png&size=512..4096&download=1&spot=<id>` | | The styled QR code; with `spot`, that place's code (`/e/<slug>?at=<id>`) captioned with its name |
+| `POST /api/admin/events/:id/booth` | | `{ boothKey }`: turns the photo booth on, or replaces its link |
+| `DELETE /api/admin/events/:id/booth` | | `{ ok }`: turns it off |
 | `GET /api/admin/events/:id/spots` | | `{ spots: [{ id, label, photos }] }` |
 | `POST /api/admin/events/:id/spots` | `{ label }` (1 to 40 characters, up to 100 places) | `201 { spot }` |
 | `PATCH /api/admin/events/:id/spots/:spotId` | `{ label }` | `{ spot }` |
