@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element -- photos come from an auth-checked route, not a static asset */
-import { Clock, Star } from "lucide-react";
+import { Clock, Copy, Focus, Star } from "lucide-react";
 import { useT } from "@/components/I18nProvider";
 import { cn } from "@/components/ui";
 import type { PhotoDto } from "@/lib/photos";
@@ -50,6 +50,20 @@ export function PhotoGrid({ photos, onOpen, selected, onToggle, variant = "print
             {photo.favorite && (
               <span className="pointer-events-none absolute top-1 right-1 grid size-6 place-items-center rounded-full bg-accent text-accent-ink shadow-sm" title={t("admin.moderation.favorite")}>
                 <Star className="size-3.5 fill-current" aria-label={t("admin.moderation.favorite")} />
+              </span>
+            )}
+            {(photo.blurry || photo.duplicateOf) && (
+              <span className="pointer-events-none absolute right-1 bottom-1 flex gap-1">
+                {photo.blurry && (
+                  <span className="grid size-6 place-items-center rounded-full bg-surface text-ink shadow-sm" title={t("admin.moderation.blurryBadge")}>
+                    <Focus className="size-3.5" aria-label={t("admin.moderation.blurryBadge")} />
+                  </span>
+                )}
+                {photo.duplicateOf && (
+                  <span className="grid size-6 place-items-center rounded-full bg-surface text-ink shadow-sm" title={t("admin.moderation.duplicateBadge")}>
+                    <Copy className="size-3.5" aria-label={t("admin.moderation.duplicateBadge")} />
+                  </span>
+                )}
               </span>
             )}
             {photo.status === "pending" && (

@@ -2,6 +2,7 @@ import "server-only";
 import sharp from "sharp";
 import { fileTypeFromBuffer } from "file-type";
 import { config } from "@/lib/config";
+import { analyze, type Analysis } from "./analysis";
 import type { PhotoVariant } from "@/lib/policy";
 
 const ACCEPTED = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif", "image/avif", "image/gif"]);
@@ -12,6 +13,7 @@ export interface ProcessedPhoto {
   files: Record<PhotoVariant, Buffer>;
   width: number;
   height: number;
+  analysis: Analysis;
 }
 
 // The prebuilt sharp binaries can't decode HEVC-based HEIC (patent licensing),
@@ -89,15 +91,17 @@ export function processPhoto(input: Buffer): Promise<ProcessedPhoto> {
     }
 
     const original = await base.clone().jpeg({ quality: 92, mozjpeg: true }).toBuffer({ resolveWithObject: true });
-    const [display, thumb] = await Promise.all([
+    const [display, thumb, analysis] = await Promise.all([
       base.clone().resize({ width: 1600, height: 1600, fit: "inside", withoutEnlargement: true }).webp({ quality: 82 }).toBuffer(),
       base.clone().resize({ width: 480, height: 480, fit: "cover", position: "attention" }).webp({ quality: 72 }).toBuffer(),
+      analyze(base),
     ]);
 
     return {
       files: { original: original.data, display, thumb },
       width: original.info.width,
       height: original.info.height,
+      analysis,
     };
   });
 }

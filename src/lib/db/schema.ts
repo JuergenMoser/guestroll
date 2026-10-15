@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text, uniqueIndex, type AnySQLiteColumn } from "drizzle-orm/sqlite-core";
 
 const now = sql`(unixepoch() * 1000)`;
 
@@ -80,6 +80,12 @@ export const photos = sqliteTable(
     challengeId: text("challenge_id"),
     /** Where the guest scanned from (a table's own QR code), null from the event's main code. */
     spotId: text("spot_id").references(() => spots.id, { onDelete: "set null" }),
+    /** Variance of the Laplacian at 512 px (see lib/images/analysis.ts); null until analysed. */
+    sharpness: integer("sharpness"),
+    /** 64-bit difference hash, hex; null until analysed. */
+    hash: text("hash"),
+    /** The event's earliest photo this one repeats (a burst, the same shot twice); cleared when that one goes. */
+    duplicateOf: text("duplicate_of").references((): AnySQLiteColumn => photos.id, { onDelete: "set null" }),
     createdAt: integer("created_at").notNull().default(now),
   },
   (t) => [index("photos_event_idx").on(t.eventId, t.createdAt), index("photos_guest_idx").on(t.eventId, t.guestId), index("photos_spot_idx").on(t.spotId)],

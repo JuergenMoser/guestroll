@@ -21,8 +21,14 @@ default you can change later. Each event has its tabs: Photos, Guestbook
 
 The contact sheet of everything guests sent, newest first.
 
-- Filter by **All**, **Pending**, **Visible**, **Hidden** or **Favorites**, and
-  by challenge when the event has some.
+- Filter by **All**, **Pending**, **Visible**, **Hidden** or **Favorites**, by
+  challenge when the event has some, and by place when it has QR codes per table.
+- **Blurry** and **Duplicates** list what the server spotted from the pixels:
+  photos much less sharp than the rest of the event, and photos that repeat an
+  earlier one (a burst, the same shot sent twice; the first of a series isn't
+  marked). A small icon flags them on every view. They're hints: nothing is
+  hidden or deleted without you. Photos sent before this version are analysed
+  in the background, a few at a time.
 - Tap photos to select them, then **Approve**, **Hide**, **Favorite**,
   **Unfavorite** or **Delete** from the bar at the bottom. Hidden photos disappear for the guest who took them too,
   and leave the live wall; deleted photos are removed from disk.

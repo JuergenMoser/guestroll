@@ -22,6 +22,9 @@ always run on their own at startup; take a backup first all the same
 - Photo booth: a link for a tablet on a stand, with the live camera full
   screen, a countdown and the event's frame; the photo goes straight into the
   album. Revocable, no per-guest limit.
+- Blurry photos and duplicates are spotted on the server from the pixels (no
+  outside service) and shown as filters in moderation; photos already in the
+  album are analysed in the background.
 
 ## [0.4.0] - 2026-10-15
 

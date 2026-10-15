@@ -11,7 +11,7 @@ import { ImportPhotos } from "./ImportPhotos";
 import { SelectionBar, type BulkAction } from "./SelectionBar";
 import { useAdminPhotos, type PhotoFilter } from "./useAdminPhotos";
 
-const FILTERS: PhotoFilter[] = ["all", "pending", "visible", "hidden", "favorites"];
+const FILTERS: PhotoFilter[] = ["all", "pending", "visible", "hidden", "favorites", "blurry", "duplicates"];
 
 /** The contact sheet: filter, select, then approve, hide or delete in bulk. */
 export function ModerationPanel({ eventId, pendingCount, challenges = [], spots = [] }: { eventId: string; pendingCount: number; challenges?: Challenge[]; spots?: { id: string; label: string }[] }) {
@@ -115,8 +115,12 @@ export function ModerationPanel({ eventId, pendingCount, challenges = [], spots 
         </div>
       </div>
 
+      {(filter === "blurry" || filter === "duplicates") && <p className="text-sm text-ink-muted">{t("admin.moderation.flagHint")}</p>}
+
       {!loading && photos.length === 0 ? (
-        <EmptyState className="py-16">{t(filter === "favorites" ? "admin.moderation.noFavorites" : "admin.moderation.empty")}</EmptyState>
+        <EmptyState className="py-16">
+          {t(filter === "favorites" ? "admin.moderation.noFavorites" : filter === "blurry" ? "admin.moderation.noBlurry" : filter === "duplicates" ? "admin.moderation.noDuplicates" : "admin.moderation.empty")}
+        </EmptyState>
       ) : (
         <PhotoGrid photos={photos} selected={selected} onToggle={toggle} variant="sheet" />
       )}

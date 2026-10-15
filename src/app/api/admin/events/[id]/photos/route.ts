@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { apiError, readJson, requireEventAdmin } from "@/lib/http";
-import { deletePhotos, listPhotos, setFavorite, setPhotoStatus, toPhotoDto } from "@/lib/photos";
+import { deletePhotos, listPhotos, setFavorite, setPhotoStatus, toPhotoDto, eventBlurThreshold } from "@/lib/photos";
 
 type Context = RouteContext<"/api/admin/events/[id]/photos">;
 const STATUSES = new Set(["visible", "pending", "hidden"] as const);
@@ -12,7 +12,11 @@ export async function GET(request: Request, { params }: Context) {
   const search = new URL(request.url).searchParams;
   const status = search.get("status") as "visible" | "pending" | "hidden" | null;
   const before = Number(search.get("before")) || undefined;
+  const blurryBelow = eventBlurThreshold(event.id);
+  const flag = search.get("flag");
   const rows = listPhotos(event, "album", {
+    blurryBelow: flag === "blurry" ? blurryBelow : undefined,
+    duplicates: flag === "duplicates",
     favorite: search.get("favorites") === "1",
     challengeId: search.get("challenge") ?? undefined,
     spotId: search.get("spot") ?? undefined,
@@ -21,7 +25,7 @@ export async function GET(request: Request, { params }: Context) {
     status: status && STATUSES.has(status) ? status : undefined,
   });
   return NextResponse.json({
-    photos: rows.map((p) => toPhotoDto(p, { admin: admin.scope })),
+    photos: rows.map((p) => toPhotoDto(p, { admin: admin.scope }, blurryBelow)),
     nextCursor: rows.length === 100 ? rows[rows.length - 1].createdAt : null,
   });
 }

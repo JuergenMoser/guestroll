@@ -46,6 +46,7 @@ async function addPhotos(eventId: string, count: number, offset: number, challen
       bytes: processed.files.original.length,
       status: i % 9 === 4 ? "pending" : "visible",
       challengeId: challengeIds.length && i % 2 === 0 ? challengeIds[i % challengeIds.length] : null,
+      analysis: processed.analysis,
     });
     ids.push(id);
   }

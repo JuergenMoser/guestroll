@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/client/api";
 import type { PhotoDto } from "@/lib/photos";
 
-export type PhotoFilter = "all" | "visible" | "pending" | "hidden" | "favorites";
+export type PhotoFilter = "all" | "visible" | "pending" | "hidden" | "favorites" | "blurry" | "duplicates";
 
 type Page = { photos: PhotoDto[]; nextCursor: number | null };
 
@@ -18,6 +18,7 @@ export function useAdminPhotos(eventId: string, filter: PhotoFilter, challengeId
     (before?: number) => {
       const query = new URLSearchParams();
       if (filter === "favorites") query.set("favorites", "1");
+      else if (filter === "blurry" || filter === "duplicates") query.set("flag", filter);
       else if (filter !== "all") query.set("status", filter);
       if (challengeId) query.set("challenge", challengeId);
       if (spotId) query.set("spot", spotId);

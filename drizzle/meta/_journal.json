@@ -92,6 +92,13 @@
       "when": 1792093596502,
       "tag": "0012_photo_booth",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "6",
+      "when": 1792093910865,
+      "tag": "0013_photo_analysis",
+      "breakpoints": true
     }
   ]
 }

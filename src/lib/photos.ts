@@ -1,5 +1,6 @@
 import "server-only";
-import { and, count, desc, eq, inArray, lt, ne, or, sql, type SQL } from "drizzle-orm";
+import { and, count, desc, eq, inArray, isNotNull, lt, lte, ne, or, sql, type SQL } from "drizzle-orm";
+import { blurryThreshold, findDuplicate, type Analysis } from "@/lib/images/analysis";
 import { getDb } from "@/lib/db/client";
 import { photos, type EventRow, type PhotoRow } from "@/lib/db/schema";
 import { isEventAdmin, type Viewer } from "@/lib/policy";
@@ -17,9 +18,17 @@ export interface PhotoDto {
   favorite?: boolean;
   challengeId: string | null;
   createdAt: number;
+  /** Admins only: probably blurry, by the event's own standard (see `blurryThreshold`). */
+  blurry?: boolean;
+  /** Admins only: the earlier photo of the event this one repeats. */
+  duplicateOf?: string | null;
 }
 
-export function toPhotoDto(photo: PhotoRow, viewer: Pick<Viewer, "admin" | "guestId">): PhotoDto {
+/**
+ * `blurryBelow`: the event's threshold, when the caller lists for an admin
+ * (`eventBlurThreshold`); without it, no photo is flagged.
+ */
+export function toPhotoDto(photo: PhotoRow, viewer: Pick<Viewer, "admin" | "guestId">, blurryBelow?: number): PhotoDto {
   return {
     id: photo.id,
     width: photo.width,
@@ -29,7 +38,14 @@ export function toPhotoDto(photo: PhotoRow, viewer: Pick<Viewer, "admin" | "gues
     mine: viewer.guestId !== undefined && photo.guestId === viewer.guestId,
     challengeId: photo.challengeId,
     // The hosts' picks and counters stay theirs: guests and links never see them.
-    ...(isEventAdmin(photo.eventId, viewer) ? { downloads: photo.downloads, favorite: photo.favorite } : {}),
+    ...(isEventAdmin(photo.eventId, viewer)
+      ? {
+          downloads: photo.downloads,
+          favorite: photo.favorite,
+          blurry: blurryBelow !== undefined && photo.sharpness !== null && photo.sharpness < blurryBelow,
+          duplicateOf: photo.duplicateOf,
+        }
+      : {}),
     createdAt: photo.createdAt,
   };
 }
@@ -38,8 +54,29 @@ export function getPhoto(id: string): PhotoRow | undefined {
   return getDb().select().from(photos).where(eq(photos.id, id)).get();
 }
 
-export function insertPhoto(photo: Omit<PhotoRow, "downloads" | "createdAt" | "favorite" | "challengeId" | "spotId"> & { challengeId?: string | null; spotId?: string | null }): PhotoRow {
-  return getDb().insert(photos).values(photo).returning().get();
+type NewPhoto = Omit<PhotoRow, "downloads" | "createdAt" | "favorite" | "challengeId" | "spotId" | "sharpness" | "hash" | "duplicateOf"> & {
+  challengeId?: string | null;
+  spotId?: string | null;
+  analysis?: Analysis;
+};
+
+/** With an analysis, the photo is checked against the event's earlier ones for a duplicate. */
+export function insertPhoto({ analysis, ...photo }: NewPhoto): PhotoRow {
+  const duplicateOf = analysis ? findDuplicate(analysis.hash, analysedPhotos(photo.eventId)) : null;
+  return getDb()
+    .insert(photos)
+    .values({ ...photo, sharpness: analysis?.sharpness ?? null, hash: analysis?.hash ?? null, duplicateOf })
+    .returning()
+    .get();
+}
+
+/** The event's analysed photos, oldest first: a duplicate points at the first of its kind. */
+export function analysedPhotos(eventId: string, before?: number): { id: string; hash: string | null }[] {
+  const filters: SQL[] = [eq(photos.eventId, eventId), isNotNull(photos.hash)];
+  // `created_at` has second precision: a photo of the same second counts as earlier
+  // (the caller excludes the photo itself by its still-null hash).
+  if (before !== undefined) filters.push(lte(photos.createdAt, before));
+  return getDb().select({ id: photos.id, hash: photos.hash }).from(photos).where(and(...filters)).orderBy(photos.createdAt, photos.id).all();
 }
 
 export function countGuestPhotos(eventId: string, guestId: string): number {
@@ -60,6 +97,10 @@ export interface ListOptions {
   favorite?: boolean;
   challengeId?: string;
   spotId?: string;
+  /** Album only: the photos under this sharpness (the event's `eventBlurThreshold`). */
+  blurryBelow?: number;
+  /** Album only: the photos that repeat an earlier one. */
+  duplicates?: boolean;
 }
 
 /**
@@ -77,6 +118,8 @@ export function listPhotos(event: EventRow, who: "album" | { guestId?: string; s
   if (who === "album") {
     if (options.status) filters.push(eq(photos.status, options.status));
     if (options.favorite) filters.push(eq(photos.favorite, true));
+    if (options.blurryBelow !== undefined) filters.push(lt(photos.sharpness, options.blurryBelow));
+    if (options.duplicates) filters.push(isNotNull(photos.duplicateOf));
   } else if (who.shared) {
     const own = who.guestId ? and(eq(photos.guestId, who.guestId), ne(photos.status, "hidden")) : undefined;
     filters.push(or(eq(photos.status, "visible"), own)!);
@@ -165,4 +208,15 @@ export async function deleteGuestPhoto(photoId: string, eventId: string, guestId
     .get();
   if (deleted) await deletePhotoFiles(eventId, deleted.id);
   return Boolean(deleted);
+}
+
+/** Sharpness under which this event's photos are flagged blurry, from its analysed photos. */
+export function eventBlurThreshold(eventId: string): number {
+  const scores = getDb()
+    .select({ s: photos.sharpness })
+    .from(photos)
+    .where(and(eq(photos.eventId, eventId), isNotNull(photos.sharpness)))
+    .all()
+    .map((r) => r.s!);
+  return blurryThreshold(scores);
 }

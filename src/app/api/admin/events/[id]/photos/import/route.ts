@@ -52,6 +52,7 @@ export async function POST(request: Request, { params }: RouteContext<"/api/admi
       height: processed.height,
       bytes: processed.files.original.length,
       status: "visible",
+      analysis: processed.analysis,
     });
     return NextResponse.json({ photo: toPhotoDto(photo, { admin: admin.scope }) }, { status: 201 });
   } catch (error) {

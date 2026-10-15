@@ -187,6 +187,7 @@ async function store(
       status: event.moderation === "pre" ? "pending" : "visible",
       challengeId,
       spotId,
+      analysis: processed.analysis,
     });
     track("upload", event.id, guestId);
     return NextResponse.json(

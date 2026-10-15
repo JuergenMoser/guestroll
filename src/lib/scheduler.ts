@@ -5,6 +5,7 @@ import { processOutbox } from "@/lib/mail/outbox";
 import { mailEnabled } from "@/lib/mail/settings";
 import { processWebhooks } from "@/lib/webhooks/queue";
 import { cleanTempFiles } from "@/lib/backup";
+import { analysePending } from "@/lib/images/backfill";
 import { runRetention } from "@/lib/retention";
 import { maybeCheckForUpdate } from "@/lib/updates";
 
@@ -16,6 +17,7 @@ export async function tick(now = Date.now()): Promise<void> {
   await storageAlert(now);
   await runRetention(now);
   await cleanTempFiles();
+  await analysePending();
   // A public demo sends nothing out: queued mails and webhooks stay queued, reset at night.
   if (config.demo.enabled) return;
   // Mails are queued even without SMTP, so configuring it later still delivers them.
