@@ -61,6 +61,7 @@ export interface EventSummary extends AdminEvent {
   photoCount: number;
   pendingCount: number;
   bytes: number;
+  acceptingUploads: boolean;
 }
 
 export function listEvents(): EventSummary[] {
@@ -76,7 +77,14 @@ export function listEvents(): EventSummary[] {
     .groupBy(events.id)
     .orderBy(desc(events.createdAt))
     .all();
-  return rows.map((r) => ({ ...toAdminEvent(r.event), photoCount: r.photoCount, pendingCount: r.pendingCount, bytes: r.bytes }));
+  const now = Date.now();
+  return rows.map((r) => ({
+    ...toAdminEvent(r.event),
+    photoCount: r.photoCount,
+    pendingCount: r.pendingCount,
+    bytes: r.bytes,
+    acceptingUploads: r.event.uploadsOpen && (r.event.uploadsCloseAt === null || r.event.uploadsCloseAt > now),
+  }));
 }
 
 function hashCode(code: string | null | undefined): string | null | undefined {

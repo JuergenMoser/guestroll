@@ -16,7 +16,6 @@ export function EventList({ events, locale }: { events: EventSummary[]; locale: 
   return (
     <ul role="list" className="divide-y divide-ink-800 overflow-hidden rounded-2xl bg-ink-900 ring-1 ring-ink-800">
       {events.map((event) => {
-        const open = event.uploadsOpen && (event.uploadsCloseAt === null || event.uploadsCloseAt > Date.now());
         return (
           <li key={event.id}>
             <EventTheme color={event.accentColor}>
@@ -35,7 +34,7 @@ export function EventList({ events, locale }: { events: EventSummary[]; locale: 
                   </span>
                 </span>
                 {event.pendingCount > 0 && <Badge tone="accent">{event.pendingCount} {t("admin.pending").toLowerCase()}</Badge>}
-                <Badge tone={open ? "ok" : "neutral"}>{open ? t("admin.open") : t("admin.closed")}</Badge>
+                <Badge tone={event.acceptingUploads ? "ok" : "neutral"}>{event.acceptingUploads ? t("admin.open") : t("admin.closed")}</Badge>
                 <ChevronRight className="size-4 text-ink-600" aria-hidden />
               </Link>
             </EventTheme>

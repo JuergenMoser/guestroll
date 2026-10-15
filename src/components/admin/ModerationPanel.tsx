@@ -20,26 +20,41 @@ export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pe
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
 
-  const load = useCallback(
-    async (before?: number) => {
-      setLoading(true);
+  const fetchPage = useCallback(
+    (before?: number) => {
       const query = new URLSearchParams();
       if (filter !== "all") query.set("status", filter);
       if (before) query.set("before", String(before));
-      const data = await api<{ photos: PhotoDto[]; nextCursor: number | null }>(`/api/admin/events/${eventId}/photos?${query}`).catch(
-        () => ({ photos: [], nextCursor: null }),
-      );
-      setPhotos((list) => (before ? [...list, ...data.photos] : data.photos));
-      setCursor(data.nextCursor);
-      setLoading(false);
+      return api<{ photos: PhotoDto[]; nextCursor: number | null }>(`/api/admin/events/${eventId}/photos?${query}`).catch(() => ({
+        photos: [] as PhotoDto[],
+        nextCursor: null,
+      }));
     },
     [eventId, filter],
   );
 
+  const reload = useCallback(
+    () =>
+      fetchPage().then((data) => {
+        setPhotos(data.photos);
+        setCursor(data.nextCursor);
+        setLoading(false);
+      }),
+    [fetchPage],
+  );
+
   useEffect(() => {
-    setSelected(new Set());
-    void load();
-  }, [load]);
+    void reload();
+  }, [reload]);
+
+  async function loadMore() {
+    if (cursor === null) return;
+    setLoading(true);
+    const data = await fetchPage(cursor);
+    setPhotos((list) => [...list, ...data.photos]);
+    setCursor(data.nextCursor);
+    setLoading(false);
+  }
 
   const toggle = (id: string) =>
     setSelected((s) => {
@@ -56,7 +71,7 @@ export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pe
     await api(`/api/admin/events/${eventId}/photos`, { body: { action, ids } }).catch(() => {});
     setSelected(new Set());
     setBusy(false);
-    await load();
+    await reload();
   }
 
   return (
@@ -69,7 +84,11 @@ export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pe
               role="tab"
               type="button"
               aria-selected={filter === f}
-              onClick={() => setFilter(f)}
+              onClick={() => {
+                setSelected(new Set());
+                setLoading(true);
+                setFilter(f);
+              }}
               className={cn("rounded-full px-3 py-1 text-sm transition", filter === f ? "bg-ink-700 text-paper" : "text-ink-400 hover:text-paper")}
             >
               {t(`admin.moderation.${f}`)}
@@ -120,7 +139,7 @@ export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pe
 
       {cursor !== null && (
         <div className="flex justify-center">
-          <Button variant="secondary" onClick={() => load(cursor)} loading={loading}>
+          <Button variant="secondary" onClick={loadMore} loading={loading}>
             {t("common.loadMore")}
           </Button>
         </div>

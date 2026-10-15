@@ -1,6 +1,8 @@
 import next from "eslint-config-next";
 
-export default [
+const config = [
   { ignores: [".next/**", "node_modules/**", "data/**", "drizzle/**", "next-env.d.ts"] },
   ...next,
 ];
+
+export default config;
