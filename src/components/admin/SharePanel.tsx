@@ -14,6 +14,7 @@ import { QrDesigner } from "./qr/QrDesigner";
 import { SlideshowExport } from "./SlideshowExport";
 import { WallSettings } from "./WallSettings";
 import { SpotsCard } from "./SpotsCard";
+import { AlbumPdfCard } from "./AlbumPdfCard";
 import { BoothCard } from "./BoothCard";
 import type { SpotDto } from "@/lib/spots";
 
@@ -50,6 +51,8 @@ export function SharePanel({ event, url, locale, purgeAt, favoriteCount, spots }
       <SpotsCard eventId={event.id} initial={spots} />
 
       <BoothCard eventId={event.id} url={url} initialKey={event.boothKey} />
+
+      <AlbumPdfCard eventId={event.id} hasFavorites={favoriteCount > 0} />
 
       <SlideshowExport eventId={event.id} eventName={event.name} eventDate={event.eventDate} accent={event.accentColor} hasFavorites={favoriteCount > 0} />
 

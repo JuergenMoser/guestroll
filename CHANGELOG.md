@@ -28,6 +28,8 @@ always run on their own at startup; take a backup first all the same
 - Invite co-organizers by email: a single-use link, valid 7 days, where they
   pick their own username and password; revocable, and shown to copy when
   email isn't set up.
+- Printable album: a PDF with a cover and the photos (or the favorites), 1, 2
+  or 4 per A4 page with credits, from the originals for one per page.
 
 ## [0.4.0] - 2026-10-15
 

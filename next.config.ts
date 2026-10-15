@@ -10,11 +10,14 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // A production build next to a running `next dev` would replace files under it:
+  // the e2e suite builds into its own folder (scripts/start.mjs reads the same variable).
+  distDir: process.env.GUESTROLL_BUILD_DIR || ".next",
   poweredByHeader: false,
   agentRules: false,
   devIndicators: false,
   // Native modules must stay out of the bundle so the standalone build ships their binaries.
-  serverExternalPackages: ["better-sqlite3", "sharp", "heic-decode"],
+  serverExternalPackages: ["better-sqlite3", "sharp", "heic-decode", "pdfkit"],
   // The local data folder holds photos and the session secret: never ship it in a build.
   // Read from disk by the social preview images (src/lib/og.tsx).
   outputFileTracingIncludes: { "/**": ["./assets/fonts/*.woff", "./assets/fonts/*.ttf"] },

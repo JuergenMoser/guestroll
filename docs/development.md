@@ -36,6 +36,15 @@ npm run test:e2e       # functional tests on the production build (Playwright)
 data folder, so it never touches your data. Locally it uses your installed
 Chrome; in CI, the Chromium installed by `npx playwright install`.
 
+With `npm run dev` running, build into another folder: a build replaces files
+under the dev server and breaks it. `GUESTROLL_BUILD_DIR` sets the folder for
+both the build and the e2e server:
+
+```bash
+GUESTROLL_BUILD_DIR=.next-e2e npm run build
+GUESTROLL_BUILD_DIR=.next-e2e npm run test:e2e
+```
+
 ### Three layers of tests
 
 | Layer | Where | What it runs against |

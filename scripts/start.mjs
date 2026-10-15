@@ -7,13 +7,14 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const standalone = path.join(root, ".next", "standalone");
+const buildDir = process.env.GUESTROLL_BUILD_DIR || ".next";
+const standalone = path.join(root, buildDir, "standalone");
 if (!fs.existsSync(path.join(standalone, "server.js"))) {
   console.error("No production build found: run `npm run build` first.");
   process.exit(1);
 }
 
-fs.cpSync(path.join(root, ".next", "static"), path.join(standalone, ".next", "static"), { recursive: true });
+fs.cpSync(path.join(root, buildDir, "static"), path.join(standalone, buildDir, "static"), { recursive: true });
 fs.cpSync(path.join(root, "drizzle"), path.join(standalone, "drizzle"), { recursive: true });
 if (fs.existsSync(path.join(root, "public"))) fs.cpSync(path.join(root, "public"), path.join(standalone, "public"), { recursive: true });
 if (fs.existsSync(path.join(root, "assets"))) fs.cpSync(path.join(root, "assets"), path.join(standalone, "assets"), { recursive: true });

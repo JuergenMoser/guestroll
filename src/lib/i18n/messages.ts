@@ -677,6 +677,24 @@ const en = {
       taken: "This username is taken.",
       submit: "Create my account",
     },
+    album: {
+      title: "Printable album",
+      hint: "A PDF to send to a printer: a cover with the event's name, then the visible photos in the order they were taken, each credited. One per page uses the originals, for printing large. Albums of hundreds of photos take a minute.",
+      layout: "Photos per page",
+      layouts: {
+        "1": "1",
+        "2": "2",
+        "4": "4",
+      },
+      photos: "Photos",
+      scopes: {
+        visible: "All visible",
+        favorites: "Favorites",
+      },
+      download: "Download the PDF",
+      count: "{n} photos",
+      credit: "Photo: {name}",
+    },
   },
   shared: {
     title: "Private album",
@@ -1418,6 +1436,24 @@ const fr: DeepPartialStrings<Messages> = {
       taken: "Cet identifiant est déjà pris.",
       submit: "Créer mon compte",
     },
+    album: {
+      title: "Album à imprimer",
+      hint: "Un PDF à envoyer à un imprimeur : une couverture au nom de l'évènement, puis les photos visibles dans l'ordre où elles ont été prises, chacune avec son auteur. Une par page utilise les originaux, pour imprimer en grand. Un album de centaines de photos prend une minute.",
+      layout: "Photos par page",
+      layouts: {
+        "1": "1",
+        "2": "2",
+        "4": "4",
+      },
+      photos: "Photos",
+      scopes: {
+        visible: "Toutes les visibles",
+        favorites: "Favorites",
+      },
+      download: "Télécharger le PDF",
+      count: "{n} photos",
+      credit: "Photo : {name}",
+    },
   },
   shared: {
     title: "Album privé",
@@ -2155,6 +2191,24 @@ const it: DeepPartialStrings<Messages> = {
       taken: "Questo nome utente è già in uso.",
       submit: "Crea il mio account",
     },
+    album: {
+      title: "Album da stampare",
+      hint: "Un PDF da mandare a una tipografia: una copertina con il nome dell'evento, poi le foto visibili nell'ordine in cui sono state scattate, ciascuna con il suo autore. Una per pagina usa gli originali, per stampare in grande. Un album di centinaia di foto richiede un minuto.",
+      layout: "Foto per pagina",
+      layouts: {
+        "1": "1",
+        "2": "2",
+        "4": "4",
+      },
+      photos: "Foto",
+      scopes: {
+        visible: "Tutte le visibili",
+        favorites: "Preferite",
+      },
+      download: "Scarica il PDF",
+      count: "{n} foto",
+      credit: "Foto: {name}",
+    },
   },
   shared: {
     title: "Album privato",
@@ -2891,6 +2945,24 @@ const es: DeepPartialStrings<Messages> = {
       mismatch: "Las dos contraseñas no coinciden.",
       taken: "Este usuario ya existe.",
       submit: "Crear mi cuenta",
+    },
+    album: {
+      title: "Álbum para imprimir",
+      hint: "Un PDF para enviar a una imprenta: una portada con el nombre del evento y luego las fotos visibles en el orden en que se hicieron, cada una con su autor. Una por página usa los originales, para imprimir en grande. Un álbum de cientos de fotos tarda un minuto.",
+      layout: "Fotos por página",
+      layouts: {
+        "1": "1",
+        "2": "2",
+        "4": "4",
+      },
+      photos: "Fotos",
+      scopes: {
+        visible: "Todas las visibles",
+        favorites: "Favoritas",
+      },
+      download: "Descargar el PDF",
+      count: "{n} fotos",
+      credit: "Foto: {name}",
     },
   },
   shared: {

@@ -83,6 +83,12 @@ and photos per challenge.
   per-guest limit, and needs HTTPS for the camera. *New link* replaces it (the
   booth set up with the old one stops), *Turn off* disables it.
 - **Printable poster**: an A4 card with the event name, date and QR code.
+- **Printable album**: a PDF to send to a printer, with a cover (name, date,
+  logo, number of photos), then the visible photos (or the favorites) in the
+  order they were taken, 1, 2 or 4 per A4 page, each credited to the guest who
+  took it, and page numbers. One per page uses the originals, to print large.
+  It is generated on the server one photo at a time, so even a large album
+  doesn't load the server's memory; one album is made at a time.
 - **Slideshow video**: an MP4 of the visible photos (or the favorites) in the
   order they were taken, with a title card, slow zooms and crossfades, 16:9 or
   9:16 for stories, 2 to 8 seconds per photo, up to 300 photos, and your own
