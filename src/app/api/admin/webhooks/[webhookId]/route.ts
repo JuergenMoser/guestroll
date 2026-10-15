@@ -6,7 +6,7 @@ type Context = RouteContext<"/api/admin/webhooks/[webhookId]">;
 
 /** An empty `url` keeps the saved one; `secret: null` removes it. */
 export async function PATCH(request: Request, { params }: Context) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   const parsed = parseWebhookInput(await readJson(request), true);
   if (!parsed.ok) return apiError("bad_request", parsed.errors);
@@ -16,7 +16,7 @@ export async function PATCH(request: Request, { params }: Context) {
 }
 
 export async function DELETE(request: Request, { params }: Context) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   return deleteWebhook((await params).webhookId) ? NextResponse.json({ ok: true }) : apiError("not_found");
 }

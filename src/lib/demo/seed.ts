@@ -11,6 +11,7 @@ import { insertMessage } from "@/lib/messages";
 import { insertPhoto, setFavorite } from "@/lib/photos";
 import { newId } from "@/lib/security/ids";
 import { createShareLink } from "@/lib/shares";
+import { readSetting, writeSetting } from "@/lib/settings";
 import { storage } from "@/lib/storage";
 import { writePhotoFiles } from "@/lib/storage/files";
 import { demoPhoto } from "./photos";
@@ -51,9 +52,29 @@ async function addPhotos(eventId: string, count: number, offset: number, challen
   return ids;
 }
 
-/** A believable instance: three events with photos, challenges, a guestbook, favorites and a gallery link. */
+// Set when the seed creates the demo: the publicly known account and the nightly
+// wipe only ever exist on an instance that was a demo from the start.
+const MARKER = "demo_instance";
+
+export class NotADemoError extends Error {}
+
+/** True for an instance seeded as a demo; false for one that already held its own data. */
+export function isDemoInstance(): boolean {
+  return readSetting(MARKER) === "1";
+}
+
+/**
+ * A believable instance: three events with photos, challenges, a guestbook,
+ * favorites and a gallery link. Refuses an instance that already has events of
+ * its own: DEMO_MODE turned on by mistake must not open a real album with a
+ * public password.
+ */
 export async function seedDemo(): Promise<void> {
   bootstrapAdmin();
+  if (!isDemoInstance() && getDb().select({ id: eventsTable.id }).from(eventsTable).limit(1).get()) {
+    throw new NotADemoError("DEMO_MODE is set on an instance that already has events: refusing to seed a public account on real data");
+  }
+  writeSetting(MARKER, "1");
   if (!getAccountByUsername(DEMO_USERNAME)) {
     createAccount({ username: DEMO_USERNAME, name: "Demo host", email: null, role: "owner", eventIds: [], passwordHash: hashPassword(DEMO_PASSWORD) });
   }
@@ -96,6 +117,7 @@ export async function seedDemo(): Promise<void> {
  * then the seed runs again. Visitors' changes last until the next reset.
  */
 export async function resetDemo(): Promise<void> {
+  if (!isDemoInstance()) throw new NotADemoError("Refusing to wipe an instance that wasn't seeded as a demo");
   const ids = getDb().select({ id: eventsTable.id }).from(eventsTable).all();
   for (const { id } of ids) await storage().deletePrefix(id).catch(() => {});
   closeDb();

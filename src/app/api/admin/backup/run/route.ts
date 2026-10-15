@@ -5,7 +5,7 @@ import { apiError, requireAdmin } from "@/lib/http";
 
 /** A backup now, to the scheduled backups' destination. Waits for it: the admin sees the result. */
 export async function POST(request: Request) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   try {
     return NextResponse.json({ run: await runBackup("manual") });

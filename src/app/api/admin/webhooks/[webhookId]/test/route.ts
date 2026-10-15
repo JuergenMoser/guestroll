@@ -9,7 +9,7 @@ import { getWebhook } from "@/lib/webhooks/settings";
 
 /** Sends a test notice now, not through the queue, so the admin sees the service's answer. */
 export async function POST(request: Request, { params }: RouteContext<"/api/admin/webhooks/[webhookId]/test">) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   const limit = limiters.mailTest.consume("webhook");
   if (!limit.allowed) return rateLimited(limit.retryAfterMs);

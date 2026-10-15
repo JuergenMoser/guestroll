@@ -12,7 +12,7 @@ import { limiters } from "@/lib/security/limiters";
  * SMTP server's answer now, error message included.
  */
 export async function POST(request: Request) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   const limit = limiters.mailTest.consume("admin");
   if (!limit.allowed) return rateLimited(limit.retryAfterMs);

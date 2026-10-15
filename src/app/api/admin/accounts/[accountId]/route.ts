@@ -14,7 +14,7 @@ type Context = RouteContext<"/api/admin/accounts/[accountId]">;
  * demoted or deleted, so nobody is locked out of the instance settings.
  */
 export async function PATCH(request: Request, { params }: Context) {
-  const { admin, denied } = await requireAdmin(request, { owner: true });
+  const { admin, denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   const account = getAccount((await params).accountId);
   if (!account) return apiError("not_found");
@@ -52,7 +52,7 @@ export async function PATCH(request: Request, { params }: Context) {
 }
 
 export async function DELETE(request: Request, { params }: Context) {
-  const { admin, denied } = await requireAdmin(request, { owner: true });
+  const { admin, denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   const account = getAccount((await params).accountId);
   if (!account) return apiError("not_found");

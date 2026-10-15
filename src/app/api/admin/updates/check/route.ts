@@ -6,7 +6,7 @@ import { availableUpdate, checkForUpdate } from "@/lib/updates";
 
 /** "Check now": asks GitHub right away. */
 export async function POST(request: Request) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   // GitHub allows 60 anonymous calls an hour per IP: a stuck button must not spend them.
   const limit = limiters.mailTest.consume("update-check");

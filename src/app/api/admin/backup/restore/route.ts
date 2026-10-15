@@ -9,7 +9,7 @@ const globalForRestore = globalThis as unknown as { guestrollRestoring?: boolean
  * signed in is signed out, since accounts come from the backup.
  */
 export async function POST(request: Request) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   if (!request.body) return apiError("bad_request", { file: "required" });
   if (globalForRestore.guestrollRestoring) return apiError("bad_request", { file: "busy" });

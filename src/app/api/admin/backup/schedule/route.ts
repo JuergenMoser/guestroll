@@ -4,7 +4,7 @@ import { apiError, readJson, requireAdmin } from "@/lib/http";
 
 /** `{ enabled, cron, keep }`. Refused when BACKUP_CRON sets it from the environment. */
 export async function PUT(request: Request) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   if (scheduleFromEnv()) return apiError("forbidden", { schedule: "managed_by_env" });
   const body = (await readJson(request)) as { enabled?: unknown; cron?: unknown; keep?: unknown } | undefined;

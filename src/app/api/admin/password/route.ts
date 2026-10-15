@@ -6,7 +6,7 @@ import { apiError, readJson, requireAdmin } from "@/lib/http";
 
 /** Changes the signed-in account's own password. */
 export async function POST(request: Request) {
-  const { admin, denied } = await requireAdmin(request);
+  const { admin, denied } = await requireAdmin(request, { notInDemo: true });
   if (denied) return denied;
   const account = getAccount(admin.id)!;
   if (passwordManagedByEnv(account)) return apiError("forbidden", { password: "managed_by_env" });

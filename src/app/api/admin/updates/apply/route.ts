@@ -11,7 +11,7 @@ import { startUpdate, updaterConfigured } from "@/lib/updater";
  * The page then waits for the new version to answer.
  */
 export async function POST(request: Request) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   if (!updaterConfigured()) return apiError("bad_request", { updater: "not_configured" });
   const body = (await readJson(request)) as { version?: unknown; skipBackup?: unknown } | undefined;

@@ -9,7 +9,7 @@ import { apiError, rateLimited, readJson, requireAdmin } from "@/lib/http";
 import { limiters } from "@/lib/security/limiters";
 
 export async function GET(request: Request) {
-  const { admin, denied } = await requireAdmin(request);
+  const { admin, denied } = await requireAdmin(request, { notInDemo: true });
   if (denied) return denied;
   const account = getAccount(admin.id)!;
   return NextResponse.json({ enabled: Boolean(account.totpSecret), recoveryCodesLeft: recoveryCodesLeft(account) });
@@ -22,7 +22,7 @@ export async function GET(request: Request) {
  * alone must not be able to put its own app on the account and lock its owner out.
  */
 export async function POST(request: Request) {
-  const { admin, denied } = await requireAdmin(request);
+  const { admin, denied } = await requireAdmin(request, { notInDemo: true });
   if (denied) return denied;
   const limit = limiters.twoFactorSettings.consume(admin.id);
   if (!limit.allowed) return rateLimited(limit.retryAfterMs);
@@ -58,7 +58,7 @@ export async function POST(request: Request) {
 
 /** Turning it off takes the password and a code: a stolen session alone can't. */
 export async function DELETE(request: Request) {
-  const { admin, denied } = await requireAdmin(request);
+  const { admin, denied } = await requireAdmin(request, { notInDemo: true });
   if (denied) return denied;
   const limit = limiters.twoFactorSettings.consume(admin.id);
   if (!limit.allowed) return rateLimited(limit.retryAfterMs);

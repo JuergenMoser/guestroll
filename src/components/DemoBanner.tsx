@@ -8,7 +8,7 @@ export async function DemoBanner({ nextReset }: { nextReset: number | null }) {
   return (
     <div role="note" className="bg-ink px-4 py-2 text-center text-[13px] text-canvas">
       <strong>{t("demo.title")}</strong> {t("demo.signIn", { username: DEMO_USERNAME, password: DEMO_PASSWORD })} {t("demo.gallery", { password: DEMO_GALLERY_PASSWORD })}{" "}
-      {time && t("demo.reset", { time })}
+      {time && t("demo.reset", { time })} {t("demo.public")}
     </div>
   );
 }

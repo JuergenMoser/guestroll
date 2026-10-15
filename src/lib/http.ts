@@ -49,9 +49,15 @@ type Guarded<T> = ({ denied: null } & T) | ({ denied: NextResponse } & { [K in k
  * cross-site form POST through in some browsers. `owner` restricts the route
  * to owners (instance settings, accounts, backups).
  */
-export async function requireAdmin(request: Request, options: { owner?: boolean } = {}): Promise<Guarded<{ admin: AdminIdentity }>> {
+/**
+ * `notInDemo`: what a public demo must not let visitors do, sending anything
+ * out (email, webhooks), touching the host (updates, backups and their
+ * secrets) or locking the shared account (passwords, two-step, accounts).
+ */
+export async function requireAdmin(request: Request, options: { owner?: boolean; notInDemo?: boolean } = {}): Promise<Guarded<{ admin: AdminIdentity }>> {
   if (request.method !== "GET" && request.method !== "HEAD" && !isSameOrigin(request)) return { denied: apiError("forbidden"), admin: null };
-  if (config.demo.enabled && blockedInDemo(request)) return { denied: apiError("forbidden", { demo: "disabled" }), admin: null };
+  // Declared by each route, not matched on the URL: no path spelling can slip past it.
+  if (config.demo.enabled && options.notInDemo) return { denied: apiError("forbidden", { demo: "disabled" }), admin: null };
   const admin = await getAdmin();
   if (!admin) return { denied: apiError("unauthorized"), admin: null };
   if (options.owner && admin.role !== "owner") return { denied: apiError("forbidden"), admin: null };
@@ -68,18 +74,6 @@ export async function requireEventAdmin(request: Request, eventId: string): Prom
   const event = getEventById(eventId);
   if (!event || !isEventAdmin(event.id, { admin: admin.scope })) return { denied: apiError("not_found"), admin: null, event: null };
   return { denied: null, admin, event };
-}
-
-// What a public demo must not let visitors do: send anything out (email,
-// webhooks), touch the host (updates, backups and their secrets), or lock the
-// shared account (passwords, two-step, accounts).
-const DEMO_BLOCKED = [/^\/api\/admin\/mail/, /^\/api\/admin\/webhooks/, /^\/api\/admin\/updates\/(check|apply)/, /^\/api\/admin\/password/, /^\/api\/admin\/me\/two-factor/, /^\/api\/admin\/accounts/, /^\/api\/admin\/backup\/(restore|run|schedule|stored)/];
-
-function blockedInDemo(request: Request): boolean {
-  const url = new URL(request.url);
-  if (url.pathname === "/api/admin/backup" && url.searchParams.has("download")) return true;
-  const reads = request.method === "GET" || request.method === "HEAD";
-  return DEMO_BLOCKED.some((pattern) => pattern.test(url.pathname)) && (!reads || /stored|webhooks/.test(url.pathname));
 }
 
 export async function readJson(request: Request): Promise<unknown> {

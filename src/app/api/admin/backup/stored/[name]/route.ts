@@ -7,7 +7,7 @@ type Context = RouteContext<"/api/admin/backup/stored/[name]">;
 const NAME = /^guestroll-backup-[0-9-]+\.zip$/;
 
 export async function GET(request: Request, { params }: Context) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   const { name } = await params;
   if (!NAME.test(name)) return apiError("not_found");
@@ -24,7 +24,7 @@ export async function GET(request: Request, { params }: Context) {
 }
 
 export async function DELETE(request: Request, { params }: Context) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   const { name } = await params;
   if (!NAME.test(name)) return apiError("not_found");

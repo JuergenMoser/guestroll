@@ -53,8 +53,20 @@ describe("admin guards", () => {
       for (const route of files(path.join(root, dir), "route.ts")) {
         const source = fs.readFileSync(route, "utf8");
         const handlers = source.match(/export async function (GET|POST|PATCH|DELETE|PUT)/g) ?? [];
-        const owner = source.match(/requireAdmin\(request, \{ owner: true \}\)/g) ?? [];
+        const owner = source.match(/requireAdmin\(request, \{ owner: true[ ,}]/g) ?? [];
         expect(owner.length, rel(route)).toBe(handlers.length);
+      }
+    }
+  });
+
+  it("routes a public demo must not serve declare it themselves", () => {
+    // Declared per route rather than matched on the URL: no path spelling slips past.
+    for (const dir of ["api/admin/mail", "api/admin/webhooks", "api/admin/accounts", "api/admin/backup/run", "api/admin/backup/schedule", "api/admin/backup/restore", "api/admin/backup/stored", "api/admin/updates/check", "api/admin/updates/apply", "api/admin/password", "api/admin/me/two-factor"]) {
+      for (const route of files(path.join(root, dir), "route.ts")) {
+        const source = fs.readFileSync(route, "utf8");
+        const handlers = source.match(/export async function (GET|POST|PATCH|DELETE|PUT)/g) ?? [];
+        const marked = source.match(/notInDemo: true/g) ?? [];
+        expect(marked.length, rel(route)).toBe(handlers.length);
       }
     }
   });

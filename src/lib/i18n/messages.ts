@@ -610,6 +610,7 @@ const en = {
     signIn: "Admin: /admin, {username} / {password}.",
     gallery: "Gallery link password: {password}.",
     reset: "Everything resets at {time} UTC; emails and webhooks are off.",
+    public: "Photos sent here are visible to other visitors: don't send personal ones.",
   },
 };
 
@@ -1229,6 +1230,7 @@ const fr: DeepPartialStrings<Messages> = {
     signIn: "Admin : /admin, {username} / {password}.",
     gallery: "Mot de passe du lien de galerie : {password}.",
     reset: "Tout est remis à zéro à {time} UTC ; e-mails et webhooks sont coupés.",
+    public: "Les photos envoyées ici sont visibles des autres visiteurs : n'en envoyez pas de personnelles.",
   },
 };
 
@@ -1844,6 +1846,7 @@ const it: DeepPartialStrings<Messages> = {
     signIn: "Admin: /admin, {username} / {password}.",
     gallery: "Password del link alla galleria: {password}.",
     reset: "Tutto si azzera alle {time} UTC; e-mail e webhook sono disattivati.",
+    public: "Le foto inviate qui sono visibili agli altri visitatori: non inviarne di personali.",
   },
 };
 
@@ -2459,6 +2462,7 @@ const es: DeepPartialStrings<Messages> = {
     signIn: "Admin: /admin, {username} / {password}.",
     gallery: "Contraseña del enlace de galería: {password}.",
     reset: "Todo se reinicia a las {time} UTC; correos y webhooks están desactivados.",
+    public: "Las fotos enviadas aquí son visibles para otros visitantes: no envíes fotos personales.",
   },
 };
 

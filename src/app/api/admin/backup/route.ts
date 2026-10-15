@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
+import { config } from "@/lib/config";
 import { backupResponse } from "@/lib/backup";
-import { requireAdmin } from "@/lib/http";
+import { apiError, requireAdmin } from "@/lib/http";
 import { getRetentionDays } from "@/lib/retention";
 import { getSchedule, lastRun, listStoredBackups, nextBackupAt, scheduleFromEnv, targetDescription } from "@/lib/backupSchedule";
 import { storage } from "@/lib/storage";
@@ -9,7 +10,11 @@ import { storage } from "@/lib/storage";
 export async function GET(request: Request) {
   const { denied } = await requireAdmin(request, { owner: true });
   if (denied) return denied;
-  if (new URL(request.url).searchParams.get("download") === "1") return backupResponse();
+  if (new URL(request.url).searchParams.get("download") === "1") {
+    // A backup holds every secret of the instance: never handed out by a public demo.
+    if (config.demo.enabled) return apiError("forbidden", { demo: "disabled" });
+    return backupResponse();
+  }
   let files = 0;
   let bytes = 0;
   for await (const item of storage().list()) {

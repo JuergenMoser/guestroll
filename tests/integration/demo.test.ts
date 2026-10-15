@@ -37,4 +37,16 @@ describe("demo mode", () => {
     await tick();
     expect(outboxSummary().pending).toBe(1);
   });
+
+  it("refuses to seed or wipe an instance that holds its own data", async () => {
+    const events = await import("@/lib/events");
+    events.createEvent({ name: "A real wedding" });
+    const { seedDemo, resetDemo, NotADemoError } = await import("@/lib/demo/seed");
+    await expect(seedDemo()).rejects.toBeInstanceOf(NotADemoError);
+    await expect(resetDemo()).rejects.toBeInstanceOf(NotADemoError);
+    const { getAccountByUsername } = await import("@/lib/accounts");
+    expect(getAccountByUsername("demo")).toBeUndefined();
+    expect(events.listEvents({ all: true }).map((e) => e.name)).toEqual(["A real wedding"]);
+  });
 });
+

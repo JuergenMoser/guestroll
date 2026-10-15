@@ -5,14 +5,14 @@ import { randomToken } from "@/lib/security/ids";
 import { parseAccountInput } from "@/lib/validation";
 
 export async function GET(request: Request) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   return NextResponse.json({ accounts: listAccounts().map(toAccountDto) });
 }
 
 /** A generated password is returned once, for the owner to hand over; it is never stored in clear. */
 export async function POST(request: Request) {
-  const { denied } = await requireAdmin(request, { owner: true });
+  const { denied } = await requireAdmin(request, { owner: true, notInDemo: true });
   if (denied) return denied;
   const parsed = parseAccountInput(await readJson(request), false);
   if (!parsed.ok) return apiError("bad_request", parsed.errors);
