@@ -4,6 +4,8 @@ import { endEvent, eventsToEnd, failedLoginAlert, pendingPhotoAlerts, storageAle
 import { processOutbox } from "@/lib/mail/outbox";
 import { mailEnabled } from "@/lib/mail/settings";
 import { processWebhooks } from "@/lib/webhooks/queue";
+import { cleanTempFiles } from "@/lib/backup";
+import { runRetention } from "@/lib/retention";
 
 /** One pass of everything time-based. Exported for tests and the admin's "run now". */
 export async function tick(now = Date.now()): Promise<void> {
@@ -11,6 +13,8 @@ export async function tick(now = Date.now()): Promise<void> {
   pendingPhotoAlerts(now);
   failedLoginAlert(now);
   await storageAlert(now);
+  await runRetention(now);
+  await cleanTempFiles();
   // Mails are queued even without SMTP, so configuring it later still delivers them.
   if (mailEnabled()) await processOutbox(undefined, now);
   await processWebhooks(undefined, now);

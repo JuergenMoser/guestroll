@@ -115,14 +115,25 @@ Run it under systemd or another supervisor, as an unprivileged user that owns `D
 
 ## Backups
 
-Everything lives in `/data`:
+The simplest way: **Admin → Settings → Backup and retention → Download a
+backup** (owners). One ZIP with the database (an online snapshot, consistent
+while guests keep uploading), every photo, logo and voice note whatever the
+storage driver, and the generated session secret. **Restore** on the same page
+replaces the whole instance with a backup; it is also how photos move from
+disk to an S3 bucket (back up, set `STORAGE_DRIVER=s3`, restart, restore).
+Restores are sent as one upload: raise your reverse proxy's body limit
+(`client_max_body_size` in nginx) above the backup's size.
+
+To script it, the same ZIP comes from `GET /api/admin/backup?download=1` with
+an owner's session. Or copy the data folder yourself; everything lives in
+`/data`:
 
 ```
 /data
-├── guestroll.db          # events, photo metadata, stats, admin password hash
+├── guestroll.db          # events, photo metadata, stats, accounts, settings
 ├── guestroll.db-wal      # SQLite write-ahead log, part of the database
 ├── .session-secret       # only if SESSION_SECRET isn't set
-└── uploads/<event-id>/   # photo files
+└── uploads/<event-id>/   # photos, logo, messages/ (empty with STORAGE_DRIVER=s3)
 ```
 
 For a consistent copy while the app runs, back up the database with SQLite's

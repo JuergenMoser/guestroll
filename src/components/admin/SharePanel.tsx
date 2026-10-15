@@ -13,7 +13,7 @@ import { GalleryLinks } from "./GalleryLinks";
 import { QrDesigner } from "./qr/QrDesigner";
 import { WallSettings } from "./WallSettings";
 
-export function SharePanel({ event, url, locale }: { event: AdminEvent; url: string; locale: string }) {
+export function SharePanel({ event, url, locale, purgeAt }: { event: AdminEvent; url: string; locale: string; purgeAt: number | null }) {
   const t = useT();
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -36,7 +36,7 @@ export function SharePanel({ event, url, locale }: { event: AdminEvent; url: str
         <CopyField value={url} />
       </Card>
 
-      <EndEventCard eventId={event.id} endedAt={event.endedAt} locale={locale} />
+      <EndEventCard eventId={event.id} endedAt={event.endedAt} purgeAt={purgeAt} locale={locale} />
 
       <GalleryLinks eventId={event.id} baseUrl={url.slice(0, url.indexOf("/e/"))} locale={locale} />
 

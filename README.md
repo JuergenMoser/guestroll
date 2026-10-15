@@ -78,7 +78,8 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 - 🗃️ No external database: SQLite plus a folder of files in one volume, or photos in any **S3-compatible bucket** (AWS, R2, B2, Garage…).
 - 🛡️ Private by design: photos are never public files, and every request is checked. See [Security](docs/security.md).
 - 🧩 **Swappable capture component**: ship your own camera UI without touching the upload code. See [Customization](docs/customization.md).
-- ⚙️ Configured with environment variables only: port, data path, `PUID`/`PGID`, time zone, limits.
+- 💾 **Backup and restore** from the admin in one ZIP, and automatic deletion of ended events after a delay you choose.
+- ⚙️ Configured with environment variables: port, data path, `PUID`/`PGID`, time zone, limits.
 
 ## Quick start
 

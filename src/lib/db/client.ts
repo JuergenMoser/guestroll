@@ -7,7 +7,7 @@ import { migrate } from "drizzle-orm/better-sqlite3/migrator";
 import { config } from "@/lib/config";
 import * as schema from "./schema";
 
-export type Db = BetterSQLite3Database<typeof schema>;
+export type Db = BetterSQLite3Database<typeof schema> & { $client: Database.Database };
 
 // Survives Next's dev hot reloads, which would otherwise open a new handle per edit.
 const globalForDb = globalThis as unknown as { guestrollDb?: Db };
@@ -40,4 +40,18 @@ export function getDb(): Db {
     migratedThisModule = true;
   }
   return globalForDb.guestrollDb;
+}
+
+/**
+ * Closes the database so a restore can replace its file. The next `getDb()`
+ * opens the new one and applies any migration it lacks.
+ */
+export function closeDb(): void {
+  globalForDb.guestrollDb?.$client.close();
+  globalForDb.guestrollDb = undefined;
+}
+
+/** A consistent copy of the live database, safe while it's being written to (SQLite's online backup). */
+export async function snapshotDb(target: string): Promise<void> {
+  await getDb().$client.backup(target);
 }

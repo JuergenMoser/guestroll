@@ -14,7 +14,7 @@ interface EndResult {
 }
 
 /** Ends the event on demand: closes uploads and runs the end-of-event emails once. */
-export function EndEventCard({ eventId, endedAt, locale }: { eventId: string; endedAt: number | null; locale: string }) {
+export function EndEventCard({ eventId, endedAt, purgeAt, locale }: { eventId: string; endedAt: number | null; purgeAt: number | null; locale: string }) {
   const t = useT();
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -39,7 +39,10 @@ export function EndEventCard({ eventId, endedAt, locale }: { eventId: string; en
           {t("admin.end.title")}
         </CardTitle>
         {endedAt ? (
-          <p className="text-sm text-ink-muted">{t("admin.end.done", { date: new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(endedAt)) })}</p>
+          <p className="text-sm text-ink-muted">
+            {t("admin.end.done", { date: new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(endedAt)) })}
+            {purgeAt && <span className="block font-medium text-danger">{t("admin.end.purgeAt", { date: new Intl.DateTimeFormat(locale, { dateStyle: "long" }).format(new Date(purgeAt)) })}</span>}
+          </p>
         ) : (
           <p className="max-w-prose text-sm text-ink-muted">{confirming ? t("admin.end.confirm") : t("admin.end.hint")}</p>
         )}

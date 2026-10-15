@@ -167,6 +167,13 @@ event name to confirm.
   alerts go through a queue retried like emails (1, 5, 15 minutes, 1 and 6
   hours); the last deliveries are listed under the webhooks.
 
+- **Backup and retention** (owners): download a backup of everything (see
+  [Deployment](deployment.md#backups)), restore one, and choose how long ended
+  events are kept. With a number of days (14 or more), an event is deleted
+  that long after it ended, photos and messages included; its hosts get an
+  email a week before, and the date shows on the event's *QR & sharing* tab.
+  Events that never ended (no closing time, never ended by hand) are kept.
+
 Event emails (summaries, photos waiting for approval) go to the instance
 address in **Email** and to every account managing the event that set an
 address. Instance alerts (failed sign-ins, disk) go to the owners.

@@ -51,6 +51,16 @@ whatever the settings: this is a design decision, not an option.
 - Generated passwords (`xxxx-xxxx-xxxx-xxxx`, ~82 bits) are shown once and
   never stored in clear.
 
+## Backups
+
+- Only owners download or restore backups. A backup holds everything,
+  including password hashes and the generated session secret: store it like
+  the server itself.
+- A restore checks the whole archive before changing anything: the manifest,
+  a real SQLite file, and file names in the shapes the app writes (paths
+  climbing out with `../` are refused). An archive that fails these checks
+  leaves the instance untouched.
+
 ## Webhooks
 
 - Only owners manage them. URLs and signing secrets are encrypted at rest

@@ -101,6 +101,9 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | `POST /api/admin/webhooks` | `{ name, type: "ntfy"\|"discord"\|"slack"\|"json", url, kinds, secret?, enabled? }` | `201 { webhook }` |
 | `PATCH /api/admin/webhooks/:id` / `DELETE` | same fields; empty `url` keeps it | `{ webhook }` / `{ ok }` |
 | `POST /api/admin/webhooks/:id/test` | | `{ ok }`, or `502 { error: "webhook_failed", message }` |
+| `GET /api/admin/backup[?download=1]` | | Owners: `{ files, bytes, storage, retentionDays }`, or the backup ZIP |
+| `POST /api/admin/backup/restore` | the ZIP as the body | `{ ok, manifest }`; `400 { details: { file } }` if refused |
+| `PUT /api/admin/backup/retention` | `{ days }`: 0, or 14 to 3650 | `{ retentionDays }` |
 | `GET /api/admin/stats[?eventId=]` | | Totals, time series, top guests |
 | `GET /api/admin/events/:id/messages?status=&before=` | | `{ messages, nextCursor }` |
 | `POST /api/admin/events/:id/messages` | `{ action: "approve"\|"hide"\|"delete", ids }` | `{ changed }` |

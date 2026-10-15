@@ -9,6 +9,7 @@ import { SharePanel } from "@/components/admin/SharePanel";
 import { StatsPanel } from "@/components/admin/StatsPanel";
 import { GuestbookPanel } from "@/components/admin/GuestbookPanel";
 import { countMessages } from "@/lib/messages";
+import { purgeDate } from "@/lib/retention";
 import { EventTheme } from "@/components/EventTheme";
 import { buttonClass, cn } from "@/components/ui";
 import { toAdminEvent } from "@/lib/events";
@@ -70,7 +71,7 @@ export default async function EventPage({ params, searchParams }: Props) {
       {tab === "photos" && <ModerationPanel eventId={event.id} pendingCount={stats.totals.pending} challenges={event.challenges} />}
       {tab === "guestbook" && <GuestbookPanel eventId={event.id} locale={await getLocale()} />}
       {tab === "stats" && <StatsPanel stats={stats} locale={await getLocale()} challenges={event.challenges} />}
-      {tab === "share" && <SharePanel event={event} url={url} locale={await getLocale()} />}
+      {tab === "share" && <SharePanel event={event} url={url} locale={await getLocale()} purgeAt={purgeDate(event)} />}
       {tab === "settings" && (
         <div className="mx-auto max-w-2xl space-y-8">
           <EventForm event={event} />

@@ -189,3 +189,14 @@ export function storageMail(c: Common & { url: string; percent: number; free: st
     cta: { label: m.storage.cta, url: c.url },
   });
 }
+
+export function purgeMail(c: Common & { event: string; accent: string; url: string; date: string }): RenderedMail {
+  const m = mailMessages[c.locale];
+  return make(
+    m,
+    c,
+    fill(m.purge.subject, { event: c.event, date: c.date }),
+    { title: fill(m.purge.title, { date: c.date }), paragraphs: [fill(m.purge.body, { event: c.event })], cta: { label: m.purge.cta, url: c.url } },
+    c.accent,
+  );
+}

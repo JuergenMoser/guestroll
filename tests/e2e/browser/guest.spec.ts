@@ -16,11 +16,11 @@ test.describe("guest page on a phone", () => {
     await page.getByRole("button", { name: "Take a photo" }).click();
     await (await chooser).setFiles({ name: "p.jpg", mimeType: "image/jpeg", buffer: await photo() });
 
-    await expect(page.getByText("01")).toBeVisible();
+    await expect(page.getByText("01", { exact: true })).toBeVisible();
     await expect(page.getByRole("list").last().getByRole("listitem")).toHaveCount(1);
 
     await page.reload();
-    await expect(page.getByText("01")).toBeVisible();
+    await expect(page.getByText("01", { exact: true })).toBeVisible();
     await expect(page.getByText("Your photos will appear here.")).toHaveCount(0);
   });
 
@@ -34,14 +34,14 @@ test.describe("guest page on a phone", () => {
     const chooser = firstPage.waitForEvent("filechooser");
     await firstPage.getByRole("button", { name: "Take a photo" }).click();
     await (await chooser).setFiles({ name: "p.jpg", mimeType: "image/jpeg", buffer: await photo() });
-    await expect(firstPage.getByText("01")).toBeVisible();
+    await expect(firstPage.getByText("01", { exact: true })).toBeVisible();
 
     const second = await browser.newContext();
     const secondPage = await second.newPage();
     await secondPage.goto(`/e/${event.slug}`);
     await secondPage.getByRole("button", { name: "Stay anonymous" }).click();
     await expect(secondPage.getByText("Your photos will appear here.")).toBeVisible();
-    await expect(secondPage.getByText("00")).toBeVisible();
+    await expect(secondPage.getByText("00", { exact: true })).toBeVisible();
   });
 
   test("an access code guards the album", async ({ page, baseURL }) => {

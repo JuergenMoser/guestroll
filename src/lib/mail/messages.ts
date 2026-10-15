@@ -55,6 +55,12 @@ const en = {
     testTitle: "{app}: test notification",
     testBody: "If you can read this, the webhook works.",
   },
+  purge: {
+    subject: "{event} will be deleted on {date}",
+    title: "This album will be deleted on {date}.",
+    body: "Your instance deletes events some time after they end. Download the photos and the guestbook of {event} before then if you want to keep them.",
+    cta: "Open the event",
+  },
   storage: {
     subject: "{app}: the disk is {percent}% full",
     title: "Storage is running out.",
@@ -117,6 +123,12 @@ const fr: Strings<MailMessages> = {
     testTitle: "{app} : notification de test",
     testBody: "Si vous lisez ceci, le webhook fonctionne.",
   },
+  purge: {
+    subject: "« {event} » sera supprimé le {date}",
+    title: "Cet album sera supprimé le {date}.",
+    body: "Votre instance supprime les évènements quelque temps après leur fin. Téléchargez les photos et le livre d'or de « {event} » d'ici là pour les garder.",
+    cta: "Ouvrir l'évènement",
+  },
   storage: {
     subject: "{app} : disque plein à {percent} %",
     title: "L'espace disque s'épuise.",
@@ -176,6 +188,12 @@ const it: Strings<MailMessages> = {
     testTitle: "{app}: notifica di prova",
     testBody: "Se leggi questo messaggio, il webhook funziona.",
   },
+  purge: {
+    subject: "«{event}» sarà eliminato il {date}",
+    title: "Questo album sarà eliminato il {date}.",
+    body: "La tua istanza elimina gli eventi un po' di tempo dopo la fine. Scarica le foto e il libro degli ospiti di «{event}» prima di allora per conservarli.",
+    cta: "Apri l'evento",
+  },
   storage: {
     subject: "{app}: disco pieno al {percent}%",
     title: "Lo spazio sta finendo.",
@@ -234,6 +252,12 @@ const es: Strings<MailMessages> = {
     voiceNote: "(nota de voz)",
     testTitle: "{app}: notificación de prueba",
     testBody: "Si puedes leer esto, el webhook funciona.",
+  },
+  purge: {
+    subject: "«{event}» se eliminará el {date}",
+    title: "Este álbum se eliminará el {date}.",
+    body: "Tu instancia elimina los eventos un tiempo después de que terminen. Descarga las fotos y el libro de visitas de «{event}» antes de esa fecha si quieres conservarlos.",
+    cta: "Abrir el evento",
   },
   storage: {
     subject: "{app}: disco al {percent} %",

@@ -35,3 +35,8 @@ export function sessionSecret(): string {
   }
   return cached;
 }
+
+/** After a restore wrote another instance's secret file: read it again on next use. */
+export function forgetSessionSecret(): void {
+  cached = undefined;
+}
