@@ -22,6 +22,7 @@ CREATE TABLE `events` (
 	`capture_mode` text DEFAULT 'camera' NOT NULL,
 	`ask_guest_name` integer DEFAULT true NOT NULL,
 	`max_photos_per_guest` integer DEFAULT 0 NOT NULL,
+	`default_locale` text,
 	`qr_style` text,
 	`logo_version` integer,
 	`created_at` integer DEFAULT (unixepoch() * 1000) NOT NULL

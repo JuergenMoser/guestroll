@@ -23,6 +23,7 @@ export interface PublicEvent {
   moderation: EventRow["moderation"];
   maxPhotosPerGuest: number;
   logoVersion: number | null;
+  defaultLocale: EventRow["defaultLocale"];
 }
 
 export function toPublicEvent(event: EventRow): PublicEvent {
@@ -39,6 +40,7 @@ export function toPublicEvent(event: EventRow): PublicEvent {
     moderation: event.moderation,
     maxPhotosPerGuest: event.maxPhotosPerGuest,
     logoVersion: event.logoVersion,
+    defaultLocale: event.defaultLocale,
   };
 }
 

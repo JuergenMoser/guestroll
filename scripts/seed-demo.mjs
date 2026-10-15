@@ -53,8 +53,8 @@ const admin = new Client();
 await admin.json("/api/admin/login", { password });
 
 const events = [
-  { name: "Julie & Thomas", description: "Share your favourite moments of the night!", eventDate: "2026-10-17", captureMode: "both", accentColor: "#f59e0b", guests: ["Camille", "Hugo", "Léa", "Marco", "Sofia", null], perGuest: 4 },
-  { name: "Acme summer party", description: "Snap it, send it, see it on the big screen.", eventDate: "2026-07-03", captureMode: "camera", accentColor: "#38bdf8", moderation: "pre", accessCode: "SUMMER26", guests: ["Nina", "Paul"], perGuest: 3 },
+  { name: "Julie & Thomas", description: "Share your favourite moments of the night!", eventDate: "2026-10-17", captureMode: "both", accentColor: "#ffc72c", guests: ["Camille", "Hugo", "Léa", "Marco", "Sofia", null], perGuest: 4 },
+  { name: "Festa di Marco", description: "Scatta, invia, guardala sul maxischermo.", eventDate: "2026-07-03", captureMode: "camera", accentColor: "#1d4ed8", defaultLocale: "it", maxPhotosPerGuest: 10, moderation: "pre", accessCode: "SUMMER26", guests: ["Nina", "Paul"], perGuest: 3 },
 ];
 
 let n = 0;

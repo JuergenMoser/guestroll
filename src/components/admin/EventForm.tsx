@@ -7,6 +7,8 @@ import { Button, Card, CardTitle, Field, Input, Select, Switch, Textarea } from 
 import { ApiError, api } from "@/lib/client/api";
 import type { AdminEvent } from "@/lib/events";
 import { errorText } from "@/lib/i18n/errors";
+import { LOCALES, type Locale } from "@/lib/constants";
+import { LOCALE_NAMES } from "@/lib/i18n/locale";
 
 type FormState = {
   name: string;
@@ -21,6 +23,7 @@ type FormState = {
   captureMode: "camera" | "picker" | "both";
   askGuestName: boolean;
   maxPhotosPerGuest: number;
+  defaultLocale: Locale | "";
 };
 
 // <input type="datetime-local"> works in local time without a zone suffix.
@@ -44,6 +47,7 @@ function initialState(event?: AdminEvent): FormState {
     captureMode: event?.captureMode ?? "camera",
     askGuestName: event?.askGuestName ?? true,
     maxPhotosPerGuest: event?.maxPhotosPerGuest ?? 0,
+    defaultLocale: event?.defaultLocale ?? "",
   };
 }
 
@@ -63,9 +67,10 @@ export function EventForm({ event }: { event?: AdminEvent }) {
     setErrors({});
     setMessage(undefined);
 
-    const { accessCode, removeCode, uploadsCloseAt, eventDate, ...rest } = form;
+    const { accessCode, removeCode, uploadsCloseAt, eventDate, defaultLocale, ...rest } = form;
     const body: Record<string, unknown> = {
       ...rest,
+      defaultLocale: defaultLocale || null,
       eventDate: eventDate || null,
       uploadsCloseAt: uploadsCloseAt ? new Date(uploadsCloseAt).getTime() : null,
     };
@@ -113,9 +118,9 @@ export function EventForm({ event }: { event?: AdminEvent }) {
                   type="color"
                   value={form.accentColor}
                   onChange={(e) => set("accentColor", e.target.value)}
-                  className="h-11 w-14 cursor-pointer rounded-xl bg-ink-900 p-1 ring-1 ring-ink-700"
+                  className="h-11 w-14 cursor-pointer rounded-xl bg-surface p-1 ring-1 ring-line-2"
                 />
-                <Input value={form.accentColor} onChange={(e) => set("accentColor", e.target.value)} className="font-mono" aria-label={t("admin.form.color")} />
+                <Input value={form.accentColor} onChange={(e) => set("accentColor", e.target.value)} className="tabular-nums" aria-label={t("admin.form.color")} />
               </div>
             )}
           </Field>
@@ -136,7 +141,7 @@ export function EventForm({ event }: { event?: AdminEvent }) {
                 minLength={6}
                 maxLength={64}
                 placeholder={hasCode ? "••••••" : ""}
-                className="font-mono"
+                className="tracking-wider"
               />
               {hasCode && (
                 <Button variant="secondary" onClick={() => set("removeCode", true)}>
@@ -178,6 +183,18 @@ export function EventForm({ event }: { event?: AdminEvent }) {
             )}
           </Field>
         </div>
+        <Field label={t("admin.form.defaultLocale")} hint={t("admin.form.defaultLocaleHint")}>
+          {(id, describedBy) => (
+            <Select id={id} aria-describedby={describedBy} value={form.defaultLocale} onChange={(e) => set("defaultLocale", e.target.value as FormState["defaultLocale"])}>
+              <option value="">{t("admin.form.autoLocale")}</option>
+              {LOCALES.map((locale) => (
+                <option key={locale} value={locale} lang={locale}>
+                  {LOCALE_NAMES[locale]}
+                </option>
+              ))}
+            </Select>
+          )}
+        </Field>
         <Switch label={t("admin.form.askGuestName")} checked={form.askGuestName} onChange={(v) => set("askGuestName", v)} />
       </Card>
 

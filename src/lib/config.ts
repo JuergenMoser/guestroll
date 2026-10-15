@@ -30,11 +30,9 @@ function oneOf<T extends string>(name: string, allowed: readonly T[], fallback: 
   return raw;
 }
 
-export const LOCALES = ["en", "fr", "it", "es"] as const;
-export type Locale = (typeof LOCALES)[number];
+import { CAPTURE_MODES, LOCALES } from "./constants";
 
-export const CAPTURE_MODES = ["camera", "picker", "both"] as const;
-export type CaptureMode = (typeof CAPTURE_MODES)[number];
+export { CAPTURE_MODES, LOCALES, type CaptureMode, type Locale } from "./constants";
 
 // The data folder is runtime state, not code: keep the build tracer out of it.
 const dataDir = path.resolve(/*turbopackIgnore: true*/ process.env.DATA_DIR || "./data");
@@ -44,6 +42,8 @@ export const config = {
   /** Public origin, used for QR codes. Falls back to the request host when unset. */
   publicUrl: process.env.PUBLIC_URL?.replace(/\/+$/, "") || "",
   locale: oneOf("DEFAULT_LOCALE", LOCALES, "en"),
+  /** false = ignore the browser's language and use DEFAULT_LOCALE (unless the album or the visitor chose). */
+  detectBrowserLocale: bool("DETECT_BROWSER_LOCALE", true),
 
   dataDir,
   dbFile: path.join(/*turbopackIgnore: true*/ dataDir, "guestroll.db"),

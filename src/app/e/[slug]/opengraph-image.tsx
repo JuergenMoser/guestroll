@@ -1,8 +1,9 @@
 import { ImageResponse } from "next/og";
+import { readableInk } from "@/lib/color";
 import { config } from "@/lib/config";
 import { getEventBySlug } from "@/lib/events";
-import { getLocale, getT } from "@/lib/i18n/server";
-import { OG_SIZE, OgLogo, ogFonts } from "@/lib/og";
+import { getT } from "@/lib/i18n/server";
+import { OG_COLORS, OG_SIZE, OgLogo, ogFonts } from "@/lib/og";
 import { SLUG_PATTERN } from "@/lib/security/ids";
 import { readLogo } from "@/lib/storage/files";
 
@@ -12,32 +13,37 @@ export const contentType = "image/png";
 
 /**
  * The card WhatsApp, iMessage or Slack show when the event link is shared:
- * name, date and logo only. Never a guest photo, whatever the event settings.
+ * name, date, logo and color. Never a guest photo, whatever the event settings.
  */
 export default async function Image({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const event = SLUG_PATTERN.test(slug) ? getEventBySlug(slug) : undefined;
-  const [t, locale, fonts] = await Promise.all([getT(), getLocale(), ogFonts()]);
-  const accent = event?.accentColor ?? "#f59e0b";
+  const [t, fonts] = await Promise.all([getT(event?.defaultLocale), ogFonts()]);
+  const accent = event?.accentColor ?? "#ffc72c";
+  const accentInk = readableInk(accent);
   const logo = event?.logoVersion ? await readLogo(event.id) : null;
-  const date = event?.eventDate
-    ? new Intl.DateTimeFormat(locale, { dateStyle: "long", timeZone: "UTC" }).format(new Date(`${event.eventDate}T00:00:00Z`))
-    : null;
+  const stamp = event?.eventDate ? event.eventDate.split("-").reverse().join(" ").replace(/ (\d{2})(\d{2})$/, " '$2") : null;
 
   return new ImageResponse(
     (
-      <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 28, padding: 80, background: "#0c0a09", color: "#f4efe7", fontFamily: "Geist", borderBottom: `16px solid ${accent}` }}>
-        {logo ? (
-          // eslint-disable-next-line @next/next/no-img-element -- next/og renders plain <img>
-          <img src={`data:image/png;base64,${logo.toString("base64")}`} width={150} height={150} alt="" style={{ objectFit: "contain" }} />
-        ) : (
-          <OgLogo size={120} accent={accent} />
-        )}
-        {date && <div style={{ fontSize: 26, letterSpacing: 8, textTransform: "uppercase", color: "#8a7f76" }}>{date}</div>}
-        <div style={{ fontFamily: "Instrument Serif", fontSize: 104, lineHeight: 1, letterSpacing: -2, textAlign: "center", maxWidth: 1040 }}>
-          {event?.name ?? config.appName}
+      <div style={{ width: "100%", height: "100%", display: "flex", background: OG_COLORS.paper, color: OG_COLORS.ink, fontFamily: "Bricolage Grotesque" }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "72px 64px 72px 80px" }}>
+          {logo ? (
+            <img src={`data:image/png;base64,${logo.toString("base64")}`} width={110} height={110} alt="" style={{ objectFit: "contain" }} />
+          ) : (
+            <OgLogo size={84} />
+          )}
+          <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+            <div style={{ fontSize: 96, fontWeight: 800, lineHeight: 0.92, letterSpacing: -3 }}>{event?.name ?? config.appName}</div>
+            {stamp && <div style={{ fontSize: 34, fontWeight: 600, color: OG_COLORS.stamp }}>{stamp}</div>}
+          </div>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 14, fontSize: 32, color: accent, fontWeight: 600 }}>{t("guest.takePhoto")} →</div>
+        <div style={{ width: 400, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 26, margin: 36, borderRadius: 44, background: accent, color: accentInk }}>
+          <div style={{ width: 170, height: 170, borderRadius: 999, border: `9px solid ${accentInk}`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <div style={{ width: 128, height: 128, borderRadius: 999, background: "#ffffff" }} />
+          </div>
+          <div style={{ fontSize: 36, fontWeight: 600 }}>{t("guest.takePhoto")}</div>
+        </div>
       </div>
     ),
     { ...OG_SIZE, fonts },

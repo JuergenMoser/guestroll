@@ -1,4 +1,4 @@
-import { LOCALES, type Locale } from "@/lib/config";
+import { LOCALES, type Locale } from "@/lib/constants";
 
 /**
  * Picks the first supported language from an Accept-Language header, honouring

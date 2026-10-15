@@ -1,5 +1,5 @@
 import type { ComponentType } from "react";
-import type { CaptureMode } from "@/lib/config";
+import type { CaptureMode } from "@/lib/constants";
 import { CameraAndPickerCapture } from "./CameraAndPickerCapture";
 import { CameraCapture } from "./CameraCapture";
 import { PickerCapture } from "./PickerCapture";

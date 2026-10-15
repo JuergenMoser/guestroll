@@ -1,4 +1,4 @@
-import { CAPTURE_MODES, type CaptureMode } from "@/lib/config";
+import { CAPTURE_MODES, LOCALES, type CaptureMode, type Locale } from "@/lib/constants";
 import { parseQrStyle } from "@/lib/qr/style";
 
 /** Admin-editable event fields, already validated and normalised. */
@@ -15,6 +15,7 @@ export interface EventInput {
   captureMode: CaptureMode;
   askGuestName: boolean;
   maxPhotosPerGuest: number;
+  defaultLocale: Locale | null;
   /** Already normalised by `parseQrStyle` and serialised. */
   qrStyle: string;
 }
@@ -91,6 +92,12 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     const n = src.maxPhotosPerGuest;
     if (typeof n === "number" && Number.isInteger(n) && n >= 0 && n <= 10_000) out.maxPhotosPerGuest = n;
     else errors.maxPhotosPerGuest = "Expected an integer between 0 and 10000";
+  }
+
+  if (has("defaultLocale")) {
+    if (src.defaultLocale === null || src.defaultLocale === "") out.defaultLocale = null;
+    else if ((LOCALES as readonly unknown[]).includes(src.defaultLocale)) out.defaultLocale = src.defaultLocale as Locale;
+    else errors.defaultLocale = `Expected one of ${LOCALES.join(", ")} or null`;
   }
 
   if (has("qrStyle")) {
