@@ -61,7 +61,7 @@ export default async function SharedAlbumPage({ params }: Props) {
   }
 
   return (
-    <I18nProvider messages={messages[locale]}>
+    <I18nProvider locale={locale} messages={messages[locale]}>
       <EventTheme color={event.accentColor} className="min-h-dvh">
         <main lang={locale} className="mx-auto flex min-h-dvh max-w-5xl flex-col gap-8 px-5 pt-[max(2rem,env(safe-area-inset-top))] pb-10">
           {access.status === "open" && <EventHeader event={publicEvent} locale={locale} />}

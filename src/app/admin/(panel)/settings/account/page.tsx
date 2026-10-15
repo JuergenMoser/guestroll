@@ -25,7 +25,7 @@ export default async function AccountSettingsPage() {
       <TwoFactorCard />
       <SettingsSection id="appearance" title={t("admin.settingsPage.appearance")} description={t("admin.settingsPage.appearanceLead")}>
         <div className="flex flex-wrap gap-2">
-          <LanguagePicker current={await getLocale()} />
+          <LanguagePicker current={await getLocale()} align="start" />
           <ThemeToggle initial={await getTheme()} />
         </div>
       </SettingsSection>

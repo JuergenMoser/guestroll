@@ -61,10 +61,29 @@ test.describe("guest page on a phone", () => {
     const event = await createEvent(await admin(baseURL!), { defaultLocale: "it" });
     await page.goto(`/e/${event.slug}`);
     await expect(page.getByRole("heading", { name: "Come ti chiami?" })).toBeVisible();
-    await page.getByRole("combobox").selectOption("fr");
+    await page.getByRole("button", { name: /Italiano/ }).click();
+    // Each language under its own name, with the current language's name for it.
+    await expect(page.getByRole("option", { name: /Français/ })).toContainText("francese");
+    await page.getByRole("option", { name: /Français/ }).click();
     await expect(page.getByRole("heading", { name: "Comment tu t'appelles ?" })).toBeVisible();
     await page.reload();
     await expect(page.getByRole("heading", { name: "Comment tu t'appelles ?" })).toBeVisible();
+  });
+
+  test("the language list works from the keyboard", async ({ page, baseURL }) => {
+    const event = await createEvent(await admin(baseURL!), { defaultLocale: "en" });
+    await page.goto(`/e/${event.slug}`);
+    const picker = page.getByRole("button", { name: /English/ });
+    await picker.focus();
+    await page.keyboard.press("ArrowDown");
+    await expect(page.getByRole("listbox")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(page.getByRole("listbox")).toBeHidden();
+    await expect(picker).toBeFocused();
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("e");
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("heading", { name: "¿Cómo te llamas?" })).toBeVisible();
   });
 
   test("the theme switch applies at once and sticks", async ({ page, baseURL }) => {

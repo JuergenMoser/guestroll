@@ -48,7 +48,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     <html lang={locale} className={bricolage.variable} data-theme={theme === "system" ? undefined : theme}>
       <body className="min-h-dvh">
         {config.demo.enabled && <DemoBanner nextReset={nextDemoReset()} />}
-        <I18nProvider messages={messages[locale]}>{children}</I18nProvider>
+        <I18nProvider locale={locale} messages={messages[locale]}>{children}</I18nProvider>
       </body>
     </html>
   );

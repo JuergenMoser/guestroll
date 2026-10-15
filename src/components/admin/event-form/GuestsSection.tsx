@@ -1,14 +1,15 @@
 "use client";
 
-import { useT } from "@/components/I18nProvider";
+import { useLocale, useT } from "@/components/I18nProvider";
 import { Field, Select, Switch } from "@/components/ui";
 import { LOCALES } from "@/lib/constants";
-import { LOCALE_NAMES } from "@/lib/i18n/locale";
+import { localeOptionLabel } from "@/lib/i18n/locale";
 import { FormSection } from "./FormSection";
 import type { EventFormState, SectionProps } from "./state";
 
 export function GuestsSection({ form, set }: SectionProps) {
   const t = useT();
+  const uiLocale = useLocale();
   return (
     <FormSection title={t("admin.form.sections.guests")}>
       <Field label={t("admin.form.defaultLocale")} hint={t("admin.form.defaultLocaleHint")}>
@@ -17,7 +18,7 @@ export function GuestsSection({ form, set }: SectionProps) {
             <option value="">{t("admin.form.autoLocale")}</option>
             {LOCALES.map((locale) => (
               <option key={locale} value={locale} lang={locale}>
-                {LOCALE_NAMES[locale]}
+                {localeOptionLabel(locale, uiLocale)}
               </option>
             ))}
           </Select>

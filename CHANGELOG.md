@@ -38,6 +38,10 @@ always run on their own at startup; take a backup first all the same
   system), each a page of its own; the list says which area needs attention:
   two-step verification off, no automatic backups, no email server, an update
   waiting.
+- The language picker lists each language under its own name with its name in
+  the current language beside it ("Italiano, italien"), works from the
+  keyboard, and opens upwards near the bottom of the screen. The event form's
+  default language reads the same way.
 
 ### Security
 
