@@ -29,6 +29,10 @@ jobs:
   build:
     name: Build and smoke-test the image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Trivy's findings go to the Security tab (code scanning).
+      security-events: write
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -75,6 +79,35 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' -b "$guest" "$base/api/media/$id?v=thumb")" = 200
           test "$(curl -s -o /dev/null -w '%{http_code}' "$base/api/media/$id?v=thumb")" = 404
           test -n "$(find "$RUNNER_TEMP/data/uploads" -name '*.original.jpg')"
+
+      # Vulnerabilities in the image (Alpine packages and node_modules): every
+      # finding to the Security tab, and the build fails on a critical one that
+      # already has a fix.
+      - name: Scan the image (Trivy)
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: guestroll:ci
+          format: sarif
+          output: trivy.sarif
+          ignore-unfixed: true
+          severity: CRITICAL,HIGH,MEDIUM
+
+      - name: Publish the scan
+        if: ${{ !cancelled() && github.event_name != 'pull_request' }}
+        uses: github/codeql-action/upload-sarif@24c54180a607b1449ed407dd24f251e4e9147c8d # v4.38.3
+        with:
+          sarif_file: trivy.sarif
+          category: trivy-image
+
+      - name: Fail on fixable critical vulnerabilities
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
+        with:
+          image-ref: guestroll:ci
+          format: table
+          ignore-unfixed: true
+          severity: CRITICAL
+          exit-code: "1"
+          skip-setup-trivy: true
 
       - name: Container logs
         if: failure()

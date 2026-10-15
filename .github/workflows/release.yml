@@ -76,6 +76,18 @@ jobs:
           provenance: true
           sbom: true
 
+      # Docker Scout also analyses every pushed tag on Docker Hub by itself (enabled
+      # on the repository); this run puts the same report in the release's summary.
+      - if: env.HAS_DOCKERHUB == 'true'
+        name: Docker Scout vulnerabilities
+        uses: docker/scout-action@221e7f4860634eeb1579e3bd7ca232e577bd1864 # v1.26.0
+        with:
+          command: cves,recommendations
+          image: registry://achedon12/guestroll:${{ steps.meta.outputs.version }}
+          only-fixed: true
+          summary: true
+          write-comment: false
+
       - if: env.HAS_DOCKERHUB == 'true'
         name: Sync the Docker Hub description
         uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
