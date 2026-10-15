@@ -28,7 +28,7 @@ Authenticated by the `gr_guest` cookie.
 | `POST /api/e/:slug/join` | none | `{ ok }`. Events without an access code only. |
 | `POST /api/e/:slug/unlock` | `{ code }` | `{ ok }` |
 | `POST /api/e/:slug/guest` | `{ name }` | `{ name }`. Stored in the cookie. |
-| `POST /api/e/:slug/photos` | multipart, field `photo` | `201 { photo: PhotoDto }` |
+| `POST /api/e/:slug/photos` | multipart, field `photo`, optional `challenge` (a challenge id) | `201 { photo: PhotoDto }`; an unknown challenge is ignored |
 | `GET /api/e/:slug/photos?before=<ms>` | | `{ photos: PhotoDto[], nextCursor }`, the guest's own photos only |
 | `GET /api/e/:slug/logo?v=<n>` | | The event logo (PNG), public with the slug |
 | `GET /api/media/:id?v=thumb\|display\|original[&download=1]` | | The image, if the viewer may see it |
@@ -43,7 +43,7 @@ Authenticated by the `gr_share` cookie, set by `unlock`.
 | Route | Body | Response |
 |---|---|---|
 | `POST /api/g/:token/unlock` | `{ password }` | `{ ok }`, or `invalid_code` |
-| `GET /api/g/:token/photos?before=<ms>` | | `{ photos, nextCursor }`, visible photos only; `403` until unlocked |
+| `GET /api/g/:token/photos?challenge=&before=<ms>` | | `{ photos, nextCursor }`, visible photos only; `403` until unlocked |
 | `GET /api/g/:token/archive` | | Streamed ZIP, if the link allows downloads |
 
 ```ts
@@ -56,6 +56,7 @@ interface PhotoDto {
   mine: boolean;
   downloads?: number; // admins only
   favorite?: boolean;  // admins only
+  challengeId: string | null;
   createdAt: number;  // epoch ms
 }
 ```
@@ -85,7 +86,7 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | `POST /api/admin/events/:id/logo` | multipart, field `logo` | `{ event }` |
 | `DELETE /api/admin/events/:id/logo` | | `{ event }` |
 | `GET /api/admin/events/:id/qr?format=svg\|png&size=512..4096&download=1` | | The styled QR code |
-| `GET /api/admin/events/:id/photos?status=&favorites=1&before=` | | `{ photos, nextCursor }` |
+| `GET /api/admin/events/:id/photos?status=&favorites=1&challenge=&before=` | | `{ photos, nextCursor }` |
 | `POST /api/admin/events/:id/photos` | `{ action: "approve"\|"hide"\|"favorite"\|"unfavorite"\|"delete", ids }` | `{ changed }` |
 | `GET /api/admin/events/:id/archive[?all=1\|?favorites=1]` | | Streamed ZIP; `all=1` includes pending and hidden, `favorites=1` is the visible favorites |
 | `GET /api/admin/stats[?eventId=]` | | Totals, time series, top guests |
@@ -104,7 +105,7 @@ Event fields: `name`, `description`, `eventDate` (`YYYY-MM-DD`), `accentColor`
 `captureMode` (`camera`|`picker`|`both`), `askGuestName`, `maxPhotosPerGuest`,
 `defaultLocale` (`en`|`fr`|`it`|`es`|`null`), `collectGuestEmails`,
 `notifyAdminSummary`, `emailGuestsGallery`, `galleryLinkDays` (0–3650),
-`galleryLinkDownload`, `galleryMailIncludesPassword`, `galleryLinkFavorites`, `qrStyle` (object, see
+`galleryLinkDownload`, `galleryMailIncludesPassword`, `galleryLinkFavorites`, `challenges` (list of `{ id?, label }` or strings; ids are kept, new ones assigned), `qrStyle` (object, see
 `src/lib/qr/style.ts`).
 
 ## Health

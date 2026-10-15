@@ -44,6 +44,7 @@ export default async function SharedAlbumPage({ params }: Props) {
         initialCursor={rows.length === 60 ? rows[rows.length - 1].createdAt : null}
         total={countVisiblePhotos(event.id, share.favoritesOnly)}
         allowDownload={share.allowDownload}
+        challenges={publicEvent.challenges}
       />
     );
   }

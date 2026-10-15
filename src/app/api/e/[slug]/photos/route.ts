@@ -8,6 +8,7 @@ import { apiError, rateLimited } from "@/lib/http";
 import { InvalidImageError, processPhoto, type ProcessedPhoto } from "@/lib/images/process";
 import { countGuestPhotos, insertPhoto, listPhotos, toPhotoDto } from "@/lib/photos";
 import { canEnterEvent, uploadState, type Viewer } from "@/lib/policy";
+import { readChallenges } from "@/lib/challenges";
 import type { EventRow } from "@/lib/db/schema";
 import { newId } from "@/lib/security/ids";
 import { limiters, uploadLocks } from "@/lib/security/limiters";
@@ -57,6 +58,7 @@ export async function POST(request: Request, { params }: RouteContext<"/api/e/[s
     if (!limit.allowed) return rateLimited(limit.retryAfterMs);
 
     let file: File | null = null;
+    let challengeId: string | null = null;
     try {
       const body = await readBodyCapped(request, config.maxUploadBytes + MULTIPART_OVERHEAD);
       const form = await new Response(body, {
@@ -64,6 +66,9 @@ export async function POST(request: Request, { params }: RouteContext<"/api/e/[s
       }).formData();
       const value = form.get("photo");
       file = value instanceof File ? value : null;
+      const picked = form.get("challenge");
+      // An unknown or removed challenge is dropped, not an error: the photo matters more than its tag.
+      challengeId = readChallenges(event.challenges).some((c) => c.id === picked) ? (picked as string) : null;
     } catch (error) {
       return apiError(error instanceof BodyTooLargeError ? "too_large" : "bad_request");
     }
@@ -78,7 +83,7 @@ export async function POST(request: Request, { params }: RouteContext<"/api/e/[s
       throw error;
     }
 
-    return await store(event, guestId, session, viewer, processed);
+    return await store(event, guestId, session, viewer, processed, challengeId);
   } finally {
     uploadLocks.delete(guestId);
   }
@@ -90,6 +95,7 @@ async function store(
   session: Awaited<ReturnType<typeof getGuestSession>>,
   viewer: Viewer,
   processed: ProcessedPhoto,
+  challengeId: string | null,
 ) {
   const id = newId();
   await writePhotoFiles(event.id, id, processed.files);
@@ -103,6 +109,7 @@ async function store(
       height: processed.height,
       bytes: processed.files.original.length,
       status: event.moderation === "pre" ? "pending" : "visible",
+      challengeId,
     });
     track("upload", event.id, guestId);
     return NextResponse.json({ photo: toPhotoDto(photo, viewer) }, { status: 201 });

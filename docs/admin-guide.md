@@ -19,7 +19,8 @@ default you can change later. Each event has four tabs.
 
 The contact sheet of everything guests sent, newest first.
 
-- Filter by **All**, **Pending**, **Visible**, **Hidden** or **Favorites**.
+- Filter by **All**, **Pending**, **Visible**, **Hidden** or **Favorites**, and
+  by challenge when the event has some.
 - Tap photos to select them, then **Approve**, **Hide**, **Favorite**,
   **Unfavorite** or **Delete** from the bar at the bottom. Hidden photos disappear for the guest who took them too,
   and leave the live wall; deleted photos are removed from disk.
@@ -34,7 +35,8 @@ The contact sheet of everything guests sent, newest first.
 ### Stats
 
 Uploads per hour over the event (a party lasts a night, so hours are the
-useful unit), page views, downloads, wrong access codes and top photographers.
+useful unit), page views, downloads, wrong access codes, top photographers,
+and photos per challenge.
 
 ### QR & sharing
 
@@ -63,6 +65,7 @@ useful unit), page views, downloads, wrong access codes and top photographers.
 | | Moderation | Publish immediately and hide later, or approve each photo first. |
 | Guests | Album language | Automatic (each guest's phone) or one fixed language. Guests can still switch. |
 | | Ask guests for their name | Shown next to their photos in the admin and on the live wall. |
+| Challenges | List of prompts | Up to 30 photo ideas ("The dance floor", "The couple with a stranger"). Guests pick one above the shutter and see which ones they already did. Renaming a challenge keeps its photos; removing it keeps them too, untagged in the filter. |
 
 | After the event | Let guests leave their email to get the album | Adds a card on the guest page. Opt-in; addresses are deleted with the event. |
 | | Email me a summary when uploads close | Photos, photographers, views, what's still pending. |

@@ -11,9 +11,11 @@ export async function GET(request: Request, { params }: RouteContext<"/api/g/[to
   if (access.status === "missing") return apiError("not_found");
   if (access.status === "locked") return apiError("forbidden");
 
-  const before = Number(new URL(request.url).searchParams.get("before")) || undefined;
+  const search = new URL(request.url).searchParams;
+  const before = Number(search.get("before")) || undefined;
+  const challengeId = search.get("challenge") ?? undefined;
   // The album filtered to visible: exactly what canViewPhoto lets a link see.
-  const rows = listPhotos(access.event, "album", { status: "visible", favorite: access.share.favoritesOnly, before, limit: PAGE });
+  const rows = listPhotos(access.event, "album", { status: "visible", favorite: access.share.favoritesOnly, challengeId, before, limit: PAGE });
   const asLink = { admin: undefined, guestId: undefined };
   return NextResponse.json(
     { photos: rows.map((p) => ({ ...toPhotoDto(p, asLink), downloads: undefined })), nextCursor: rows.length === PAGE ? rows[rows.length - 1].createdAt : null },

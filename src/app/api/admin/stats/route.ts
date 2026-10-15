@@ -11,5 +11,5 @@ export async function GET(request: Request) {
   if (!eventId) return NextResponse.json(getStats(admin.scope));
   const event = getEventById(eventId);
   if (!event || !isEventAdmin(event.id, { admin: admin.scope })) return apiError("not_found");
-  return NextResponse.json(getStats({ all: false, eventIds: [event.id] }));
+  return NextResponse.json(getStats(event.id));
 }

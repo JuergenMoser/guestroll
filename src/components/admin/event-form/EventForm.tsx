@@ -9,6 +9,7 @@ import type { AdminEvent } from "@/lib/events";
 import { errorText } from "@/lib/i18n/errors";
 import { AccessSection } from "./AccessSection";
 import { AfterSection } from "./AfterSection";
+import { ChallengesSection } from "./ChallengesSection";
 import { DetailsSection } from "./DetailsSection";
 import { GuestsSection } from "./GuestsSection";
 import { initialState, toRequestBody, type SetField } from "./state";
@@ -55,6 +56,7 @@ export function EventForm({ event }: { event?: AdminEvent }) {
       <AccessSection {...sectionProps} hasCode={Boolean(event?.hasAccessCode) && !form.removeCode} />
       <UploadsSection {...sectionProps} />
       <GuestsSection {...sectionProps} />
+      <ChallengesSection {...sectionProps} />
       <AfterSection {...sectionProps} />
       <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center justify-end gap-3 border-t border-line bg-canvas/95 px-4 py-3 backdrop-blur-sm">
         <StatusMessage message={message} />

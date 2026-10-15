@@ -4,7 +4,8 @@ import { Download } from "lucide-react";
 import { useState } from "react";
 import { PhotoGrid } from "@/components/guest/PhotoGrid";
 import { useT } from "@/components/I18nProvider";
-import { Button, buttonClass, EmptyState, SegmentedControl } from "@/components/ui";
+import { Button, buttonClass, EmptyState, SegmentedControl, Select } from "@/components/ui";
+import type { Challenge } from "@/lib/challenges";
 import { api } from "@/lib/client/api";
 import { SelectionBar, type BulkAction } from "./SelectionBar";
 import { useAdminPhotos, type PhotoFilter } from "./useAdminPhotos";
@@ -12,10 +13,11 @@ import { useAdminPhotos, type PhotoFilter } from "./useAdminPhotos";
 const FILTERS: PhotoFilter[] = ["all", "pending", "visible", "hidden", "favorites"];
 
 /** The contact sheet: filter, select, then approve, hide or delete in bulk. */
-export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pendingCount: number }) {
+export function ModerationPanel({ eventId, pendingCount, challenges = [] }: { eventId: string; pendingCount: number; challenges?: Challenge[] }) {
   const t = useT();
   const [filter, setFilter] = useState<PhotoFilter>(pendingCount > 0 ? "pending" : "all");
-  const { photos, cursor, loading, setLoading, reload, loadMore } = useAdminPhotos(eventId, filter);
+  const [challengeId, setChallengeId] = useState("");
+  const { photos, cursor, loading, setLoading, reload, loadMore } = useAdminPhotos(eventId, filter, challengeId);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
 
@@ -52,7 +54,26 @@ export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pe
             setFilter(f);
           }}
         />
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          {challenges.length > 0 && (
+            <Select
+              aria-label={t("admin.challenges.filter")}
+              value={challengeId}
+              onChange={(e) => {
+                setSelected(new Set());
+                setLoading(true);
+                setChallengeId(e.target.value);
+              }}
+              className="h-8 w-auto max-w-56 py-1 text-sm"
+            >
+              <option value="">{t("admin.challenges.allChallenges")}</option>
+              {challenges.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </Select>
+          )}
           {photos.length > 0 && (
             <Button size="sm" variant="ghost" onClick={() => setSelected(selected.size === photos.length ? new Set() : new Set(photos.map((p) => p.id)))}>
               {t("admin.moderation.selectAll")}

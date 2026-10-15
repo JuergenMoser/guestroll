@@ -15,6 +15,7 @@ export interface PhotoDto {
   mine: boolean;
   downloads?: number;
   favorite?: boolean;
+  challengeId: string | null;
   createdAt: number;
 }
 
@@ -26,6 +27,7 @@ export function toPhotoDto(photo: PhotoRow, viewer: Pick<Viewer, "admin" | "gues
     guestName: photo.guestName,
     status: photo.status,
     mine: viewer.guestId !== undefined && photo.guestId === viewer.guestId,
+    challengeId: photo.challengeId,
     // The hosts' picks and counters stay theirs: guests and links never see them.
     ...(isEventAdmin(photo.eventId, viewer) ? { downloads: photo.downloads, favorite: photo.favorite } : {}),
     createdAt: photo.createdAt,
@@ -36,7 +38,7 @@ export function getPhoto(id: string): PhotoRow | undefined {
   return getDb().select().from(photos).where(eq(photos.id, id)).get();
 }
 
-export function insertPhoto(photo: Omit<PhotoRow, "downloads" | "createdAt" | "favorite">): PhotoRow {
+export function insertPhoto(photo: Omit<PhotoRow, "downloads" | "createdAt" | "favorite" | "challengeId"> & { challengeId?: string | null }): PhotoRow {
   return getDb().insert(photos).values(photo).returning().get();
 }
 
@@ -56,6 +58,7 @@ export interface ListOptions {
   limit?: number;
   status?: PhotoRow["status"];
   favorite?: boolean;
+  challengeId?: string;
 }
 
 /**
@@ -67,6 +70,7 @@ export function listPhotos(event: EventRow, who: "album" | { guestId?: string },
   const limit = Math.min(Math.max(options.limit ?? 60, 1), 200);
   const filters: SQL[] = [eq(photos.eventId, event.id)];
 
+  if (options.challengeId) filters.push(eq(photos.challengeId, options.challengeId));
   if (who === "album") {
     if (options.status) filters.push(eq(photos.status, options.status));
     if (options.favorite) filters.push(eq(photos.favorite, true));

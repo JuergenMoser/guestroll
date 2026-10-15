@@ -104,3 +104,23 @@ test.describe("gallery link on a phone", () => {
     await expect(page.getByRole("link", { name: "Download all photos" })).toBeVisible();
   });
 });
+
+test.describe("challenges on a phone", () => {
+  test("a guest picks a challenge, shoots, and it's ticked", async ({ page, baseURL }) => {
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { askGuestName: false, challenges: ["The dance floor", "The cake"] });
+    await page.goto(`/e/${event.slug}`);
+    await expect(page.getByText("0 of 2 done")).toBeVisible();
+    await page.getByRole("radio", { name: "The cake" }).click();
+    await expect(page.getByText("Challenge: The cake")).toBeVisible();
+
+    const chooser = page.waitForEvent("filechooser");
+    await page.getByRole("button", { name: "Take a photo" }).click();
+    await (await chooser).setFiles({ name: "p.jpg", mimeType: "image/jpeg", buffer: await photo() });
+    await expect(page.getByText("1 of 2 done")).toBeVisible();
+
+    const { photos } = await (await host.get(`/api/admin/events/${event.id}/photos`)).json();
+    const cake = (await (await host.get(`/api/admin/events/${event.id}`)).json()).event.challenges[1];
+    expect(photos[0].challengeId).toBe(cake.id);
+  });
+});

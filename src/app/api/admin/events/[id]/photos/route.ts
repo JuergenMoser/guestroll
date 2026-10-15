@@ -14,6 +14,7 @@ export async function GET(request: Request, { params }: Context) {
   const before = Number(search.get("before")) || undefined;
   const rows = listPhotos(event, "album", {
     favorite: search.get("favorites") === "1",
+    challengeId: search.get("challenge") ?? undefined,
     before,
     limit: 100,
     status: status && STATUSES.has(status) ? status : undefined,

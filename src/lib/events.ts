@@ -9,6 +9,7 @@ import { deleteEventFiles } from "@/lib/storage/files";
 import type { EventInput } from "@/lib/validation";
 import type { AdminScope } from "@/lib/policy";
 import { parseQrStyle, type QrStyle } from "@/lib/qr/style";
+import { readChallenges, type Challenge } from "@/lib/challenges";
 
 /** What the guest page may know about an event: no hash, no internal settings. */
 export interface PublicEvent {
@@ -26,6 +27,7 @@ export interface PublicEvent {
   logoVersion: number | null;
   defaultLocale: EventRow["defaultLocale"];
   collectGuestEmails: boolean;
+  challenges: Challenge[];
 }
 
 export function toPublicEvent(event: EventRow): PublicEvent {
@@ -44,13 +46,19 @@ export function toPublicEvent(event: EventRow): PublicEvent {
     logoVersion: event.logoVersion,
     defaultLocale: event.defaultLocale,
     collectGuestEmails: event.collectGuestEmails,
+    challenges: readChallenges(event.challenges),
   };
 }
 
-export type AdminEvent = Omit<EventRow, "accessCodeHash" | "qrStyle"> & { hasAccessCode: boolean; qrStyle: QrStyle };
+export type AdminEvent = Omit<EventRow, "accessCodeHash" | "qrStyle" | "challenges"> & { hasAccessCode: boolean; qrStyle: QrStyle; challenges: Challenge[] };
 
-export function toAdminEvent({ accessCodeHash, qrStyle, ...event }: EventRow): AdminEvent {
-  return { ...event, hasAccessCode: accessCodeHash !== null, qrStyle: parseQrStyle(qrStyle ? JSON.parse(qrStyle) : null) };
+export function toAdminEvent({ accessCodeHash, qrStyle, challenges, ...event }: EventRow): AdminEvent {
+  return {
+    ...event,
+    hasAccessCode: accessCodeHash !== null,
+    qrStyle: parseQrStyle(qrStyle ? JSON.parse(qrStyle) : null),
+    challenges: readChallenges(challenges),
+  };
 }
 
 export function eventQrStyle(event: EventRow): QrStyle {

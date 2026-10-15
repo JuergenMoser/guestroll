@@ -49,6 +49,7 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 - 📷 Camera opens directly from the QR code. iPhone and Android, no install.
 - 🔁 Uploads keep going on a weak 4G connection: resized on the phone, queued, retried, resumed when back online.
 - 🙋 Optional name prompt so the hosts know who took what.
+- 🎯 **Photo challenges**: prompts guests pick before shooting ("The dance floor", "The cake"), with their progress.
 - 🔒 Guests only ever see their own photos. The album belongs to the hosts.
 - 🌍 English, French, Italian and Spanish, picked from the phone's language, switchable on the page.
 - 🌗 Light and dark themes.

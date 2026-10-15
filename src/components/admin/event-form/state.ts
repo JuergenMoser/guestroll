@@ -1,4 +1,5 @@
 import type { AdminEvent } from "@/lib/events";
+import type { Challenge } from "@/lib/challenges";
 import type { CaptureMode, Locale } from "@/lib/constants";
 
 /** Form values as the inputs hold them (strings for dates), converted by `toRequestBody`. */
@@ -23,6 +24,8 @@ export interface EventFormState {
   galleryLinkDownload: boolean;
   galleryMailIncludesPassword: boolean;
   galleryLinkFavorites: boolean;
+  /** New rows have an empty id: the server assigns one. */
+  challenges: Challenge[];
 }
 
 export type SetField = <K extends keyof EventFormState>(key: K, value: EventFormState[K]) => void;
@@ -62,6 +65,7 @@ export function initialState(event?: AdminEvent): EventFormState {
     galleryLinkDownload: event?.galleryLinkDownload ?? true,
     galleryMailIncludesPassword: event?.galleryMailIncludesPassword ?? true,
     galleryLinkFavorites: event?.galleryLinkFavorites ?? false,
+    challenges: event?.challenges ?? [],
   };
 }
 
@@ -73,6 +77,7 @@ export function toRequestBody(form: EventFormState): Record<string, unknown> {
     defaultLocale: defaultLocale || null,
     eventDate: eventDate || null,
     uploadsCloseAt: uploadsCloseAt ? new Date(uploadsCloseAt).getTime() : null,
+    challenges: rest.challenges.filter((c) => c.label.trim()),
   };
   if (removeCode) body.accessCode = null;
   else if (accessCode) body.accessCode = accessCode;

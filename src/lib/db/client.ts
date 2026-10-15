@@ -27,7 +27,17 @@ function open(): Db {
   return db;
 }
 
+let migratedThisModule = false;
+
 export function getDb(): Db {
-  globalForDb.guestrollDb ??= open();
+  if (!globalForDb.guestrollDb) {
+    globalForDb.guestrollDb = open();
+    migratedThisModule = true;
+  } else if (!migratedThisModule) {
+    // Dev hot reload keeps the handle but brings new code: apply migrations
+    // added since the server started (a no-op when there are none).
+    migrate(globalForDb.guestrollDb, { migrationsFolder: path.join(process.cwd(), "drizzle") });
+    migratedThisModule = true;
+  }
   return globalForDb.guestrollDb;
 }

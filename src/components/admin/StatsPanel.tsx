@@ -3,11 +3,13 @@
 import { useT } from "@/components/I18nProvider";
 import { Card, CardTitle } from "@/components/ui";
 import type { Stats } from "@/lib/stats";
+import type { Challenge } from "@/lib/challenges";
+import { ChallengeStats } from "./ChallengeStats";
 import { StatGrid } from "./StatGrid";
 import { TopGuests } from "./TopGuests";
 import { UploadsChart } from "./UploadsChart";
 
-export function StatsPanel({ stats, locale }: { stats: Stats; locale: string }) {
+export function StatsPanel({ stats, locale, challenges = [] }: { stats: Stats; locale: string; challenges?: Challenge[] }) {
   const t = useT();
   return (
     <div className="space-y-4">
@@ -21,6 +23,12 @@ export function StatsPanel({ stats, locale }: { stats: Stats; locale: string }) 
           <CardTitle className="mb-4">{t("admin.topGuests")}</CardTitle>
           <TopGuests guests={stats.topGuests} />
         </Card>
+        {challenges.length > 0 && (
+          <Card className="lg:col-span-3">
+            <CardTitle className="mb-4">{t("admin.challenges.statsTitle")}</CardTitle>
+            <ChallengeStats challenges={challenges} counts={stats.challenges} />
+          </Card>
+        )}
       </div>
     </div>
   );

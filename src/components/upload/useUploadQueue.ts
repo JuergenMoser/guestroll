@@ -8,6 +8,8 @@ export type UploadStatus = "queued" | "compressing" | "uploading" | "done" | "er
 export interface UploadItem {
   id: string;
   file: File;
+  /** Challenge picked when the photo was taken; sent with it. */
+  challengeId: string | null;
   preview: string;
   status: UploadStatus;
   progress: number;
@@ -40,11 +42,12 @@ async function compress(file: File): Promise<File> {
   }
 }
 
-function send(url: string, file: File, onProgress: (ratio: number) => void): Promise<PhotoDto> {
+function send(url: string, file: File, challengeId: string | null, onProgress: (ratio: number) => void): Promise<PhotoDto> {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
     const body = new FormData();
     body.append("photo", file, file.name || "photo.jpg");
+    if (challengeId) body.append("challenge", challengeId);
     xhr.open("POST", url);
     xhr.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
     xhr.onload = () => {
@@ -96,7 +99,7 @@ export function useUploadQueue(endpoint: string, onUploaded: (photo: PhotoDto) =
         await waitOnline();
         patch(item.id, { status: "uploading", progress: 0 });
         try {
-          const photo = await send(endpoint, file, (progress) => patch(item.id, { progress }));
+          const photo = await send(endpoint, file, item.challengeId, (progress) => patch(item.id, { progress }));
           patch(item.id, { status: "done", progress: 1 });
           onUploadedRef.current(photo);
           break;
@@ -114,10 +117,11 @@ export function useUploadQueue(endpoint: string, onUploaded: (photo: PhotoDto) =
   }, [endpoint, patch]);
 
   const add = useCallback(
-    (files: File[]) => {
+    (files: File[], challengeId: string | null = null) => {
       const added = files.map<UploadItem>((file) => ({
         id: crypto.randomUUID(),
         file,
+        challengeId,
         preview: URL.createObjectURL(file),
         status: "queued",
         progress: 0,

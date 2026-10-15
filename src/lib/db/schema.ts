@@ -34,6 +34,8 @@ export const events = sqliteTable("events", {
   galleryLinkDownload: integer("gallery_link_download", { mode: "boolean" }).notNull().default(true),
   galleryMailIncludesPassword: integer("gallery_mail_includes_password", { mode: "boolean" }).notNull().default(true),
   galleryLinkFavorites: integer("gallery_link_favorites", { mode: "boolean" }).notNull().default(false),
+  /** JSON `[{ id, label }]`, read through `readChallenges`: photo prompts guests can pick before shooting. */
+  challenges: text("challenges").notNull().default("[]"),
   /** Set once the end-of-event automation ran: it never runs twice for the same event. */
   endedAt: integer("ended_at"),
   createdAt: integer("created_at").notNull().default(now),
@@ -55,6 +57,8 @@ export const photos = sqliteTable(
     downloads: integer("downloads").notNull().default(0),
     /** The hosts' pick: a "best of" ZIP, gallery links limited to it, the wall and slideshow. */
     favorite: integer("favorite", { mode: "boolean" }).notNull().default(false),
+    /** One of the event's challenge ids, or null. Kept when the challenge is later removed: the photo still answered it. */
+    challengeId: text("challenge_id"),
     createdAt: integer("created_at").notNull().default(now),
   },
   (t) => [index("photos_event_idx").on(t.eventId, t.createdAt), index("photos_guest_idx").on(t.eventId, t.guestId)],

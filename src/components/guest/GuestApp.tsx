@@ -1,7 +1,7 @@
 "use client";
 
 import { EyeOff } from "lucide-react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useT } from "@/components/I18nProvider";
 import { CaptureHost } from "@/components/upload/CaptureHost";
 import { Button, EmptyState } from "@/components/ui";
@@ -35,6 +35,8 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
   const [remaining, setRemaining] = useState(initialRemaining);
   const [sent, setSent] = useState(sentCount);
   const [open, setOpen] = useState<number | null>(null);
+  // From the photos loaded so far: a guest with hundreds of photos may see a tick appear only after "Load more".
+  const doneChallenges = useMemo(() => new Set(photos.map((p) => p.challengeId).filter((id): id is string => Boolean(id))), [photos]);
 
   useEffect(() => {
     if (!event.askGuestName || guestName) return;
@@ -83,7 +85,7 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
 
   return (
     <div className="space-y-9">
-      <CaptureHost event={event} closedReason={closedReason} remaining={remaining} sent={sent} onUploaded={onUploaded} />
+      <CaptureHost event={event} doneChallenges={doneChallenges} closedReason={closedReason} remaining={remaining} sent={sent} onUploaded={onUploaded} />
 
       <section className="space-y-4">
         <div className="space-y-1">

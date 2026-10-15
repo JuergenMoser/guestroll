@@ -1,4 +1,5 @@
 import { CAPTURE_MODES, LOCALES, type CaptureMode, type Locale } from "@/lib/constants";
+import { parseChallenges } from "@/lib/challenges";
 import { parseQrStyle } from "@/lib/qr/style";
 
 /** Admin-editable event fields, already validated and normalised. */
@@ -23,6 +24,8 @@ export interface EventInput {
   galleryLinkDownload: boolean;
   galleryMailIncludesPassword: boolean;
   galleryLinkFavorites: boolean;
+  /** JSON, already normalised by `parseChallenges`. */
+  challenges: string;
   /** Already normalised by `parseQrStyle` and serialised. */
   qrStyle: string;
 }
@@ -121,6 +124,12 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     if (src.defaultLocale === null || src.defaultLocale === "") out.defaultLocale = null;
     else if ((LOCALES as readonly unknown[]).includes(src.defaultLocale)) out.defaultLocale = src.defaultLocale as Locale;
     else errors.defaultLocale = `Expected one of ${LOCALES.join(", ")} or null`;
+  }
+
+  if (has("challenges")) {
+    const parsed = parseChallenges(src.challenges);
+    if (parsed.ok) out.challenges = JSON.stringify(parsed.value);
+    else errors.challenges = parsed.error;
   }
 
   if (has("qrStyle")) {

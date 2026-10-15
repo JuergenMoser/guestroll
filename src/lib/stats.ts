@@ -1,5 +1,5 @@
 import "server-only";
-import { and, count, countDistinct, desc, eq, gte, inArray, sql, sum, type SQL } from "drizzle-orm";
+import { and, count, countDistinct, desc, eq, gte, inArray, isNotNull, ne, sql, sum, type SQL } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { activity, events, photos } from "@/lib/db/schema";
 import type { AdminScope } from "@/lib/policy";
@@ -27,6 +27,8 @@ export interface Stats {
   totals: Totals;
   series: SeriesPoint[];
   topGuests: { name: string; photos: number }[];
+  /** One event only: photos per challenge id (visible and pending). */
+  challenges: { id: string; photos: number }[];
 }
 
 /**
@@ -92,5 +94,14 @@ export function getStats(target: string | AdminScope = { all: true }): Stats {
     .limit(5)
     .all();
 
-  return { totals, series: rows, topGuests };
+  const challenges = eventId
+    ? db
+        .select({ id: sql<string>`${photos.challengeId}`, photos: count() })
+        .from(photos)
+        .where(and(eq(photos.eventId, eventId), isNotNull(photos.challengeId), ne(photos.status, "hidden")))
+        .groupBy(photos.challengeId)
+        .all()
+    : [];
+
+  return { totals, series: rows, topGuests, challenges };
 }
