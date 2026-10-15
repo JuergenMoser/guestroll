@@ -4,7 +4,7 @@ name: Badges
 # hours. The counts go to the `badges` branch, read by shields' endpoint badge.
 on:
   schedule:
-    - cron: "17 * * * *"
+    - cron: "*/15 * * * *"
   workflow_dispatch:
 
 permissions: {}
