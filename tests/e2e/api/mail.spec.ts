@@ -115,3 +115,34 @@ test.describe("email and gallery links", () => {
     expect((await guest.post(`/api/e/${event.slug}/contact`, { data: { email: "a@b.test" } })).status()).toBe(403);
   });
 });
+
+test.describe("favorites", () => {
+  test("are the hosts' picks: a best-of ZIP and links limited to them", async ({ baseURL }) => {
+    const host = await admin(baseURL!);
+    const event = await createEvent(host);
+    const guest = await client(baseURL!);
+    const ids = await joinAndUpload(guest, event.slug, 3);
+
+    expect((await (await host.post(`/api/admin/events/${event.id}/photos`, { data: { action: "favorite", ids: ids.slice(0, 2) } })).json()).changed).toBe(2);
+    await host.post(`/api/admin/events/${event.id}/photos`, { data: { action: "unfavorite", ids: [ids[1]] } });
+    const favorites = (await (await host.get(`/api/admin/events/${event.id}/photos?favorites=1`)).json()).photos;
+    expect(favorites.map((p: { id: string }) => p.id)).toEqual([ids[0]]);
+    expect(favorites[0].favorite).toBe(true);
+
+    // Guests never learn which of their photos the hosts picked.
+    const own = (await (await guest.get(`/api/e/${event.slug}/photos`)).json()).photos;
+    expect(own.every((p: object) => !("favorite" in p))).toBe(true);
+
+    const zip = await host.get(`/api/admin/events/${event.id}/archive?favorites=1`);
+    expect(zip.headers()["content-disposition"]).toContain("-favorites.zip");
+
+    const { share, password } = await (await host.post(`/api/admin/events/${event.id}/shares`, { data: { favoritesOnly: true } })).json();
+    expect(share.favoritesOnly).toBe(true);
+    const visitor = await client(baseURL!);
+    await visitor.post(`/api/g/${share.token}/unlock`, { data: { password } });
+    const shown = (await (await visitor.get(`/api/g/${share.token}/photos`)).json()).photos;
+    expect(shown.map((p: { id: string }) => p.id)).toEqual([ids[0]]);
+    expect((await visitor.get(`/api/media/${ids[2]}?v=thumb`)).status()).toBe(404);
+    expect((await visitor.get(`/api/media/${ids[0]}?v=original`)).status()).toBe(200);
+  });
+});

@@ -10,7 +10,7 @@ import { openPhotoStream } from "@/lib/storage/files";
  * download starts immediately. JPEGs are already compressed, so `store` skips
  * a pointless deflate pass.
  */
-export function archiveResponse(event: EventRow, rows: PhotoRow[]): Response {
+export function archiveResponse(event: EventRow, rows: PhotoRow[], suffix?: string): Response {
   const zip = archiver("zip", { store: true });
   zip.on("warning", (error: Error) => console.warn("[archive]", error));
   // Files are opened one after the other, as the ZIP consumes them: with S3,
@@ -32,7 +32,7 @@ export function archiveResponse(event: EventRow, rows: PhotoRow[]): Response {
     zip.abort();
   });
 
-  const filename = `${slugify(event.name) || "photos"}.zip`;
+  const filename = `${slugify(event.name) || "photos"}${suffix ? `-${suffix}` : ""}.zip`;
   return new Response(Readable.toWeb(zip) as ReadableStream, {
     headers: {
       "Content-Type": "application/zip",

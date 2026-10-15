@@ -34,7 +34,7 @@ describe("archiveResponse", () => {
       await new Promise((r) => setTimeout(r, 3));
     }
 
-    const res = archiveResponse(event, listForArchive(event.id, false));
+    const res = archiveResponse(event, listForArchive(event.id, "visible"));
     expect(res.headers.get("content-type")).toBe("application/zip");
     expect(res.headers.get("content-disposition")).toContain('filename="julie-thomas.zip"');
     const names = zipEntries(Buffer.from(await res.arrayBuffer()));
@@ -42,7 +42,7 @@ describe("archiveResponse", () => {
     expect(names[0]).toMatch(/^0001-lea-[0-9a-f]{8}\.jpg$/);
     expect(names[1]).toMatch(/^0002-guest-[0-9a-f]{8}\.jpg$/);
 
-    const all = archiveResponse(event, listForArchive(event.id, true));
+    const all = archiveResponse(event, listForArchive(event.id, "all"));
     expect(zipEntries(Buffer.from(await all.arrayBuffer()))).toHaveLength(3);
   });
 });

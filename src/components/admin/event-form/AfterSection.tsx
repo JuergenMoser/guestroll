@@ -40,6 +40,12 @@ export function AfterSection({ form, set, errors }: SectionProps) {
           </Field>
           <Switch label={t("admin.form.galleryLinkDownload")} checked={form.galleryLinkDownload} onChange={(v) => set("galleryLinkDownload", v)} />
           <Switch
+            label={t("admin.form.galleryLinkFavorites")}
+            hint={t("admin.form.galleryLinkFavoritesHint")}
+            checked={form.galleryLinkFavorites}
+            onChange={(v) => set("galleryLinkFavorites", v)}
+          />
+          <Switch
             label={t("admin.form.galleryMailIncludesPassword")}
             hint={t("admin.form.galleryMailIncludesPasswordHint")}
             checked={form.galleryMailIncludesPassword}

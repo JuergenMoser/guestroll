@@ -22,6 +22,7 @@ export interface EventInput {
   galleryLinkDays: number;
   galleryLinkDownload: boolean;
   galleryMailIncludesPassword: boolean;
+  galleryLinkFavorites: boolean;
   /** Already normalised by `parseQrStyle` and serialised. */
   qrStyle: string;
 }
@@ -85,6 +86,7 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     "emailGuestsGallery",
     "galleryLinkDownload",
     "galleryMailIncludesPassword",
+    "galleryLinkFavorites",
   ] as const) {
     if (!has(key)) continue;
     if (typeof src[key] === "boolean") out[key] = src[key] as boolean;
@@ -134,6 +136,7 @@ export interface ShareLinkInput {
   password: string | null;
   label: string;
   allowDownload: boolean;
+  favoritesOnly: boolean;
   /** 0 = never expires. */
   expiresInDays: number;
 }
@@ -148,10 +151,11 @@ export function parseShareLinkInput(body: unknown): ValidationResult<ShareLinkIn
   }
   const label = typeof src.label === "string" ? src.label.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 80) : "";
   const allowDownload = typeof src.allowDownload === "boolean" ? src.allowDownload : true;
+  const favoritesOnly = src.favoritesOnly === true;
   const days = src.expiresInDays === undefined ? 30 : src.expiresInDays;
   if (typeof days !== "number" || !Number.isInteger(days) || days < 0 || days > 3650) errors.expiresInDays = "Expected an integer between 0 and 3650";
   if (Object.keys(errors).length) return { ok: false, errors };
-  return { ok: true, value: { password, label, allowDownload, expiresInDays: days as number } };
+  return { ok: true, value: { password, label, allowDownload, favoritesOnly, expiresInDays: days as number } };
 }
 
 export function parseGuestName(value: unknown): string | null {

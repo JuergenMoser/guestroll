@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   isEventAdmin,
+  shareShows,
   canDownloadAlbum,
   canEnterEvent,
   canJoinFreely,
@@ -91,7 +92,7 @@ describe("canViewPhoto", () => {
 });
 
 describe("gallery links", () => {
-  const link = (allowDownload: boolean): Viewer => ({ unlocked: [], shares: [{ eventId: "event-1", allowDownload }] });
+  const link = (allowDownload: boolean): Viewer => ({ unlocked: [], shares: [{ shareId: "s1", eventId: "event-1", allowDownload, favoritesOnly: false }] });
 
   it("show the visible photos of their event only", () => {
     expect(canViewPhoto(event(), photo(), link(false), "display")).toBe(true);
@@ -103,8 +104,10 @@ describe("gallery links", () => {
   it("serve originals and the ZIP only when downloads are allowed", () => {
     expect(canViewPhoto(event(), photo(), link(false), "original")).toBe(false);
     expect(canViewPhoto(event(), photo(), link(true), "original")).toBe(true);
-    expect(canDownloadAlbum(event(), link(false))).toBe(false);
-    expect(canDownloadAlbum(event(), link(true))).toBe(true);
+    expect(canDownloadAlbum(event(), link(false), link(false).shares![0])).toBe(false);
+    expect(canDownloadAlbum(event(), link(true), link(true).shares![0])).toBe(true);
+    // A grant the browser doesn't hold proves nothing.
+    expect(canDownloadAlbum(event(), link(true), { shareId: "other", eventId: "event-1", allowDownload: true, favoritesOnly: false })).toBe(false);
     expect(canDownloadAlbum(event(), guest())).toBe(false);
   });
 
@@ -135,5 +138,23 @@ describe("organizers", () => {
   it("owners manage every event", () => {
     expect(isEventAdmin("anything", admin)).toBe(true);
     expect(isEventAdmin("event-1", stranger)).toBe(false);
+  });
+});
+
+describe("favorites-only links", () => {
+  const favLink: Viewer = { unlocked: [], shares: [{ shareId: "f", eventId: "event-1", allowDownload: true, favoritesOnly: true }] };
+
+  it("show the visible favorites and nothing else", () => {
+    expect(canViewPhoto(event(), photo({ favorite: true }), favLink, "original")).toBe(true);
+    expect(canViewPhoto(event(), photo({ favorite: false }), favLink, "thumb")).toBe(false);
+    expect(canViewPhoto(event(), photo({ favorite: true, status: "hidden" }), favLink, "thumb")).toBe(false);
+    expect(shareShows({ favoritesOnly: false }, { status: "visible", favorite: false })).toBe(true);
+  });
+
+  it("add up with a whole-album link unlocked in the same browser", () => {
+    const both: Viewer = { unlocked: [], shares: [...favLink.shares!, { shareId: "a", eventId: "event-1", allowDownload: false, favoritesOnly: false }] };
+    expect(canViewPhoto(event(), photo({ favorite: false }), both, "display")).toBe(true);
+    expect(canViewPhoto(event(), photo({ favorite: false }), both, "original")).toBe(false);
+    expect(canViewPhoto(event(), photo({ favorite: true }), both, "original")).toBe(true);
   });
 });

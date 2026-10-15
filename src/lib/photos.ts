@@ -14,6 +14,7 @@ export interface PhotoDto {
   status: PhotoRow["status"];
   mine: boolean;
   downloads?: number;
+  favorite?: boolean;
   createdAt: number;
 }
 
@@ -25,7 +26,8 @@ export function toPhotoDto(photo: PhotoRow, viewer: Pick<Viewer, "admin" | "gues
     guestName: photo.guestName,
     status: photo.status,
     mine: viewer.guestId !== undefined && photo.guestId === viewer.guestId,
-    ...(isEventAdmin(photo.eventId, viewer) ? { downloads: photo.downloads } : {}),
+    // The hosts' picks and counters stay theirs: guests and links never see them.
+    ...(isEventAdmin(photo.eventId, viewer) ? { downloads: photo.downloads, favorite: photo.favorite } : {}),
     createdAt: photo.createdAt,
   };
 }
@@ -34,7 +36,7 @@ export function getPhoto(id: string): PhotoRow | undefined {
   return getDb().select().from(photos).where(eq(photos.id, id)).get();
 }
 
-export function insertPhoto(photo: Omit<PhotoRow, "downloads" | "createdAt">): PhotoRow {
+export function insertPhoto(photo: Omit<PhotoRow, "downloads" | "createdAt" | "favorite">): PhotoRow {
   return getDb().insert(photos).values(photo).returning().get();
 }
 
@@ -53,6 +55,7 @@ export interface ListOptions {
   before?: number;
   limit?: number;
   status?: PhotoRow["status"];
+  favorite?: boolean;
 }
 
 /**
@@ -66,6 +69,7 @@ export function listPhotos(event: EventRow, who: "album" | { guestId?: string },
 
   if (who === "album") {
     if (options.status) filters.push(eq(photos.status, options.status));
+    if (options.favorite) filters.push(eq(photos.favorite, true));
   } else {
     if (!who.guestId) return [];
     filters.push(eq(photos.guestId, who.guestId), ne(photos.status, "hidden"));
@@ -81,13 +85,26 @@ export function listPhotos(event: EventRow, who: "album" | { guestId?: string },
     .all();
 }
 
-export function listForArchive(eventId: string, includeHidden: boolean): PhotoRow[] {
+/** `visible`: the album as links show it; `favorites`: the visible favorites; `all`: everything, hidden included. */
+export function listForArchive(eventId: string, scope: "visible" | "favorites" | "all"): PhotoRow[] {
+  const filters: SQL[] = [eq(photos.eventId, eventId)];
+  if (scope !== "all") filters.push(eq(photos.status, "visible"));
+  if (scope === "favorites") filters.push(eq(photos.favorite, true));
   return getDb()
     .select()
     .from(photos)
-    .where(includeHidden ? eq(photos.eventId, eventId) : and(eq(photos.eventId, eventId), eq(photos.status, "visible")))
+    .where(and(...filters))
     .orderBy(photos.createdAt)
     .all();
+}
+
+export function setFavorite(ids: string[], eventId: string, favorite: boolean): number {
+  if (ids.length === 0) return 0;
+  return getDb()
+    .update(photos)
+    .set({ favorite })
+    .where(and(eq(photos.eventId, eventId), inArray(photos.id, ids)))
+    .run().changes;
 }
 
 export function setPhotoStatus(ids: string[], eventId: string, status: PhotoRow["status"]): number {
@@ -119,12 +136,8 @@ export function incrementDownloads(ids: string[]): void {
     .run();
 }
 
-export function countVisiblePhotos(eventId: string): number {
-  return (
-    getDb()
-      .select({ n: count() })
-      .from(photos)
-      .where(and(eq(photos.eventId, eventId), eq(photos.status, "visible")))
-      .get()?.n ?? 0
-  );
+export function countVisiblePhotos(eventId: string, favoritesOnly = false): number {
+  const filters: SQL[] = [eq(photos.eventId, eventId), eq(photos.status, "visible")];
+  if (favoritesOnly) filters.push(eq(photos.favorite, true));
+  return getDb().select({ n: count() }).from(photos).where(and(...filters)).get()?.n ?? 0;
 }

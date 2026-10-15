@@ -10,6 +10,6 @@ export async function getViewer(): Promise<Viewer> {
   const shares: ShareGrant[] = (share.shares ?? [])
     .map((id) => getShareById(id))
     .filter((s) => s !== undefined && isShareActive(s))
-    .map((s) => ({ eventId: s!.eventId, allowDownload: s!.allowDownload }));
+    .map((s) => ({ shareId: s!.id, eventId: s!.eventId, allowDownload: s!.allowDownload, favoritesOnly: s!.favoritesOnly }));
   return { admin: admin?.scope, guestId: guest.guestId, unlocked: guest.unlocked ?? [], shares };
 }

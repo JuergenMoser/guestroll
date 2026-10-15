@@ -13,7 +13,7 @@ export async function GET(request: Request, { params }: RouteContext<"/api/g/[to
 
   const before = Number(new URL(request.url).searchParams.get("before")) || undefined;
   // The album filtered to visible: exactly what canViewPhoto lets a link see.
-  const rows = listPhotos(access.event, "album", { status: "visible", before, limit: PAGE });
+  const rows = listPhotos(access.event, "album", { status: "visible", favorite: access.share.favoritesOnly, before, limit: PAGE });
   const asLink = { admin: undefined, guestId: undefined };
   return NextResponse.json(
     { photos: rows.map((p) => ({ ...toPhotoDto(p, asLink), downloads: undefined })), nextCursor: rows.length === PAGE ? rows[rows.length - 1].createdAt : null },

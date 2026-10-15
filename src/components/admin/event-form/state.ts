@@ -22,6 +22,7 @@ export interface EventFormState {
   galleryLinkDays: number;
   galleryLinkDownload: boolean;
   galleryMailIncludesPassword: boolean;
+  galleryLinkFavorites: boolean;
 }
 
 export type SetField = <K extends keyof EventFormState>(key: K, value: EventFormState[K]) => void;
@@ -60,6 +61,7 @@ export function initialState(event?: AdminEvent): EventFormState {
     galleryLinkDays: event?.galleryLinkDays ?? 30,
     galleryLinkDownload: event?.galleryLinkDownload ?? true,
     galleryMailIncludesPassword: event?.galleryMailIncludesPassword ?? true,
+    galleryLinkFavorites: event?.galleryLinkFavorites ?? false,
   };
 }
 

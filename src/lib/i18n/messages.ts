@@ -131,6 +131,8 @@ const en = {
       dangerZone: "Danger zone",
       deleteEvent: "Delete this event and all its photos",
       deleteConfirm: "Type the event name to confirm",
+      galleryLinkFavorites: "Only send the favorites",
+      galleryLinkFavoritesHint: "Mark them with the star in Photos before the event ends.",
     },
     gallery: {
       title: "Gallery links",
@@ -152,6 +154,9 @@ const en = {
       revoke: "Revoke",
       downloadsOn: "Downloads on",
       downloadsOff: "View only",
+      scope: "Photos shown",
+      scopeAll: "The whole album",
+      scopeFavorites: "Favorites only",
     },
     end: {
       title: "End the event",
@@ -218,6 +223,11 @@ const en = {
       empty: "No photos here.",
       downloadZip: "Download ZIP",
       deleteConfirm: "Delete {n} photos permanently?",
+      favorites: "Favorites",
+      favorite: "Favorite",
+      unfavorite: "Unfavorite",
+      noFavorites: "No favorites yet. Select photos and mark them with the star.",
+      downloadFavorites: "Download the favorites",
     },
     settingsPage: {
       appearance: "Language and theme",
@@ -464,6 +474,8 @@ const fr: DeepPartialStrings<Messages> = {
       dangerZone: "Zone sensible",
       deleteEvent: "Supprimer cet évènement et toutes ses photos",
       deleteConfirm: "Tape le nom de l'évènement pour confirmer",
+      galleryLinkFavorites: "N'envoyer que les favorites",
+      galleryLinkFavoritesHint: "Marquez-les avec l'étoile dans Photos avant la fin de l'évènement.",
     },
     gallery: {
       title: "Liens de galerie",
@@ -485,6 +497,9 @@ const fr: DeepPartialStrings<Messages> = {
       revoke: "Révoquer",
       downloadsOn: "Téléchargement autorisé",
       downloadsOff: "Consultation seule",
+      scope: "Photos montrées",
+      scopeAll: "Tout l'album",
+      scopeFavorites: "Les favorites seulement",
     },
     end: {
       title: "Terminer l'évènement",
@@ -551,6 +566,11 @@ const fr: DeepPartialStrings<Messages> = {
       empty: "Aucune photo ici.",
       downloadZip: "Télécharger le ZIP",
       deleteConfirm: "Supprimer définitivement {n} photos ?",
+      favorites: "Favorites",
+      favorite: "Favorite",
+      unfavorite: "Retirer des favorites",
+      noFavorites: "Pas encore de favorites. Sélectionnez des photos et marquez-les avec l'étoile.",
+      downloadFavorites: "Télécharger les favorites",
     },
     settingsPage: {
       appearance: "Langue et thème",
@@ -793,6 +813,8 @@ const it: DeepPartialStrings<Messages> = {
       dangerZone: "Zona pericolosa",
       deleteEvent: "Elimina questo evento e tutte le sue foto",
       deleteConfirm: "Digita il nome dell'evento per confermare",
+      galleryLinkFavorites: "Invia solo le preferite",
+      galleryLinkFavoritesHint: "Segnale con la stella in Foto prima della fine dell'evento.",
     },
     gallery: {
       title: "Link alla galleria",
@@ -814,6 +836,9 @@ const it: DeepPartialStrings<Messages> = {
       revoke: "Revoca",
       downloadsOn: "Download consentiti",
       downloadsOff: "Solo visione",
+      scope: "Foto mostrate",
+      scopeAll: "Tutto l'album",
+      scopeFavorites: "Solo le preferite",
     },
     end: {
       title: "Termina l'evento",
@@ -880,6 +905,11 @@ const it: DeepPartialStrings<Messages> = {
       empty: "Nessuna foto qui.",
       downloadZip: "Scarica ZIP",
       deleteConfirm: "Eliminare definitivamente {n} foto?",
+      favorites: "Preferite",
+      favorite: "Preferita",
+      unfavorite: "Togli dalle preferite",
+      noFavorites: "Ancora nessuna preferita. Seleziona delle foto e segnale con la stella.",
+      downloadFavorites: "Scarica le preferite",
     },
     settingsPage: {
       appearance: "Lingua e tema",
@@ -1122,6 +1152,8 @@ const es: DeepPartialStrings<Messages> = {
       dangerZone: "Zona peligrosa",
       deleteEvent: "Eliminar este evento y todas sus fotos",
       deleteConfirm: "Escribe el nombre del evento para confirmar",
+      galleryLinkFavorites: "Enviar solo las favoritas",
+      galleryLinkFavoritesHint: "Márcalas con la estrella en Fotos antes de que termine el evento.",
     },
     gallery: {
       title: "Enlaces a la galería",
@@ -1143,6 +1175,9 @@ const es: DeepPartialStrings<Messages> = {
       revoke: "Revocar",
       downloadsOn: "Descargas permitidas",
       downloadsOff: "Solo ver",
+      scope: "Fotos mostradas",
+      scopeAll: "Todo el álbum",
+      scopeFavorites: "Solo las favoritas",
     },
     end: {
       title: "Terminar el evento",
@@ -1209,6 +1244,11 @@ const es: DeepPartialStrings<Messages> = {
       empty: "No hay fotos aquí.",
       downloadZip: "Descargar ZIP",
       deleteConfirm: "¿Eliminar definitivamente {n} fotos?",
+      favorites: "Favoritas",
+      favorite: "Favorita",
+      unfavorite: "Quitar de favoritas",
+      noFavorites: "Todavía no hay favoritas. Selecciona fotos y márcalas con la estrella.",
+      downloadFavorites: "Descargar las favoritas",
     },
     settingsPage: {
       appearance: "Idioma y tema",

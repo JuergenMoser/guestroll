@@ -19,14 +19,17 @@ default you can change later. Each event has four tabs.
 
 The contact sheet of everything guests sent, newest first.
 
-- Filter by **All**, **Pending**, **Visible** or **Hidden**.
-- Tap photos to select them, then **Approve**, **Hide** or **Delete** from the
-  bar at the bottom. Hidden photos disappear for the guest who took them too,
+- Filter by **All**, **Pending**, **Visible**, **Hidden** or **Favorites**.
+- Tap photos to select them, then **Approve**, **Hide**, **Favorite**,
+  **Unfavorite** or **Delete** from the bar at the bottom. Hidden photos disappear for the guest who took them too,
   and leave the live wall; deleted photos are removed from disk.
 - **Download ZIP** gets every visible photo at full resolution, named
   `0001-camille-1a2b3c4d.jpg` so they sort in the order they were taken.
   The archive streams, so even a multi-gigabyte album starts downloading
   immediately.
+- **Favorites** are your picks, marked with a star. Under the Favorites filter,
+  **Download the favorites** gets a "best of" ZIP, and a gallery link can show
+  the favorites only. Guests never see which photos you picked.
 
 ### Stats
 
@@ -66,6 +69,7 @@ useful unit), page views, downloads, wrong access codes and top photographers.
 | | Email guests a gallery link when uploads close | One password-protected link for the event, sent to every address once. |
 | | Link valid for (days) | 0 for a link that never expires. |
 | | Guests can download the photos from the link | Off: the link shows photos but not originals or the ZIP. |
+| | Only send the favorites | The link shows the photos you starred instead of the whole album. Star them before the event ends. |
 | | Put the password in the email | Off: guests get the link only, and the password reaches you (summary email and the *End the event* card) so you can pass it on yourself. A forwarded email then isn't enough. |
 
 ### Gallery links
@@ -73,7 +77,8 @@ useful unit), page views, downloads, wrong access codes and top photographers.
 In **QR & sharing**, *Gallery links* creates private links to the visible
 photos of the event: for family who weren't there, or for guests afterwards.
 Each link has its own password (yours, or a generated one shown **once**), an
-optional expiry, a downloads switch, and a view counter. **Revoke** cuts it off
+optional expiry, a downloads switch, the whole album or the favorites only,
+and a view counter. **Revoke** cuts it off
 at once, even for someone who already opened it. A gallery link never lets
 anyone upload, and never shows pending or hidden photos.
 

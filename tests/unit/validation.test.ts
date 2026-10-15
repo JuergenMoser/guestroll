@@ -52,7 +52,7 @@ describe("parseGuestName", () => {
 describe("parseShareLinkInput", () => {
   it("generates the password when none is given, and defaults to 30 days with downloads", async () => {
     const { parseShareLinkInput } = await import("@/lib/validation");
-    expect(parseShareLinkInput({})).toEqual({ ok: true, value: { password: null, label: "", allowDownload: true, expiresInDays: 30 } });
+    expect(parseShareLinkInput({})).toEqual({ ok: true, value: { password: null, label: "", allowDownload: true, favoritesOnly: false, expiresInDays: 30 } });
   });
 
   it("refuses a short password and an out-of-range validity", async () => {

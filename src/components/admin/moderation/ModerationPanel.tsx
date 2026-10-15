@@ -9,7 +9,7 @@ import { api } from "@/lib/client/api";
 import { SelectionBar, type BulkAction } from "./SelectionBar";
 import { useAdminPhotos, type PhotoFilter } from "./useAdminPhotos";
 
-const FILTERS: PhotoFilter[] = ["all", "pending", "visible", "hidden"];
+const FILTERS: PhotoFilter[] = ["all", "pending", "visible", "hidden", "favorites"];
 
 /** The contact sheet: filter, select, then approve, hide or delete in bulk. */
 export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pendingCount: number }) {
@@ -58,15 +58,22 @@ export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pe
               {t("admin.moderation.selectAll")}
             </Button>
           )}
-          <a href={`/api/admin/events/${eventId}/archive`} className={buttonClass("secondary", "sm")}>
-            <Download className="size-4" aria-hidden />
-            {t("admin.moderation.downloadZip")}
-          </a>
+          {filter === "favorites" && photos.length > 0 ? (
+            <a href={`/api/admin/events/${eventId}/archive?favorites=1`} className={buttonClass("secondary", "sm")}>
+              <Download className="size-4" aria-hidden />
+              {t("admin.moderation.downloadFavorites")}
+            </a>
+          ) : (
+            <a href={`/api/admin/events/${eventId}/archive`} className={buttonClass("secondary", "sm")}>
+              <Download className="size-4" aria-hidden />
+              {t("admin.moderation.downloadZip")}
+            </a>
+          )}
         </div>
       </div>
 
       {!loading && photos.length === 0 ? (
-        <EmptyState className="py-16">{t("admin.moderation.empty")}</EmptyState>
+        <EmptyState className="py-16">{t(filter === "favorites" ? "admin.moderation.noFavorites" : "admin.moderation.empty")}</EmptyState>
       ) : (
         <PhotoGrid photos={photos} selected={selected} onToggle={toggle} variant="sheet" />
       )}

@@ -10,6 +10,7 @@ export interface ShareInput {
   password: string;
   label?: string;
   allowDownload: boolean;
+  favoritesOnly?: boolean;
   /** Epoch ms, or null for a link that never expires. */
   expiresAt: number | null;
 }
@@ -27,6 +28,7 @@ export function createShareLink(input: ShareInput): ShareLinkRow {
       passwordHash: bcrypt.hashSync(input.password, 10),
       label: input.label?.trim().slice(0, 80) ?? "",
       allowDownload: input.allowDownload,
+      favoritesOnly: input.favoritesOnly ?? false,
       expiresAt: input.expiresAt,
     })
     .returning()
@@ -76,6 +78,7 @@ export function toShareDto(share: ShareLinkRow) {
     token: share.token,
     label: share.label,
     allowDownload: share.allowDownload,
+    favoritesOnly: share.favoritesOnly,
     expiresAt: share.expiresAt,
     revokedAt: share.revokedAt,
     views: share.views,

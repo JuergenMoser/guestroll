@@ -1,7 +1,7 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element -- photos come from an auth-checked route, not a static asset */
-import { Clock } from "lucide-react";
+import { Clock, Star } from "lucide-react";
 import { useT } from "@/components/I18nProvider";
 import { cn } from "@/components/ui";
 import type { PhotoDto } from "@/lib/photos";
@@ -47,6 +47,11 @@ export function PhotoGrid({ photos, onOpen, selected, onToggle, variant = "print
               />
             </button>
             {isSelected && <span className="pointer-events-none absolute inset-0 ring-4 ring-accent ring-inset" />}
+            {photo.favorite && (
+              <span className="pointer-events-none absolute top-1 right-1 grid size-6 place-items-center rounded-full bg-accent text-accent-ink shadow-sm" title={t("admin.moderation.favorite")}>
+                <Star className="size-3.5 fill-current" aria-label={t("admin.moderation.favorite")} />
+              </span>
+            )}
             {photo.status === "pending" && (
               <span
                 className={cn("pointer-events-none absolute grid size-6 place-items-center rounded-full bg-surface text-ink shadow-sm", sheet ? "top-1 left-1" : "top-2.5 left-2.5")}

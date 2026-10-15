@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "@/lib/client/api";
 import type { PhotoDto } from "@/lib/photos";
 
-export type PhotoFilter = "all" | "visible" | "pending" | "hidden";
+export type PhotoFilter = "all" | "visible" | "pending" | "hidden" | "favorites";
 
 type Page = { photos: PhotoDto[]; nextCursor: number | null };
 
@@ -17,7 +17,8 @@ export function useAdminPhotos(eventId: string, filter: PhotoFilter) {
   const fetchPage = useCallback(
     (before?: number) => {
       const query = new URLSearchParams();
-      if (filter !== "all") query.set("status", filter);
+      if (filter === "favorites") query.set("favorites", "1");
+      else if (filter !== "all") query.set("status", filter);
       if (before) query.set("before", String(before));
       return api<Page>(`/api/admin/events/${eventId}/photos?${query}`).catch((): Page => ({ photos: [], nextCursor: null }));
     },

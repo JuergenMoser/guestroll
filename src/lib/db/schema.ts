@@ -33,6 +33,7 @@ export const events = sqliteTable("events", {
   galleryLinkDays: integer("gallery_link_days").notNull().default(30),
   galleryLinkDownload: integer("gallery_link_download", { mode: "boolean" }).notNull().default(true),
   galleryMailIncludesPassword: integer("gallery_mail_includes_password", { mode: "boolean" }).notNull().default(true),
+  galleryLinkFavorites: integer("gallery_link_favorites", { mode: "boolean" }).notNull().default(false),
   /** Set once the end-of-event automation ran: it never runs twice for the same event. */
   endedAt: integer("ended_at"),
   createdAt: integer("created_at").notNull().default(now),
@@ -52,6 +53,8 @@ export const photos = sqliteTable(
     bytes: integer("bytes").notNull(),
     status: text("status", { enum: ["visible", "pending", "hidden"] }).notNull(),
     downloads: integer("downloads").notNull().default(0),
+    /** The hosts' pick: a "best of" ZIP, gallery links limited to it, the wall and slideshow. */
+    favorite: integer("favorite", { mode: "boolean" }).notNull().default(false),
     createdAt: integer("created_at").notNull().default(now),
   },
   (t) => [index("photos_event_idx").on(t.eventId, t.createdAt), index("photos_guest_idx").on(t.eventId, t.guestId)],
@@ -85,6 +88,8 @@ export const shareLinks = sqliteTable(
     passwordHash: text("password_hash").notNull(),
     label: text("label").notNull().default(""),
     allowDownload: integer("allow_download", { mode: "boolean" }).notNull().default(true),
+    /** Only the photos the hosts marked as favorites, instead of every visible one. */
+    favoritesOnly: integer("favorites_only", { mode: "boolean" }).notNull().default(false),
     expiresAt: integer("expires_at"),
     revokedAt: integer("revoked_at"),
     views: integer("views").notNull().default(0),

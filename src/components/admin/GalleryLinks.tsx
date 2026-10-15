@@ -3,7 +3,7 @@
 import { Link2, Plus } from "lucide-react";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useT } from "@/components/I18nProvider";
-import { Badge, Button, Card, CardTitle, EmptyState, Field, Input, Switch } from "@/components/ui";
+import { Badge, Button, Card, CardTitle, EmptyState, Field, Input, SegmentedControl, Switch } from "@/components/ui";
 import { ApiError, api } from "@/lib/client/api";
 import { errorText } from "@/lib/i18n/errors";
 import type { ShareDto } from "@/lib/shares";
@@ -18,6 +18,7 @@ export function GalleryLinks({ eventId, baseUrl, locale }: { eventId: string; ba
   const [password, setPassword] = useState("");
   const [days, setDays] = useState(30);
   const [allowDownload, setAllowDownload] = useState(true);
+  const [favoritesOnly, setFavoritesOnly] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string>();
   const [created, setCreated] = useState<{ url: string; password: string | null } | null>(null);
@@ -44,7 +45,7 @@ export function GalleryLinks({ eventId, baseUrl, locale }: { eventId: string; ba
     setError(undefined);
     try {
       const res = await api<{ share: ShareDto; password: string | null }>(`/api/admin/events/${eventId}/shares`, {
-        body: { label, password, expiresInDays: days, allowDownload },
+        body: { label, password, expiresInDays: days, allowDownload, favoritesOnly },
       });
       setCreated({ url: linkUrl(res.share.token), password: res.password ?? password });
       setCreating(false);
@@ -106,6 +107,16 @@ export function GalleryLinks({ eventId, baseUrl, locale }: { eventId: string; ba
           <div className="self-end">
             <Switch label={t("admin.gallery.allowDownload")} checked={allowDownload} onChange={setAllowDownload} />
           </div>
+          <div className="space-y-2 sm:col-span-2">
+            <p className="text-sm font-medium">{t("admin.gallery.scope")}</p>
+            <SegmentedControl
+              name={t("admin.gallery.scope")}
+              value={favoritesOnly ? "favorites" : "all"}
+              options={["all", "favorites"] as const}
+              onChange={(v) => setFavoritesOnly(v === "favorites")}
+              label={(v) => t(v === "all" ? "admin.gallery.scopeAll" : "admin.gallery.scopeFavorites")}
+            />
+          </div>
           <div className="flex justify-end gap-2 sm:col-span-2">
             <Button variant="ghost" onClick={() => setCreating(false)}>
               {t("common.cancel")}
@@ -134,6 +145,7 @@ export function GalleryLinks({ eventId, baseUrl, locale }: { eventId: string; ba
                     {share.expiresAt ? t("admin.gallery.expires", { date: date(share.expiresAt) }) : t("admin.gallery.never")}
                   </p>
                 </div>
+                {share.favoritesOnly && <Badge tone="accent">{t("admin.gallery.scopeFavorites")}</Badge>}
                 <Badge>{share.allowDownload ? t("admin.gallery.downloadsOn") : t("admin.gallery.downloadsOff")}</Badge>
                 {share.revokedAt ? (
                   <Badge tone="danger">{t("admin.gallery.revoked")}</Badge>

@@ -24,6 +24,7 @@ export async function POST(request: Request, { params }: Context) {
     password,
     label: parsed.value.label,
     allowDownload: parsed.value.allowDownload,
+    favoritesOnly: parsed.value.favoritesOnly,
     expiresAt: parsed.value.expiresInDays > 0 ? Date.now() + parsed.value.expiresInDays * 86_400_000 : null,
   });
   return NextResponse.json({ share: toShareDto(share), password: parsed.value.password ? null : password }, { status: 201 });

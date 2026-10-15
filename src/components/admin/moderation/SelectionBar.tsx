@@ -1,13 +1,15 @@
 "use client";
 
-import { Check, EyeOff, Trash2, X } from "lucide-react";
+import { Check, EyeOff, Star, StarOff, Trash2, X } from "lucide-react";
 import { useT } from "@/components/I18nProvider";
 
-export type BulkAction = "approve" | "hide" | "delete";
+export type BulkAction = "approve" | "hide" | "favorite" | "unfavorite" | "delete";
 
 const ACTIONS = [
   { action: "approve", icon: Check },
   { action: "hide", icon: EyeOff },
+  { action: "favorite", icon: Star },
+  { action: "unfavorite", icon: StarOff },
   { action: "delete", icon: Trash2 },
 ] as const;
 

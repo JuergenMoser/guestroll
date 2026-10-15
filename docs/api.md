@@ -55,6 +55,7 @@ interface PhotoDto {
   status: "visible" | "pending" | "hidden";
   mine: boolean;
   downloads?: number; // admins only
+  favorite?: boolean;  // admins only
   createdAt: number;  // epoch ms
 }
 ```
@@ -84,12 +85,12 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | `POST /api/admin/events/:id/logo` | multipart, field `logo` | `{ event }` |
 | `DELETE /api/admin/events/:id/logo` | | `{ event }` |
 | `GET /api/admin/events/:id/qr?format=svg\|png&size=512..4096&download=1` | | The styled QR code |
-| `GET /api/admin/events/:id/photos?status=&before=` | | `{ photos, nextCursor }` |
-| `POST /api/admin/events/:id/photos` | `{ action: "approve"\|"hide"\|"delete", ids }` | `{ changed }` |
-| `GET /api/admin/events/:id/archive[?all=1]` | | Streamed ZIP; `all=1` includes pending and hidden |
+| `GET /api/admin/events/:id/photos?status=&favorites=1&before=` | | `{ photos, nextCursor }` |
+| `POST /api/admin/events/:id/photos` | `{ action: "approve"\|"hide"\|"favorite"\|"unfavorite"\|"delete", ids }` | `{ changed }` |
+| `GET /api/admin/events/:id/archive[?all=1\|?favorites=1]` | | Streamed ZIP; `all=1` includes pending and hidden, `favorites=1` is the visible favorites |
 | `GET /api/admin/stats[?eventId=]` | | Totals, time series, top guests |
 | `GET /api/admin/events/:id/shares` | | `{ shares }` |
-| `POST /api/admin/events/:id/shares` | `{ password?, label?, allowDownload?, expiresInDays? }` | `201 { share, password }`; `password` is the generated one, else `null` |
+| `POST /api/admin/events/:id/shares` | `{ password?, label?, allowDownload?, favoritesOnly?, expiresInDays? }` | `201 { share, password }`; `password` is the generated one, else `null` |
 | `DELETE /api/admin/events/:id/shares/:shareId` | | `{ ok }`, revoked |
 | `POST /api/admin/events/:id/end` | | `{ event, result }`; `400` if already ended |
 | `GET /api/admin/mail` | | SMTP settings (never the password), alerts, queue |
@@ -103,7 +104,7 @@ Event fields: `name`, `description`, `eventDate` (`YYYY-MM-DD`), `accentColor`
 `captureMode` (`camera`|`picker`|`both`), `askGuestName`, `maxPhotosPerGuest`,
 `defaultLocale` (`en`|`fr`|`it`|`es`|`null`), `collectGuestEmails`,
 `notifyAdminSummary`, `emailGuestsGallery`, `galleryLinkDays` (0–3650),
-`galleryLinkDownload`, `galleryMailIncludesPassword`, `qrStyle` (object, see
+`galleryLinkDownload`, `galleryMailIncludesPassword`, `galleryLinkFavorites`, `qrStyle` (object, see
 `src/lib/qr/style.ts`).
 
 ## Health

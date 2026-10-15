@@ -35,14 +35,14 @@ export default async function SharedAlbumPage({ params }: Props) {
   if (access.status === "locked") {
     body = <ShareUnlock token={token} />;
   } else {
-    const rows = listPhotos(event, "album", { status: "visible", limit: 60 });
-    const viewer = { ...access.viewer, guestId: undefined };
+    const rows = listPhotos(event, "album", { status: "visible", favorite: share.favoritesOnly, limit: 60 });
+    const viewer = { admin: undefined, guestId: undefined };
     body = (
       <SharedGallery
         token={token}
         initialPhotos={rows.map((p) => ({ ...toPhotoDto(p, viewer), downloads: undefined }))}
         initialCursor={rows.length === 60 ? rows[rows.length - 1].createdAt : null}
-        total={countVisiblePhotos(event.id)}
+        total={countVisiblePhotos(event.id, share.favoritesOnly)}
         allowDownload={share.allowDownload}
       />
     );

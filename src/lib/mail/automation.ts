@@ -55,6 +55,7 @@ export function endEvent(event: EventRow, now = Date.now()): EndResult | null {
       password,
       label: mailMessages[config.locale].gallery.linkLabel,
       allowDownload: event.galleryLinkDownload,
+      favoritesOnly: event.galleryLinkFavorites,
       expiresAt,
     });
     result.shareId = share.id;

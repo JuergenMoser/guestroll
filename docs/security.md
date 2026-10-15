@@ -42,8 +42,10 @@ whatever the settings: this is a design decision, not an option.
 - Unlocking writes the link into a separate encrypted cookie (`gr_share`).
   Access is re-checked on every request, so revoking or expiring a link stops
   it immediately, including for browsers that already opened it.
-- Links see visible photos only. Originals and the ZIP need the link's
-  *downloads* switch. A link never grants uploading.
+- Links see visible photos only, or the visible favorites for a
+  favorites-only link. Originals and the ZIP need the link's *downloads*
+  switch, and a link's ZIP holds what that link shows. A link never grants
+  uploading. Which photos are favorites is never sent to guests or links.
 - Wrong passwords: 10 attempts per minute per IP and link, and a per-link
   ceiling across all IPs.
 - Generated passwords (`xxxx-xxxx-xxxx-xxxx`, ~82 bits) are shown once and
