@@ -219,3 +219,16 @@ export function updateAvailableMail(c: Common & { url: string; version: string; 
     cta: { label: m.update.cta, url: c.url },
   });
 }
+
+export function inviteMail(c: Common & { inviter: string; url: string; expiresAt: number; events: string[] | null }): RenderedMail {
+  const m = mailMessages[c.locale];
+  const date = new Intl.DateTimeFormat(c.locale, { dateStyle: "long" }).format(new Date(c.expiresAt));
+  return make(m, c, fill(m.invite.subject, { inviter: c.inviter, app: c.app }), {
+    title: fill(m.invite.title, { app: c.app }),
+    // An owner manages everything; an organizer the events listed (none yet: just the invitation).
+    paragraphs: [fill(m.invite.body, { inviter: c.inviter, app: c.app }), ...(c.events === null ? [m.invite.allEvents] : c.events.length ? [m.invite.events] : [])],
+    list: c.events?.length ? c.events : undefined,
+    cta: { label: m.invite.cta, url: c.url },
+    notes: [fill(m.invite.expires, { date })],
+  });
+}

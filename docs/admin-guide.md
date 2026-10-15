@@ -180,7 +180,13 @@ Organizers only see **Your account**.
 
 ### Team (owners)
 
-Add people and pick their role.
+**Invite by email**: enter an address, a role and, for an organizer, their
+events. They get a link, valid once for 7 days, and pick their own username and
+password; they're signed in right away. Without email set up, the link is shown
+for you to send another way. Pending invitations are listed with their expiry,
+and can be revoked.
+
+Or add people directly and pick their role.
 
 | Role | Can |
 |---|---|

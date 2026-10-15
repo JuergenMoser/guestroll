@@ -67,6 +67,15 @@ const en = {
     body: "The automatic backup couldn't be written. Your photos are still there, but there is no fresh copy of them: check where backups go, then run one by hand from the settings.",
     cta: "Open the settings",
   },
+  invite: {
+    subject: "{inviter} invites you to {app}",
+    title: "Join {app}",
+    body: "{inviter} gives you access to the admin of {app}, where the photos of your events arrive. Choose a username and a password to get in.",
+    events: "You'll manage:",
+    allEvents: "You'll manage every event, as an owner.",
+    cta: "Accept the invitation",
+    expires: "This link works once, until {date}.",
+  },
   update: {
     subject: "{app} {version} is available",
     title: "Guestroll {version} is out.",
@@ -147,6 +156,15 @@ const fr: Strings<MailMessages> = {
     body: "La sauvegarde automatique n'a pas pu être écrite. Vos photos sont toujours là, mais il n'en existe pas de copie récente : vérifiez la destination des sauvegardes, puis lancez-en une à la main depuis les réglages.",
     cta: "Ouvrir les réglages",
   },
+  invite: {
+    subject: "{inviter} vous invite sur {app}",
+    title: "Rejoindre {app}",
+    body: "{inviter} vous donne accès à l'administration de {app}, où arrivent les photos de vos évènements. Choisissez un identifiant et un mot de passe pour entrer.",
+    events: "Vous gérerez :",
+    allEvents: "Vous gérerez tous les évènements, en tant que propriétaire.",
+    cta: "Accepter l'invitation",
+    expires: "Ce lien ne sert qu'une fois, jusqu'au {date}.",
+  },
   update: {
     subject: "{app} {version} est disponible",
     title: "Guestroll {version} est sorti.",
@@ -224,6 +242,15 @@ const it: Strings<MailMessages> = {
     body: "Non è stato possibile scrivere il backup automatico. Le foto ci sono ancora, ma non ne esiste una copia recente: controlla la destinazione dei backup, poi avviane uno a mano dalle impostazioni.",
     cta: "Apri le impostazioni",
   },
+  invite: {
+    subject: "{inviter} ti invita su {app}",
+    title: "Unisciti a {app}",
+    body: "{inviter} ti dà accesso all'amministrazione di {app}, dove arrivano le foto dei tuoi eventi. Scegli un nome utente e una password per entrare.",
+    events: "Gestirai:",
+    allEvents: "Gestirai tutti gli eventi, come proprietario.",
+    cta: "Accetta l'invito",
+    expires: "Questo link vale una sola volta, fino al {date}.",
+  },
   update: {
     subject: "{app} {version} è disponibile",
     title: "È uscito Guestroll {version}.",
@@ -300,6 +327,15 @@ const es: Strings<MailMessages> = {
     title: "La copia de seguridad automática no se ha hecho.",
     body: "No se ha podido escribir la copia automática. Tus fotos siguen ahí, pero no hay una copia reciente: revisa el destino de las copias y lanza una a mano desde los ajustes.",
     cta: "Abrir los ajustes",
+  },
+  invite: {
+    subject: "{inviter} te invita a {app}",
+    title: "Únete a {app}",
+    body: "{inviter} te da acceso a la administración de {app}, donde llegan las fotos de tus eventos. Elige un usuario y una contraseña para entrar.",
+    events: "Gestionarás:",
+    allEvents: "Gestionarás todos los eventos, como propietario.",
+    cta: "Aceptar la invitación",
+    expires: "Este enlace solo sirve una vez, hasta el {date}.",
   },
   update: {
     subject: "{app} {version} está disponible",

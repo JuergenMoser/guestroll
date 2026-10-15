@@ -146,3 +146,14 @@ test.describe("favorites", () => {
     expect((await visitor.get(`/api/media/${ids[0]}?v=original`)).status()).toBe(200);
   });
 });
+
+test.describe("invitations by email", () => {
+  test("an invitation arrives by email with its single-use link", async ({ baseURL }) => {
+    const host = await admin(baseURL!);
+    const res = await (await host.post("/api/admin/invitations", { data: { email: "new.host@example.test", role: "owner" } })).json();
+    expect(res.emailed).toBe(true);
+    const mail = await waitForMail("new.host@example.test", /invites you/);
+    expect(mail.text).toContain(res.url);
+    expect(mail.text).toContain("You'll manage every event, as an owner.");
+  });
+});

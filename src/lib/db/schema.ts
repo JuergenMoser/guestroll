@@ -281,6 +281,23 @@ export const settings = sqliteTable("settings", {
   value: text("value").notNull(),
 });
 
+/**
+ * An owner's invitation to join the admin: a single-use link, emailed or copied.
+ * Only the SHA-256 of its token is kept, so a copy of the database opens nothing.
+ */
+export const invitations = sqliteTable("invitations", {
+  id: text("id").primaryKey(),
+  tokenHash: text("token_hash").notNull().unique(),
+  email: text("email").notNull(),
+  role: text("role", { enum: ["owner", "organizer"] }).notNull(),
+  /** JSON array of event ids, for an organizer. */
+  eventIds: text("event_ids").notNull().default("[]"),
+  invitedBy: text("invited_by").references(() => accounts.id, { onDelete: "set null" }),
+  expiresAt: integer("expires_at").notNull(),
+  acceptedAt: integer("accepted_at"),
+  createdAt: integer("created_at").notNull().default(now),
+});
+
 export type EventRow = typeof events.$inferSelect;
 export type PhotoRow = typeof photos.$inferSelect;
 export type SpotRow = typeof spots.$inferSelect;
@@ -291,4 +308,5 @@ export type GuestContactRow = typeof guestContacts.$inferSelect;
 export type OutboxRow = typeof outbox.$inferSelect;
 export type WebhookDeliveryRow = typeof webhookDeliveries.$inferSelect;
 export type AccountRow = typeof accounts.$inferSelect;
+export type InvitationRow = typeof invitations.$inferSelect;
 export type AccountRole = AccountRow["role"];

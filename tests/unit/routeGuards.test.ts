@@ -20,14 +20,18 @@ function files(dir: string, name: string): string[] {
 const rel = (file: string) => path.relative(root, file);
 
 describe("admin guards", () => {
-  it("every admin page except login checks the session itself", () => {
-    const pages = files(path.join(root, "admin"), "page.tsx").filter((f) => !f.includes(`${path.sep}login${path.sep}`));
+  // Public by design: signing in, and accepting an invitation (no account yet). The
+  // invitation route is locked by its single-use token instead, tested below.
+  const PUBLIC = (f: string) => f.includes(`${path.sep}login${path.sep}`) || f.includes(`${path.sep}invite${path.sep}`);
+
+  it("every admin page except login and invitations checks the session itself", () => {
+    const pages = files(path.join(root, "admin"), "page.tsx").filter((f) => !PUBLIC(f));
     expect(pages.length).toBeGreaterThan(5);
     for (const page of pages) expect(fs.readFileSync(page, "utf8"), rel(page)).toMatch(/await require(Event)?AdminPage\(/);
   });
 
-  it("every admin API route except login/logout calls requireAdmin", () => {
-    const routes = files(path.join(root, "api/admin"), "route.ts").filter((f) => !/login|logout/.test(f));
+  it("every admin API route except login/logout and invitation acceptance calls requireAdmin", () => {
+    const routes = files(path.join(root, "api/admin"), "route.ts").filter((f) => !/login|logout/.test(f) && !f.includes(`${path.sep}invite${path.sep}`));
     expect(routes.length).toBeGreaterThan(5);
     for (const route of routes) {
       const source = fs.readFileSync(route, "utf8");
@@ -35,6 +39,13 @@ describe("admin guards", () => {
       const guards = source.match(/await require(Event)?Admin\(request[,)]/g) ?? [];
       expect(guards.length, rel(route)).toBe(handlers.length);
     }
+  });
+
+  it("invitation acceptance checks the origin, its token and the demo mode", () => {
+    const source = fs.readFileSync(path.join(root, "api/admin/invite/[token]/route.ts"), "utf8");
+    expect(source).toContain("if (!isSameOrigin(request))");
+    expect(source).toContain("acceptInvitation(");
+    expect(source).toContain("config.demo.enabled");
   });
 
   it("routes under an event id check the admin's scope, not just the session", () => {
@@ -49,7 +60,7 @@ describe("admin guards", () => {
   });
 
   it("instance-wide routes are for owners only", () => {
-    for (const dir of ["api/admin/mail", "api/admin/accounts", "api/admin/webhooks", "api/admin/backup", "api/admin/updates"]) {
+    for (const dir of ["api/admin/mail", "api/admin/accounts", "api/admin/invitations", "api/admin/webhooks", "api/admin/backup", "api/admin/updates"]) {
       for (const route of files(path.join(root, dir), "route.ts")) {
         const source = fs.readFileSync(route, "utf8");
         const handlers = source.match(/export async function (GET|POST|PATCH|DELETE|PUT)/g) ?? [];
@@ -61,7 +72,7 @@ describe("admin guards", () => {
 
   it("routes a public demo must not serve declare it themselves", () => {
     // Declared per route rather than matched on the URL: no path spelling slips past.
-    for (const dir of ["api/admin/mail", "api/admin/webhooks", "api/admin/accounts", "api/admin/backup/run", "api/admin/backup/retention", "api/admin/backup/schedule", "api/admin/backup/restore", "api/admin/backup/stored", "api/admin/updates/check", "api/admin/updates/apply", "api/admin/password", "api/admin/me/two-factor"]) {
+    for (const dir of ["api/admin/mail", "api/admin/webhooks", "api/admin/accounts", "api/admin/invitations", "api/admin/backup/run", "api/admin/backup/retention", "api/admin/backup/schedule", "api/admin/backup/restore", "api/admin/backup/stored", "api/admin/updates/check", "api/admin/updates/apply", "api/admin/password", "api/admin/me/two-factor"]) {
       for (const route of files(path.join(root, dir), "route.ts")) {
         const source = fs.readFileSync(route, "utf8");
         const handlers = source.match(/export async function (GET|POST|PATCH|DELETE|PUT)/g) ?? [];

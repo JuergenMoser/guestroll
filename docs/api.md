@@ -98,6 +98,10 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | `POST /api/admin/events/:id/logo` | multipart, field `logo` | `{ event }` |
 | `DELETE /api/admin/events/:id/logo` | | `{ event }` |
 | `GET /api/admin/events/:id/qr?format=svg\|png&size=512..4096&download=1&spot=<id>` | | The styled QR code; with `spot`, that place's code (`/e/<slug>?at=<id>`) captioned with its name |
+| `GET /api/admin/invitations` | | `{ invitations }`: pending ones (owners) |
+| `POST /api/admin/invitations` | `{ email, role, eventIds }` | `201 { invitation, url, emailed }` |
+| `DELETE /api/admin/invitations/:id` | | `{ ok }` |
+| `POST /api/admin/invite/:token` | `{ username, name, password }` (public, the token is the credential) | `201 { ok }` and signed in; `404` for a spent, expired or revoked link |
 | `POST /api/admin/events/:id/booth` | | `{ boothKey }`: turns the photo booth on, or replaces its link |
 | `DELETE /api/admin/events/:id/booth` | | `{ ok }`: turns it off |
 | `GET /api/admin/events/:id/spots` | | `{ spots: [{ id, label, photos }] }` |

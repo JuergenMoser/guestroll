@@ -42,6 +42,15 @@ links unchanged.
   deleting one removes its files, from the album, the gallery links and the
   wall. Only the browser that sent it can (same guest cookie).
 
+## Invitations
+
+- An invitation link carries a 32-character random token; only its SHA-256 is
+  stored, so a copy of the database opens nothing.
+- It works once (spent in the same transaction that creates the account), for
+  7 days, and can be revoked. A spent, expired or revoked link answers alike.
+- Accepting checks the request origin and is rate limited; it is closed on a
+  demo instance. The page is `noindex` and sends no referrer.
+
 ## Photo booth
 
 - The booth link carries a 24-character random key (about 118 bits). Whoever

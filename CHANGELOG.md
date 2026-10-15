@@ -25,6 +25,9 @@ always run on their own at startup; take a backup first all the same
 - Blurry photos and duplicates are spotted on the server from the pixels (no
   outside service) and shown as filters in moderation; photos already in the
   album are analysed in the background.
+- Invite co-organizers by email: a single-use link, valid 7 days, where they
+  pick their own username and password; revocable, and shown to copy when
+  email isn't set up.
 
 ## [0.4.0] - 2026-10-15
 
