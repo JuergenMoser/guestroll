@@ -5,7 +5,7 @@
 # phone cameras only open on HTTPS pages. See docs/deployment.md.
 services:
   guestroll:
-    image: ${GUESTROLL_IMAGE:-achedon12/guestroll:latest}
+    image: ${GUESTROLL_IMAGE:-ghcr.io/achedon12/guestroll:latest}
     container_name: ${CONTAINER_NAME:-guestroll}
     restart: unless-stopped
     env_file: .env

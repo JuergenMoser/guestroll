@@ -8,12 +8,13 @@
 Guests scan a QR code, their camera opens, and every picture lands in your private album.
 Self-hosted. No app to install, no account to create.
 
-[![CI](https://github.com/achedon12/guestroll/actions/workflows/ci.yml/badge.svg)](https://github.com/achedon12/guestroll/actions/workflows/ci.yml)
-[![Docker pulls](https://img.shields.io/docker/pulls/achedon12/guestroll)](https://hub.docker.com/r/achedon12/guestroll)
-[![Image size](https://img.shields.io/docker/image-size/achedon12/guestroll/latest)](https://hub.docker.com/r/achedon12/guestroll)
-[![License: MIT](https://img.shields.io/badge/license-MIT-amber.svg)](LICENSE)
+[![Tests](https://github.com/achedon12/guestroll/actions/workflows/tests.yml/badge.svg?branch=main)](https://github.com/achedon12/guestroll/actions/workflows/tests.yml)
+[![Quality](https://github.com/achedon12/guestroll/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/achedon12/guestroll/actions/workflows/quality.yml)
+[![Security](https://github.com/achedon12/guestroll/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/achedon12/guestroll/actions/workflows/security.yml)
+[![Release](https://img.shields.io/github/v/release/achedon12/guestroll)](https://github.com/achedon12/guestroll/releases)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-[Quick start](#quick-start) | [Features](#features) | [Documentation](docs/README.md) | [Français](README.fr.md)
+[Website](https://achedon12.github.io/guestroll/) | [Quick start](#quick-start) | [Features](#features) | [Documentation](https://github.com/achedon12/guestroll/wiki) | [Français](README.fr.md)
 
 <img src="docs/assets/screenshots/hero.png" alt="Guest page on a phone next to the admin dashboard" width="900" />
 
@@ -69,7 +70,7 @@ docker run -d --name guestroll \
   -v guestroll-data:/data \
   -e ADMIN_PASSWORD='choose-a-long-password' \
   -e PUBLIC_URL='https://photos.example.com' \
-  achedon12/guestroll:latest
+  ghcr.io/achedon12/guestroll:latest
 ```
 
 Open `http://localhost:3000/admin`, sign in, create an event and print its QR code.

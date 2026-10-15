@@ -8,8 +8,8 @@
 - A domain name with HTTPS (required by phone cameras)
 
 Images are published for `linux/amd64` and `linux/arm64` on
-[Docker Hub](https://hub.docker.com/r/achedon12/guestroll) and
-[GHCR](https://github.com/achedon12/guestroll/pkgs/container/guestroll).
+[GHCR](https://github.com/achedon12/guestroll/pkgs/container/guestroll) (`ghcr.io/achedon12/guestroll`)
+and [Docker Hub](https://hub.docker.com/r/achedon12/guestroll) (`achedon12/guestroll`), with the same tags.
 
 | Tag | Meaning |
 |---|---|
@@ -22,7 +22,7 @@ Images are published for `linux/amd64` and `linux/arm64` on
 ```yaml
 services:
   guestroll:
-    image: achedon12/guestroll:1
+    image: ghcr.io/achedon12/guestroll:1
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000" # only reachable through the reverse proxy

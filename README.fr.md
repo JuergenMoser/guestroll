@@ -64,7 +64,7 @@ docker run -d --name guestroll \
   -e ADMIN_PASSWORD='un-mot-de-passe-long' \
   -e PUBLIC_URL='https://photos.example.com' \
   -e DEFAULT_LOCALE=fr \
-  achedon12/guestroll:latest
+  ghcr.io/achedon12/guestroll:latest
 ```
 
 Ouvrez `http://localhost:3000/admin`, connectez-vous, créez un évènement et imprimez son QR code.

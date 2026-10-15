@@ -25,14 +25,27 @@ a tunnel (`cloudflared tunnel --url http://localhost:3000`) or
 
 ```bash
 npm run lint
-npm run typecheck   # generates Next's route types first
-npm test            # vitest
+npm run typecheck      # generates Next's route types first
+npm test               # unit + integration (Vitest)
+npm run test:coverage  # the same, with a coverage report in coverage/
 npm run build
+npm run test:e2e       # functional tests on the production build (Playwright)
 ```
 
-CI runs all four, plus a Docker build, on every pull request.
+`npm run test:e2e` starts the production build on port 3210 with a temporary
+data folder, so it never touches your data. Locally it uses your installed
+Chrome; in CI, the Chromium installed by `npx playwright install`.
 
-What the tests cover:
+### Three layers of tests
+
+| Layer | Where | What it runs against |
+|---|---|---|
+| Unit | `tests/unit/` | Pure modules: access policy, validation, rate limiter, QR rendering… |
+| Integration | `tests/integration/` | Real SQLite in a temp folder, real images through sharp, real ZIPs, QR codes decoded by ZXing |
+| Functional | `tests/e2e/api/` | The HTTP API of a running production build: guest and admin scenarios, security, quotas |
+| Browser | `tests/e2e/browser/` | Real journeys: a guest on a phone, an admin on a desktop |
+
+Unit-level files:
 
 | File | What it locks |
 |---|---|
@@ -42,6 +55,29 @@ What the tests cover:
 | `qr.test.ts` | Style parsing, escaping, logo excavation |
 | `request.test.ts` | Client IP and origin rules, the streaming body cap |
 | `rateLimit.test.ts`, `validation.test.ts`, `ids.test.ts`, `negotiate.test.ts`, `translate.test.ts` | The rest of the pure modules |
+
+## Branches and CI
+
+`develop` is the default branch, where pull requests land; `main` is
+production. Every change on either branch runs:
+
+| Workflow | What it does |
+|---|---|
+| Quality | Lint, types, production build |
+| Tests | Vitest with coverage, then Playwright on a production build |
+| Security | CodeQL (code and workflows) and `npm audit` on production dependencies, plus a weekly run |
+| Docker image | Builds the image, runs it on a custom port and user, uploads a photo end to end |
+| Workflows | actionlint and zizmor on `.github/` |
+
+**Publish to production** (manual) fast-forwards `main` to `develop` once
+Quality and Tests passed there; **Align develop** carries anything that lands on
+`main` back to `develop`. Tagging `main` with `vX.Y.Z` runs **Release**: the
+multi-arch image on GHCR (and Docker Hub when its secrets are set) and a GitHub
+release with generated notes. **Website** deploys `site/` to GitHub Pages.
+
+Housekeeping: Dependabot (grouped, one-week cooldown), stale issues, a welcome
+message on first pull requests, a "merge conflict" label, and pull requests sent
+back to draft when changes are requested.
 
 ## Database changes
 

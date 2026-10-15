@@ -14,11 +14,14 @@ code are all welcome.
 
 ## Making a change
 
-1. Fork, then create a branch: `git checkout -b fix/upload-retry`.
+1. Fork, then create a branch from `develop` (the default branch; `main` is
+   production): `git checkout -b fix/upload-retry origin/develop`.
 2. Set up the project: [docs/development.md](docs/development.md).
 3. Make the change, with tests when behaviour changes.
-4. `npm run lint && npm run typecheck && npm test` must pass.
-5. Open a pull request explaining what changes and why.
+4. `npm run lint && npm run typecheck && npm test` must pass, and
+   `npm run build && npm run test:e2e` for anything a user can see.
+5. Open a pull request against `develop`, as a draft while you work on it, then
+   mark it "Ready for review". The repository owner reviews every pull request.
 
 ## The few rules that matter
 

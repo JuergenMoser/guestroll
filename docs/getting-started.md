@@ -13,7 +13,7 @@ docker run -d --name guestroll \
   -v guestroll-data:/data \
   -e ADMIN_PASSWORD='choose-a-long-password' \
   -e PUBLIC_URL='https://photos.example.com' \
-  achedon12/guestroll:latest
+  ghcr.io/achedon12/guestroll:latest
 ```
 
 - `-v guestroll-data:/data` keeps the database and photos when the container is recreated. **Don't skip it.**

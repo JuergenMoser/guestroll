@@ -20,7 +20,7 @@ These are read by the container or by `docker-compose.yml`, not by the app itsel
 | `DATA_PATH` | `guestroll-data` | Compose only: named volume or host path mounted on `/data`. |
 | `PUID` / `PGID` | `1001` | User and group that own the data folder and run the server. Match your host user for bind mounts. |
 | `TZ` | `UTC` | Time zone of the stats (hourly and daily buckets), e.g. `Europe/Paris`. |
-| `GUESTROLL_IMAGE` | `achedon12/guestroll:latest` | Compose only: image to run. Pin a version in production. |
+| `GUESTROLL_IMAGE` | `ghcr.io/achedon12/guestroll:latest` | Compose only: image to run. Pin a version in production. |
 | `CONTAINER_NAME` | `guestroll` | Compose only: lets you run several instances side by side. |
 
 ## Instance
