@@ -169,7 +169,7 @@ docker run -d --name guestroll -p 3000:3000 -v guestroll-data:/data \\
 - 🌐 [Website]({SITE}/), the same documentation with search
 - 🐳 [Docker Hub](https://hub.docker.com/r/achedon12/guestroll)
 - 🎬 [The tour on YouTube](https://youtu.be/MEuvBB-wVI8)
-- 📝 [Release notes]({REPO}/releases)
+- 📝 [Changelog]({REPO}/blob/develop/CHANGELOG.md)
 """
 
 
@@ -187,7 +187,7 @@ Once develop documents changes that are not released yet, the website also has t
 | --- | --- | --- | --- | --- |
 """ + '\n'.join(rows) + f"""
 
-All the changes, version by version: [release notes]({REPO}/releases).
+All the changes, version by version: [changelog]({REPO}/blob/develop/CHANGELOG.md).
 """
 
 
@@ -209,7 +209,7 @@ def sidebar() -> str:
 
 - [Website]({SITE}/)
 - [Repository]({REPO})
-- [Release notes]({REPO}/releases)
+- [Changelog]({REPO}/blob/develop/CHANGELOG.md)
 
 **[📚 Other versions](Versions)**
 """

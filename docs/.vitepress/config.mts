@@ -108,6 +108,7 @@ export default defineConfig({
       {
         text: 'Links',
         items: [
+          { text: 'Changelog', link: `${repo}/blob/develop/CHANGELOG.md` },
           { text: 'Releases', link: `${repo}/releases` },
           { text: 'Docker Hub', link: 'https://hub.docker.com/r/achedon12/guestroll' },
           { text: 'Watch the tour', link: 'https://youtu.be/MEuvBB-wVI8' },

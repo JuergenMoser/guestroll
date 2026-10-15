@@ -76,6 +76,18 @@ multi-arch image on GHCR (and Docker Hub when its secrets are set) and a GitHub
 release with generated notes. **Docs** builds the website and the wiki from
 `docs/` (see below) when `develop` changes them and when a release is tagged.
 
+## Releasing
+
+1. Move the **Unreleased** entries of `CHANGELOG.md` under a new
+   `## [X.Y.Z] - date` heading, with an **Upgrading** list when something
+   needs the admin's attention, and update the compare links at the bottom.
+2. Bump `version` in `package.json`, push to `develop`, wait for the checks.
+3. Run **Publish to production**, then tag `main` with `vX.Y.Z`.
+
+The release notes are that changelog section (the release fails without
+one), and the admin's update page shows it to everyone running an older
+version.
+
 ## Documentation website
 
 `docs/` is both the documentation read on GitHub and the source of the website

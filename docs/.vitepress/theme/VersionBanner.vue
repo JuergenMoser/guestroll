@@ -34,7 +34,7 @@ onUnmounted(() => observer?.disconnect())
     ·
     <a :href="changes" target="_blank" rel="noreferrer">What changed</a>
     ·
-    <a href="https://github.com/achedon12/guestroll/releases" target="_blank" rel="noreferrer">Release notes</a>
+    <a href="https://github.com/achedon12/guestroll/blob/develop/CHANGELOG.md" target="_blank" rel="noreferrer">Changelog</a>
   </div>
 </template>
 

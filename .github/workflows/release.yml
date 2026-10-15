@@ -140,8 +140,11 @@ jobs:
           TAG: ${{ github.ref_name }}
           REPO: ${{ github.repository }}
         run: |
+          # The notes are CHANGELOG.md's section for this version (the step fails
+          # without one), followed by the generated list of pull requests.
+          node scripts/changelog-section.mjs "$TAG" > notes.md
           if gh release view "$TAG" --repo "$REPO" > /dev/null 2>&1; then
             gh release upload "$TAG" --repo "$REPO" --clobber "guestroll-${TAG}-compose.zip"
           else
-            gh release create "$TAG" --repo "$REPO" --verify-tag --generate-notes --title "$TAG" "guestroll-${TAG}-compose.zip"
+            gh release create "$TAG" --repo "$REPO" --verify-tag --generate-notes --notes-file notes.md --title "$TAG" "guestroll-${TAG}-compose.zip"
           fi
