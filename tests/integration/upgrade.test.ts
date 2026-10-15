@@ -13,7 +13,7 @@ import { freshEnv } from "../helpers/env";
  * release's database is rebuilt from the migrations it shipped (releases never
  * change their migrations), then filled the way that version wrote it.
  */
-const SHIPPED_MIGRATIONS = { "0.1.0": 1, "0.2.0": 2, "0.3.0": 9 } as const;
+const SHIPPED_MIGRATIONS = { "0.1.0": 1, "0.2.0": 2, "0.3.0": 9, "0.4.0": 10 } as const;
 type Release = keyof typeof SHIPPED_MIGRATIONS;
 
 const root = path.resolve(__dirname, "../..");
@@ -36,7 +36,8 @@ function oldInstance(dir: string, release: Release): Database.Database {
   const day = 86_400_000;
   const now = Date.now();
 
-  if (release === "0.3.0") {
+  // Accounts arrived in 0.3.0.
+  if (release !== "0.1.0" && release !== "0.2.0") {
     sqlite
       .prepare("insert into accounts (id, username, name, password_hash, role) values (?, 'admin', 'Léa', ?, 'owner')")
       .run("44444444-4444-4444-8444-444444444444", bcrypt.hashSync("old-password", 4));

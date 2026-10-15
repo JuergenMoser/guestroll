@@ -11,6 +11,8 @@ always run on their own at startup; take a backup first all the same
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-15
+
 ### Upgrading
 
 - Webhooks to an address on your own network (ntfy, Home Assistant) now need
@@ -169,7 +171,8 @@ First release.
 - English, French, Italian and Spanish; light and dark themes.
 - One multi-arch Docker image with a `/data` volume.
 
-[Unreleased]: https://github.com/achedon12/guestroll/compare/v0.3.0...develop
+[Unreleased]: https://github.com/achedon12/guestroll/compare/v0.4.0...develop
+[0.4.0]: https://github.com/achedon12/guestroll/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/achedon12/guestroll/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/achedon12/guestroll/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/achedon12/guestroll/compare/v0.1.0...v0.1.1
