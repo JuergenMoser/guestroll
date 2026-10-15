@@ -1,0 +1,40 @@
+name: Docker Hub description
+
+# Keeps the Docker Hub "Overview" page in step with docs/docker-hub.md: runs when
+# that file changes on main, or by hand. Release does the same after publishing
+# an image; this one avoids waiting for a release to fix a typo.
+on:
+  push:
+    branches: [main]
+    paths:
+      - docs/docker-hub.md
+      - .github/workflows/dockerhub-description.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: dockerhub-description
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    name: Sync the Docker Hub overview
+    runs-on: ubuntu-latest
+    env:
+      HAS_DOCKERHUB: ${{ secrets.DOCKERHUB_USERNAME != '' && secrets.DOCKERHUB_TOKEN != '' }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: env.HAS_DOCKERHUB == 'true'
+        with:
+          persist-credentials: false
+
+      - if: env.HAS_DOCKERHUB == 'true'
+        uses: peter-evans/dockerhub-description@1b9a80c056b620d92cedb9d9b5a223409c68ddfa # v5.0.0
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: achedon12/guestroll
+          short-description: "Self-hosted QR-code photo sharing for events. Guests scan, shoot, done."
+          readme-filepath: ./docs/docker-hub.md
