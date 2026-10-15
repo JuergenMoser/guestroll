@@ -53,17 +53,10 @@ export function bootstrapAdmin(): void {
   if (!hash) {
     const generated = randomToken(16);
     storeHash(generated);
-    console.log(
-      [
-        "",
-        "  ┌──────────────────────────────────────────────────────┐",
-        "  │  Guestroll admin password (shown once):              │",
-        `  │  ${generated.padEnd(52)}│`,
-        "  │  Change it in Admin → Settings, or set ADMIN_PASSWORD │",
-        "  └──────────────────────────────────────────────────────┘",
-        "",
-      ].join("\n"),
-    );
+    const lines = ["Guestroll admin password (shown once):", generated, "Change it in Admin → Settings, or set ADMIN_PASSWORD."];
+    const width = Math.max(...lines.map((l) => l.length)) + 4;
+    const row = (text: string) => `  │  ${text.padEnd(width - 4)}  │`;
+    console.log(["", `  ┌${"─".repeat(width)}┐`, ...lines.map(row), `  └${"─".repeat(width)}┘`, ""].join("\n"));
   }
 }
 
