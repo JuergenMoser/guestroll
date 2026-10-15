@@ -87,6 +87,8 @@ export function albumPdf(event: EventRow, photos: PhotoRow[], layout: AlbumLayou
     let page = 0;
     const slots = boxes(layout);
     for (let i = 0; i < photos.length; i++) {
+      // Abandoned (client gone, deadline passed): stop converting photos nobody will get.
+      if (out.destroyed) return;
       const slot = slots[i % layout];
       if (i % layout === 0) {
         doc.addPage();
