@@ -13,6 +13,7 @@ import { getEventById, toAdminEvent } from "@/lib/events";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { getStats } from "@/lib/stats";
 import { eventUrl } from "@/lib/urls";
+import { requireAdminPage } from "@/lib/auth/guard";
 
 const TABS = ["photos", "stats", "share", "settings"] as const;
 type Tab = (typeof TABS)[number];
@@ -20,6 +21,7 @@ type Tab = (typeof TABS)[number];
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string }> };
 
 export default async function EventPage({ params, searchParams }: Props) {
+  await requireAdminPage();
   const [{ id }, { tab: rawTab }] = await Promise.all([params, searchParams]);
   const row = getEventById(id);
   if (!row) notFound();

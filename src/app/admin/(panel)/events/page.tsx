@@ -5,8 +5,10 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { buttonClass } from "@/components/ui";
 import { listEvents } from "@/lib/events";
 import { getLocale, getT } from "@/lib/i18n/server";
+import { requireAdminPage } from "@/lib/auth/guard";
 
-export default function EventsPage() {
+export default async function EventsPage() {
+  await requireAdminPage();
   const t = getT();
   return (
     <>

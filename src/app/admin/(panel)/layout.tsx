@@ -4,6 +4,8 @@ import { config } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 
+// Layouts and pages render in parallel: this check guards the nav only.
+// Every page under (panel) runs `requireAdminPage()` itself before reading data.
 export default async function PanelLayout({ children }: { children: React.ReactNode }) {
   await requireAdminPage();
   return (

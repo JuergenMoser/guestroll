@@ -5,8 +5,10 @@ import { passwordManagedByEnv } from "@/lib/auth/admin";
 import { config } from "@/lib/config";
 import { getT } from "@/lib/i18n/server";
 import pkg from "../../../../../package.json";
+import { requireAdminPage } from "@/lib/auth/guard";
 
-export default function SettingsPage() {
+export default async function SettingsPage() {
+  await requireAdminPage();
   const t = getT();
   return (
     <div className="mx-auto max-w-2xl space-y-4">

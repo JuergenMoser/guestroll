@@ -7,8 +7,10 @@ import { buttonClass } from "@/components/ui";
 import { listEvents } from "@/lib/events";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { getStats } from "@/lib/stats";
+import { requireAdminPage } from "@/lib/auth/guard";
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await requireAdminPage();
   const t = getT();
   const locale = getLocale();
   return (

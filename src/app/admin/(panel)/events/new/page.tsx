@@ -1,8 +1,10 @@
 import { EventForm } from "@/components/admin/EventForm";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { getT } from "@/lib/i18n/server";
+import { requireAdminPage } from "@/lib/auth/guard";
 
-export default function NewEventPage() {
+export default async function NewEventPage() {
+  await requireAdminPage();
   const t = getT();
   return (
     <div className="mx-auto max-w-2xl">
