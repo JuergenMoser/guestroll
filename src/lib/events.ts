@@ -24,6 +24,7 @@ export interface PublicEvent {
   maxPhotosPerGuest: number;
   logoVersion: number | null;
   defaultLocale: EventRow["defaultLocale"];
+  collectGuestEmails: boolean;
 }
 
 export function toPublicEvent(event: EventRow): PublicEvent {
@@ -41,6 +42,7 @@ export function toPublicEvent(event: EventRow): PublicEvent {
     maxPhotosPerGuest: event.maxPhotosPerGuest,
     logoVersion: event.logoVersion,
     defaultLocale: event.defaultLocale,
+    collectGuestEmails: event.collectGuestEmails,
   };
 }
 

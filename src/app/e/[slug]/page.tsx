@@ -9,6 +9,7 @@ import { track } from "@/lib/activity";
 import { getGuestSession } from "@/lib/auth/session";
 import { getViewer } from "@/lib/auth/viewer";
 import { config } from "@/lib/config";
+import { getGuestContact } from "@/lib/contacts";
 import { getEventBySlug, toPublicEvent } from "@/lib/events";
 import { getLocale } from "@/lib/i18n/server";
 import { messages } from "@/lib/i18n/messages";
@@ -63,6 +64,7 @@ export default async function GuestPage({ params }: Props) {
         closedReason={state.open ? null : state.reason === "locked" ? "closed" : state.reason}
         remaining={event.maxPhotosPerGuest > 0 ? Math.max(event.maxPhotosPerGuest - uploaded, 0) : null}
         sentCount={uploaded}
+        contactEmail={viewer.guestId && event.collectGuestEmails ? (getGuestContact(event.id, viewer.guestId)?.email ?? null) : null}
       />
     );
   }

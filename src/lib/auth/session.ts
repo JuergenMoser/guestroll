@@ -18,6 +18,11 @@ export interface GuestSession {
   unlocked?: string[];
 }
 
+export interface ShareSession {
+  /** Ids of gallery links this browser unlocked with their password. */
+  shares?: string[];
+}
+
 const ADMIN_TTL_SECONDS = 12 * 60 * 60;
 const GUEST_TTL_SECONDS = 30 * 24 * 60 * 60;
 
@@ -41,6 +46,10 @@ export async function getAdminSession() {
 
 export async function getGuestSession() {
   return getIronSession<GuestSession>(await cookies(), options("gr_guest", GUEST_TTL_SECONDS));
+}
+
+export async function getShareSession() {
+  return getIronSession<ShareSession>(await cookies(), options("gr_share", GUEST_TTL_SECONDS));
 }
 
 /** Returns the guest id, minting one on first visit. Callers must `save()` the session. */

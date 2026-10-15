@@ -18,6 +18,11 @@ function create() {
      * a 6+ character code (see docs/security.md).
      */
     unlockFailures: new RateLimiter(config.rateLimit.unlockPerMinute * 3, MINUTE),
+    // Same pair for gallery-link passwords, per link.
+    shareUnlock: new RateLimiter(config.rateLimit.unlockPerMinute, MINUTE),
+    shareFailures: new RateLimiter(config.rateLimit.unlockPerMinute * 3, MINUTE),
+    // A test email per click is plenty; this stops a stuck button from spamming.
+    mailTest: new RateLimiter(5, MINUTE),
   };
 }
 

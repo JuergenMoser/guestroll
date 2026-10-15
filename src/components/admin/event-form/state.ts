@@ -16,6 +16,12 @@ export interface EventFormState {
   askGuestName: boolean;
   maxPhotosPerGuest: number;
   defaultLocale: Locale | "";
+  collectGuestEmails: boolean;
+  notifyAdminSummary: boolean;
+  emailGuestsGallery: boolean;
+  galleryLinkDays: number;
+  galleryLinkDownload: boolean;
+  galleryMailIncludesPassword: boolean;
 }
 
 export type SetField = <K extends keyof EventFormState>(key: K, value: EventFormState[K]) => void;
@@ -48,6 +54,12 @@ export function initialState(event?: AdminEvent): EventFormState {
     askGuestName: event?.askGuestName ?? true,
     maxPhotosPerGuest: event?.maxPhotosPerGuest ?? 0,
     defaultLocale: event?.defaultLocale ?? "",
+    collectGuestEmails: event?.collectGuestEmails ?? false,
+    notifyAdminSummary: event?.notifyAdminSummary ?? true,
+    emailGuestsGallery: event?.emailGuestsGallery ?? false,
+    galleryLinkDays: event?.galleryLinkDays ?? 30,
+    galleryLinkDownload: event?.galleryLinkDownload ?? true,
+    galleryMailIncludesPassword: event?.galleryMailIncludesPassword ?? true,
   };
 }
 

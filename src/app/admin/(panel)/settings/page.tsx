@@ -1,4 +1,5 @@
 import { PageHeader } from "@/components/admin/PageHeader";
+import { MailSettings } from "@/components/admin/MailSettings";
 import { PasswordForm } from "@/components/admin/PasswordForm";
 import { Card, CardTitle } from "@/components/ui";
 import { passwordManagedByEnv } from "@/lib/auth/admin";
@@ -23,6 +24,7 @@ export default async function SettingsPage() {
           <ThemeToggle initial={await getTheme()} />
         </div>
       </Card>
+      <MailSettings locale={await getLocale()} />
       <Card className="space-y-4">
         <CardTitle>{t("admin.settingsPage.passwordTitle")}</CardTitle>
         {passwordManagedByEnv() ? <p className="text-sm text-ink-muted">{t("admin.settingsPage.managedByEnv")}</p> : <PasswordForm />}

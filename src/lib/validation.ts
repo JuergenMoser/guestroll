@@ -16,6 +16,12 @@ export interface EventInput {
   askGuestName: boolean;
   maxPhotosPerGuest: number;
   defaultLocale: Locale | null;
+  collectGuestEmails: boolean;
+  notifyAdminSummary: boolean;
+  emailGuestsGallery: boolean;
+  galleryLinkDays: number;
+  galleryLinkDownload: boolean;
+  galleryMailIncludesPassword: boolean;
   /** Already normalised by `parseQrStyle` and serialised. */
   qrStyle: string;
 }
@@ -71,7 +77,15 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     else errors.uploadsCloseAt = "Expected a timestamp in milliseconds";
   }
 
-  for (const key of ["uploadsOpen", "askGuestName"] as const) {
+  for (const key of [
+    "uploadsOpen",
+    "askGuestName",
+    "collectGuestEmails",
+    "notifyAdminSummary",
+    "emailGuestsGallery",
+    "galleryLinkDownload",
+    "galleryMailIncludesPassword",
+  ] as const) {
     if (!has(key)) continue;
     if (typeof src[key] === "boolean") out[key] = src[key] as boolean;
     else errors[key] = "Expected a boolean";
@@ -94,6 +108,13 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     else errors.maxPhotosPerGuest = "Expected an integer between 0 and 10000";
   }
 
+  if (has("galleryLinkDays")) {
+    const n = src.galleryLinkDays;
+    // 0 = the link never expires.
+    if (typeof n === "number" && Number.isInteger(n) && n >= 0 && n <= 3650) out.galleryLinkDays = n;
+    else errors.galleryLinkDays = "Expected an integer between 0 and 3650";
+  }
+
   if (has("defaultLocale")) {
     if (src.defaultLocale === null || src.defaultLocale === "") out.defaultLocale = null;
     else if ((LOCALES as readonly unknown[]).includes(src.defaultLocale)) out.defaultLocale = src.defaultLocale as Locale;
@@ -106,6 +127,31 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
   }
 
   return Object.keys(errors).length ? { ok: false, errors } : { ok: true, value: out };
+}
+
+export interface ShareLinkInput {
+  /** Empty: a password is generated and returned once. */
+  password: string | null;
+  label: string;
+  allowDownload: boolean;
+  /** 0 = never expires. */
+  expiresInDays: number;
+}
+
+export function parseShareLinkInput(body: unknown): ValidationResult<ShareLinkInput> {
+  const src = (typeof body === "object" && body !== null ? body : {}) as Record<string, unknown>;
+  const errors: Record<string, string> = {};
+  let password: string | null = null;
+  if (typeof src.password === "string" && src.password.length > 0) {
+    if (src.password.length < 8 || src.password.length > 128) errors.password = "Between 8 and 128 characters";
+    else password = src.password;
+  }
+  const label = typeof src.label === "string" ? src.label.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 80) : "";
+  const allowDownload = typeof src.allowDownload === "boolean" ? src.allowDownload : true;
+  const days = src.expiresInDays === undefined ? 30 : src.expiresInDays;
+  if (typeof days !== "number" || !Number.isInteger(days) || days < 0 || days > 3650) errors.expiresInDays = "Expected an integer between 0 and 3650";
+  if (Object.keys(errors).length) return { ok: false, errors };
+  return { ok: true, value: { password, label, allowDownload, expiresInDays: days as number } };
 }
 
 export function parseGuestName(value: unknown): string | null {

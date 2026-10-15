@@ -20,11 +20,20 @@ export interface PolicyPhoto {
   status: "visible" | "pending" | "hidden";
 }
 
+/** A gallery link this browser unlocked with its password (still active). */
+export interface ShareGrant {
+  eventId: string;
+  allowDownload: boolean;
+}
+
 export interface Viewer {
   isAdmin: boolean;
   guestId?: string;
   unlocked: readonly string[];
+  shares?: readonly ShareGrant[];
 }
+
+const shareFor = (event: PolicyEvent, viewer: Viewer) => viewer.shares?.find((s) => s.eventId === event.id);
 
 /**
  * Entering always requires the event in the guest cookie, even without an access
@@ -53,12 +62,20 @@ export function uploadState(event: PolicyEvent, viewer: Viewer, uploadedByGuest:
 
 /**
  * Guests only ever see the photos they took themselves (pending moderation
- * included, hidden ones excluded). Nobody but the admin sees the rest of the
- * event: the album is the hosts' alone.
+ * included, hidden ones excluded). The rest of the album is the hosts': the
+ * admin sees everything, and a gallery link the admin created (unlocked with
+ * its password) shows the visible photos, originals only if it allows downloads.
  */
-export function canViewPhoto(event: PolicyEvent, photo: PolicyPhoto, viewer: Viewer, _variant: PhotoVariant): boolean {
+export function canViewPhoto(event: PolicyEvent, photo: PolicyPhoto, viewer: Viewer, variant: PhotoVariant): boolean {
   if (photo.eventId !== event.id) return false;
   if (viewer.isAdmin) return true;
+  const share = shareFor(event, viewer);
+  if (share && photo.status === "visible" && (variant !== "original" || share.allowDownload)) return true;
   if (!canEnterEvent(event, viewer) || photo.status === "hidden") return false;
   return viewer.guestId !== undefined && photo.guestId === viewer.guestId;
+}
+
+/** Whole-album ZIP: the admin, or a gallery link that allows downloads. */
+export function canDownloadAlbum(event: PolicyEvent, viewer: Viewer): boolean {
+  return viewer.isAdmin || Boolean(shareFor(event, viewer)?.allowDownload);
 }

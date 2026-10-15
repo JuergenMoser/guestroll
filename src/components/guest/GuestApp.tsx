@@ -7,6 +7,7 @@ import { CaptureHost } from "@/components/upload/CaptureHost";
 import { Button, EmptyState } from "@/components/ui";
 import type { PublicEvent } from "@/lib/events";
 import type { PhotoDto } from "@/lib/photos";
+import { GuestContactCard } from "./GuestContactCard";
 import { Lightbox } from "./Lightbox";
 import { NamePrompt } from "./NamePrompt";
 import { PhotoGrid } from "./PhotoGrid";
@@ -19,11 +20,12 @@ interface GuestAppProps {
   closedReason: "closed" | "quota" | null;
   remaining: number | null;
   sentCount: number;
+  contactEmail: string | null;
 }
 
 const skipKey = (slug: string) => `guestroll:skip-name:${slug}`;
 
-export function GuestApp({ event, guestName, initialPhotos, initialCursor, closedReason, remaining: initialRemaining, sentCount }: GuestAppProps) {
+export function GuestApp({ event, guestName, initialPhotos, initialCursor, closedReason, remaining: initialRemaining, sentCount, contactEmail }: GuestAppProps) {
   const t = useT();
   const [name, setName] = useState(guestName);
   const [askName, setAskName] = useState(false);
@@ -106,6 +108,8 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
           </div>
         )}
       </section>
+
+      {event.collectGuestEmails && <GuestContactCard slug={event.slug} initialEmail={contactEmail} />}
 
       {event.askGuestName && name && (
         <p className="text-sm text-ink-muted">

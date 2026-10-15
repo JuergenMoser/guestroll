@@ -114,3 +114,13 @@ export function incrementDownloads(ids: string[]): void {
     .where(inArray(photos.id, ids))
     .run();
 }
+
+export function countVisiblePhotos(eventId: string): number {
+  return (
+    getDb()
+      .select({ n: count() })
+      .from(photos)
+      .where(and(eq(photos.eventId, eventId), eq(photos.status, "visible")))
+      .get()?.n ?? 0
+  );
+}

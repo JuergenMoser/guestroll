@@ -8,9 +8,11 @@ import { Button, buttonClass, Card, CardTitle } from "@/components/ui";
 import { api } from "@/lib/client/api";
 import type { AdminEvent } from "@/lib/events";
 import { CopyField } from "./CopyField";
+import { EndEventCard } from "./EndEventCard";
+import { GalleryLinks } from "./GalleryLinks";
 import { QrDesigner } from "./qr/QrDesigner";
 
-export function SharePanel({ event, url }: { event: AdminEvent; url: string }) {
+export function SharePanel({ event, url, locale }: { event: AdminEvent; url: string; locale: string }) {
   const t = useT();
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -32,6 +34,10 @@ export function SharePanel({ event, url }: { event: AdminEvent; url: string }) {
         <p className="text-sm text-ink-muted">{t("admin.share.hint")}</p>
         <CopyField value={url} />
       </Card>
+
+      <EndEventCard eventId={event.id} endedAt={event.endedAt} locale={locale} />
+
+      <GalleryLinks eventId={event.id} baseUrl={url.slice(0, url.indexOf("/e/"))} locale={locale} />
 
       {/* Keyed on the slug: a new link means a new code, so the designer restarts from it. */}
       <QrDesigner key={event.slug} event={event} url={url} />
