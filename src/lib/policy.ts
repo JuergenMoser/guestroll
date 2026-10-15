@@ -28,9 +28,17 @@ export interface Viewer {
   unlocked: readonly string[];
 }
 
+/**
+ * Entering always requires the event in the guest cookie, even without an access
+ * code: the guest page joins it automatically on first visit. A copied media URL
+ * is therefore useless in a browser that never opened the event page itself.
+ */
 export function canEnterEvent(event: PolicyEvent, viewer: Viewer): boolean {
-  return viewer.isAdmin || event.accessCodeHash === null || viewer.unlocked.includes(event.id);
+  return viewer.isAdmin || viewer.unlocked.includes(event.id);
 }
+
+/** Events without an access code are joined just by opening their page. */
+export const canJoinFreely = (event: PolicyEvent): boolean => event.accessCodeHash === null;
 
 export type UploadState = { open: true } | { open: false; reason: "closed" | "quota" | "locked" };
 
