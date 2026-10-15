@@ -31,7 +31,7 @@ LABEL org.opencontainers.image.title="Guestroll" \
       org.opencontainers.image.version="${VERSION}"
 
 # A font is needed to rasterise the QR caption into PNG (librsvg via sharp).
-RUN apk add --no-cache libstdc++ su-exec tzdata fontconfig ttf-dejavu && mkdir -p /data
+RUN apk add --no-cache libstdc++ su-exec tzdata fontconfig ttf-dejavu && fc-cache -f && mkdir -p /data
 
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
@@ -40,7 +40,8 @@ ENV NODE_ENV=production \
     DATA_DIR=/data \
     PUID=1001 \
     PGID=1001 \
-    TZ=UTC
+    TZ=UTC \
+    XDG_CACHE_HOME=/tmp/.cache
 
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
