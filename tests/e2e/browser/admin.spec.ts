@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN_PASSWORD, admin, client, createEvent, joinAndUpload, signIn as signInApi } from "../helpers";
+import { ADMIN_PASSWORD, admin, client, createEvent, joinAndUpload, signIn as signInApi, uniqueSuffix } from "../helpers";
 
 async function signIn(page: Page) {
   await page.goto("/admin");
@@ -29,7 +29,7 @@ test.describe("admin in a browser", () => {
 
   test("the event list pages and searches", async ({ page, baseURL }) => {
     const api = await admin(baseURL!);
-    const tag = `Paged${Math.random().toString(36).slice(2, 7)}`;
+    const tag = `Paged${uniqueSuffix(5)}`;
     for (let i = 0; i < 22; i++) await createEvent(api, { name: `${tag} ${String(i).padStart(2, "0")}` });
     await signIn(page);
     await page.goto("/admin/events");

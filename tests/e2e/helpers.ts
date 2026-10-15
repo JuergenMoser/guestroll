@@ -1,7 +1,11 @@
+import { randomBytes } from "node:crypto";
 import { request, type APIRequestContext } from "@playwright/test";
 import sharp from "sharp";
 
 export const ADMIN_PASSWORD = "e2e-admin-password";
+
+/** Keeps names of accounts and events from colliding between tests. */
+export const uniqueSuffix = (length = 6) => randomBytes(length).toString("hex").slice(0, length);
 
 /** A request context with its own cookie jar, sending the same-origin header browsers send. */
 export async function client(baseURL: string): Promise<APIRequestContext> {
@@ -26,7 +30,7 @@ export interface CreatedEvent {
 }
 
 export async function createEvent(api: APIRequestContext, data: Record<string, unknown> = {}): Promise<CreatedEvent> {
-  const res = await api.post("/api/admin/events", { data: { name: `E2E ${Math.random().toString(36).slice(2, 8)}`, ...data } });
+  const res = await api.post("/api/admin/events", { data: { name: `E2E ${uniqueSuffix()}`, ...data } });
   if (res.status() !== 201) throw new Error(`create event failed: ${res.status()} ${await res.text()}`);
   return (await res.json()).event;
 }

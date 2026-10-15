@@ -1,9 +1,9 @@
 import { expect, test } from "@playwright/test";
-import { admin, client, createEvent, joinAndUpload, signIn } from "../helpers";
+import { admin, client, createEvent, joinAndUpload, signIn, uniqueSuffix } from "../helpers";
 
 async function organizerOf(baseURL: string, eventIds: string[]) {
   const owner = await admin(baseURL);
-  const username = `org${Math.random().toString(36).slice(2, 8)}`;
+  const username = `org${uniqueSuffix(6)}`;
   const res = await owner.post("/api/admin/accounts", { data: { username, name: "Org", role: "organizer", eventIds } });
   expect(res.status()).toBe(201);
   const { account, password } = await res.json();
@@ -71,7 +71,7 @@ test.describe("accounts", () => {
 
   test("an owner's own password only changes with the current one", async ({ baseURL }) => {
     const owner = await admin(baseURL!);
-    const username = `own${Math.random().toString(36).slice(2, 8)}`;
+    const username = `own${uniqueSuffix(6)}`;
     const { account, password } = await (await owner.post("/api/admin/accounts", { data: { username, name: "Second", role: "owner" } })).json();
     const second = await signIn(baseURL!, username, password);
     for (const data of [{ resetPassword: true }, { password: "a-brand-new-password" }]) {

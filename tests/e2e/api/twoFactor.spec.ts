@@ -1,12 +1,12 @@
 import { expect, test } from "@playwright/test";
 import { base32Decode, hotp } from "../../../src/lib/auth/totp";
-import { admin, client, signIn } from "../helpers";
+import { admin, client, signIn, uniqueSuffix } from "../helpers";
 
 const codeFor = (secret: string, offset = 0) => hotp(base32Decode(secret), Math.floor(Date.now() / 30_000) + offset);
 
 async function organizer(baseURL: string) {
   const owner = await admin(baseURL);
-  const username = `tf${Date.now()}${Math.random().toString(36).slice(2, 5)}`;
+  const username = `tf${Date.now()}${uniqueSuffix(3)}`;
   const { password, account } = await (await owner.post("/api/admin/accounts", { data: { username, role: "organizer" } })).json();
   return { owner, username, password, account, api: await signIn(baseURL, username, password) };
 }

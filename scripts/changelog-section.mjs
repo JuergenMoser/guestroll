@@ -7,13 +7,13 @@ if (!version) {
   console.error("usage: changelog-section.mjs <version>");
   process.exit(2);
 }
-const text = fs.readFileSync(new URL("../CHANGELOG.md", import.meta.url), "utf8");
-const start = text.search(new RegExp(`^## \\[${version.replace(/\./g, "\\.")}\\]`, "m"));
+const lines = fs.readFileSync(new URL("../CHANGELOG.md", import.meta.url), "utf8").split("\n");
+// Plain string comparison, no regex built from the argument: nothing in it to escape.
+const start = lines.findIndex((line) => line.startsWith(`## [${version}]`));
 if (start === -1) {
   console.error(`CHANGELOG.md has no section for ${version}`);
   process.exit(1);
 }
-const rest = text.slice(start);
-const end = rest.slice(3).search(/^## \[|^\[Unreleased\]:/m);
-const section = (end === -1 ? rest : rest.slice(0, end + 3)).split("\n").slice(1).join("\n").trim();
+const end = lines.findIndex((line, i) => i > start && (line.startsWith("## [") || line.startsWith("[Unreleased]:")));
+const section = lines.slice(start + 1, end === -1 ? undefined : end).join("\n").trim();
 process.stdout.write(section + "\n");

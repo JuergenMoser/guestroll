@@ -1,5 +1,5 @@
 import "server-only";
-import fsp from "node:fs/promises";
+import fsp, { type FileHandle } from "node:fs/promises";
 import { Readable } from "node:stream";
 import { AwsClient } from "aws4fetch";
 import type { StorageDriver } from "./driver";
@@ -65,35 +65,43 @@ export function s3Driver(options: S3Options): StorageDriver {
     } while (token);
   }
 
+  // One part in memory at a time, so a 10 GB backup needs 16 MB of RAM.
+  async function putMultipart(key: string, handle: FileHandle, size: number, contentType: string): Promise<void> {
+    const created = await (await call(`${url(key)}?uploads`, { method: "POST", headers: { "Content-Type": contentType } })).text();
+    const uploadId = decodeXml(/<UploadId>([\s\S]*?)<\/UploadId>/.exec(created)?.[1] ?? "");
+    if (!uploadId) throw new S3Error(500, "S3 didn't start the multipart upload");
+    const parts: string[] = [];
+    try {
+      for (let offset = 0, n = 1; offset < size; offset += PART_BYTES, n++) {
+        const chunk = Buffer.alloc(Math.min(PART_BYTES, size - offset));
+        await handle.read(chunk, 0, chunk.length, offset);
+        const res = await call(`${url(key)}?partNumber=${n}&uploadId=${encodeURIComponent(uploadId)}`, { method: "PUT", body: new Uint8Array(chunk) });
+        parts.push(`<Part><PartNumber>${n}</PartNumber><ETag>${res.headers.get("etag")}</ETag></Part>`);
+      }
+      await call(`${url(key)}?uploadId=${encodeURIComponent(uploadId)}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/xml" },
+        body: `<CompleteMultipartUpload>${parts.join("")}</CompleteMultipartUpload>`,
+      });
+    } catch (error) {
+      await call(`${url(key)}?uploadId=${encodeURIComponent(uploadId)}`, { method: "DELETE", allow404: true }).catch(() => {});
+      throw error;
+    }
+  }
+
   const driver: StorageDriver = {
     name: "s3",
     async put(key, body, contentType) {
       await call(url(key), { method: "PUT", body: new Uint8Array(body), headers: { "Content-Type": contentType, "Content-Length": String(body.length) } });
     },
     async putFile(key, path, contentType) {
-      const { size } = await fsp.stat(path);
-      if (size <= PART_BYTES) return driver.put(key, await fsp.readFile(path), contentType);
-      // Multipart: one part in memory at a time, so a 10 GB backup needs 16 MB of RAM.
-      const created = await (await call(`${url(key)}?uploads`, { method: "POST", headers: { "Content-Type": contentType } })).text();
-      const uploadId = decodeXml(/<UploadId>([\s\S]*?)<\/UploadId>/.exec(created)?.[1] ?? "");
-      if (!uploadId) throw new S3Error(500, "S3 didn't start the multipart upload");
-      const parts: string[] = [];
+      // One handle for the size and the reads: a path checked, then opened again, may
+      // be another file by then.
       const handle = await fsp.open(path, "r");
       try {
-        for (let offset = 0, n = 1; offset < size; offset += PART_BYTES, n++) {
-          const chunk = Buffer.alloc(Math.min(PART_BYTES, size - offset));
-          await handle.read(chunk, 0, chunk.length, offset);
-          const res = await call(`${url(key)}?partNumber=${n}&uploadId=${encodeURIComponent(uploadId)}`, { method: "PUT", body: new Uint8Array(chunk) });
-          parts.push(`<Part><PartNumber>${n}</PartNumber><ETag>${res.headers.get("etag")}</ETag></Part>`);
-        }
-        await call(`${url(key)}?uploadId=${encodeURIComponent(uploadId)}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/xml" },
-          body: `<CompleteMultipartUpload>${parts.join("")}</CompleteMultipartUpload>`,
-        });
-      } catch (error) {
-        await call(`${url(key)}?uploadId=${encodeURIComponent(uploadId)}`, { method: "DELETE", allow404: true }).catch(() => {});
-        throw error;
+        const { size } = await handle.stat();
+        if (size <= PART_BYTES) return await driver.put(key, await handle.readFile(), contentType);
+        await putMultipart(key, handle, size, contentType);
       } finally {
         await handle.close();
       }
