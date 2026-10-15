@@ -3,6 +3,7 @@ import { config } from "@/lib/config";
 import { endEvent, eventsToEnd, failedLoginAlert, pendingPhotoAlerts, storageAlert } from "@/lib/mail/automation";
 import { processOutbox } from "@/lib/mail/outbox";
 import { mailEnabled } from "@/lib/mail/settings";
+import { processWebhooks } from "@/lib/webhooks/queue";
 
 /** One pass of everything time-based. Exported for tests and the admin's "run now". */
 export async function tick(now = Date.now()): Promise<void> {
@@ -12,6 +13,7 @@ export async function tick(now = Date.now()): Promise<void> {
   await storageAlert(now);
   // Mails are queued even without SMTP, so configuring it later still delivers them.
   if (mailEnabled()) await processOutbox(undefined, now);
+  await processWebhooks(undefined, now);
 }
 
 const globalForScheduler = globalThis as unknown as { guestrollScheduler?: NodeJS.Timeout };

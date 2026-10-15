@@ -14,6 +14,8 @@ import { backgroundBaseUrl } from "@/lib/urls";
 import { mailMessages } from "./messages";
 import { enqueueMail } from "./outbox";
 import { eventRecipients, getAlertSettings, instanceRecipients } from "./settings";
+import { notify } from "@/lib/webhooks/queue";
+import { webhooksFor } from "@/lib/webhooks/settings";
 import { failedLoginsMail, galleryMail, pendingMail, storageMail, summaryMail } from "./templates";
 
 const DAY = 86_400_000;
@@ -105,6 +107,20 @@ export function endEvent(event: EventRow, now = Date.now()): EndResult | null {
       if (enqueueMail({ to, mail, kind: "summary", eventId: event.id, dedupeKey: `summary:${event.id}:${to}` })) result.summaryQueued = true;
     }
   }
+
+  const m = mailMessages[config.locale];
+  const stats = getStats(event.id);
+  notify(
+    {
+      kind: "event_ended",
+      title: m.summary.title.replace("{event}", event.name),
+      message: [`${m.summary.photos}: ${stats.totals.photos}`, `${m.summary.guests}: ${stats.totals.guests}`, `${m.summary.pending}: ${stats.totals.pending}`].join("\n"),
+      url: `${base}/admin/events/${event.id}`,
+      event: { id: event.id, name: event.name },
+      data: { photos: stats.totals.photos, guests: stats.totals.guests, pending: stats.totals.pending, galleryRecipients: result.galleryRecipients },
+    },
+    `ended:${event.id}`,
+  );
   return result;
 }
 
@@ -122,7 +138,8 @@ export function eventsToEnd(now = Date.now()): EventRow[] {
  * minutes, and only when the count went up since the last one.
  */
 export function pendingPhotoAlerts(now = Date.now()): number {
-  if (!getAlertSettings().pendingPhotos) return 0;
+  const byEmail = getAlertSettings().pendingPhotos;
+  if (!byEmail && !webhooksFor("photos_pending").length) return 0;
   const rows = getDb()
     .select({ event: events, pending: count(photos.id) })
     .from(events)
@@ -135,10 +152,12 @@ export function pendingPhotoAlerts(now = Date.now()): number {
     const key = `alert:pending:${event.id}`;
     const last = JSON.parse(readSetting(key) ?? '{"count":0,"at":0}') as { count: number; at: number };
     if (pending <= last.count || now - last.at < 30 * 60_000) continue;
-    const mail = pendingMail({ ...common(), event: event.name, accent: event.accentColor, url: `${backgroundBaseUrl()}/admin/events/${event.id}`, count: pending });
-    for (const to of eventRecipients(event.id)) {
+    const url = `${backgroundBaseUrl()}/admin/events/${event.id}`;
+    const mail = pendingMail({ ...common(), event: event.name, accent: event.accentColor, url, count: pending });
+    for (const to of byEmail ? eventRecipients(event.id) : []) {
       if (enqueueMail({ to, mail, kind: "alert:pending", eventId: event.id, dedupeKey: `pending:${event.id}:${pending}:${to}` })) queued++;
     }
+    queued += notify({ kind: "photos_pending", title: mail.subject, message: mail.text.split("\n")[2] ?? "", url, event: { id: event.id, name: event.name }, data: { pending } }, `pending:${event.id}:${pending}`);
     writeSetting(key, JSON.stringify({ count: pending, at: now }));
   }
   return queued;
@@ -146,8 +165,8 @@ export function pendingPhotoAlerts(now = Date.now()): number {
 
 /** 10+ wrong admin passwords in 15 minutes: one alert per hour at most. */
 export function failedLoginAlert(now = Date.now()): boolean {
-  const recipients = instanceRecipients();
-  if (!recipients.length || !getAlertSettings().failedLogins) return false;
+  const recipients = getAlertSettings().failedLogins ? instanceRecipients() : [];
+  if (!recipients.length && !webhooksFor("failed_logins").length) return false;
   const failures =
     getDb()
       .select({ n: count() })
@@ -155,18 +174,33 @@ export function failedLoginAlert(now = Date.now()): boolean {
       .where(and(eq(activity.type, "login_failed"), gte(activity.createdAt, now - 15 * 60_000)))
       .get()?.n ?? 0;
   if (failures < 10) return false;
+  const hour = Math.floor(now / 3_600_000);
   const mail = failedLoginsMail({ ...common(), url: `${backgroundBaseUrl()}/admin`, count: failures });
-  return recipients.map((to) => enqueueMail({ to, mail, kind: "alert:logins", dedupeKey: `logins:${Math.floor(now / 3_600_000)}:${to}` })).some(Boolean);
+  const mailed = recipients.map((to) => enqueueMail({ to, mail, kind: "alert:logins", dedupeKey: `logins:${hour}:${to}` })).some(Boolean);
+  const hooked = notify({ kind: "failed_logins", title: mail.subject, message: mailMessages[config.locale].failedLogins.body.replace("{count}", String(failures)), url: `${backgroundBaseUrl()}/admin`, data: { failures } }, `logins:${hour}`) > 0;
+  return mailed || hooked;
 }
 
 /** The data disk is 90%+ full: one alert per day at most. */
 export async function storageAlert(now = Date.now()): Promise<boolean> {
-  const recipients = instanceRecipients();
-  if (!recipients.length || !getAlertSettings().storage) return false;
+  const recipients = getAlertSettings().storage ? instanceRecipients() : [];
+  if (!recipients.length && !webhooksFor("storage").length) return false;
   const disk = await storage().capacity();
   if (!disk) return false;
   const percent = Math.round(100 - (disk.free / disk.total) * 100);
   if (percent < 90) return false;
-  const mail = storageMail({ ...common(), url: `${backgroundBaseUrl()}/admin`, percent, free: formatBytes(disk.free, config.locale) });
-  return recipients.map((to) => enqueueMail({ to, mail, kind: "alert:storage", dedupeKey: `storage:${Math.floor(now / DAY)}:${to}` })).some(Boolean);
+  const day = Math.floor(now / DAY);
+  const free = formatBytes(disk.free, config.locale);
+  const mail = storageMail({ ...common(), url: `${backgroundBaseUrl()}/admin`, percent, free });
+  const mailed = recipients.map((to) => enqueueMail({ to, mail, kind: "alert:storage", dedupeKey: `storage:${day}:${to}` })).some(Boolean);
+  const body = mailMessages[config.locale].storage.body.replace("{percent}", String(percent)).replace("{free}", free);
+  const hooked = notify({ kind: "storage", title: mail.subject, message: body, url: `${backgroundBaseUrl()}/admin`, data: { percent, freeBytes: disk.free } }, `storage:${day}`) > 0;
+  return mailed || hooked;
+}
+
+/** Tells subscribed webhooks a guest left a message; email stays quiet, the summary counts them. */
+export function guestbookNotice(event: Pick<EventRow, "id" | "name">, message: { guestName: string | null; text: string; hasAudio: boolean }): void {
+  const m = mailMessages[config.locale].notice;
+  const lines = [message.guestName ? m.from.replace("{name}", message.guestName) : "", message.text, message.hasAudio ? m.voiceNote : ""].filter(Boolean);
+  notify({ kind: "guestbook_message", title: m.guestbook.replace("{event}", event.name), message: lines.join("\n").slice(0, 1000), url: `${backgroundBaseUrl()}/admin/events/${event.id}?tab=guestbook`, event: { id: event.id, name: event.name } });
 }

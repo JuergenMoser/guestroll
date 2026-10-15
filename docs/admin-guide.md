@@ -152,6 +152,21 @@ event name to confirm.
   *New password* generates another one and signs the person out; *Delete*
   ends their access at once. The last owner can't be demoted or deleted.
 
+- **Webhooks** (owners): the same alerts on your phone or in a chat, whatever
+  the email settings. Up to 10, each with its own choice of alerts (event
+  ended, photos waiting, new guestbook message, failed sign-ins, storage).
+
+  | Service | URL | What arrives |
+  |---|---|---|
+  | ntfy | a topic on ntfy.sh or your own server | A push notification that opens the admin page |
+  | Discord | channel settings → Integrations → Webhooks | An embed (mentions disabled) |
+  | Slack | an Incoming Webhook | A message with a link |
+  | JSON | anything: Home Assistant, n8n, your script | `{ app, kind, title, message, url, event, data, sentAt }`, signed with `X-Guestroll-Signature: sha256=<HMAC of the body>` when you set a secret |
+
+  **Test** sends a notice right away and shows the service's answer. Real
+  alerts go through a queue retried like emails (1, 5, 15 minutes, 1 and 6
+  hours); the last deliveries are listed under the webhooks.
+
 Event emails (summaries, photos waiting for approval) go to the instance
 address in **Email** and to every account managing the event that set an
 address. Instance alerts (failed sign-ins, disk) go to the owners.

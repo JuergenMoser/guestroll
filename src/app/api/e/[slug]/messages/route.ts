@@ -17,6 +17,7 @@ import {
   toMessageDto,
 } from "@/lib/messages";
 import { canEnterEvent, uploadState } from "@/lib/policy";
+import { guestbookNotice } from "@/lib/mail/automation";
 import { newId } from "@/lib/security/ids";
 import { limiters } from "@/lib/security/limiters";
 import { BodyTooLargeError, isSameOrigin, readBodyCapped } from "@/lib/security/request";
@@ -97,6 +98,7 @@ export async function POST(request: Request, { params }: Context) {
       audioSeconds: seconds,
       status: event.moderation === "pre" ? "pending" : "visible",
     });
+    guestbookNotice(event, { guestName: message.guestName, text: message.text, hasAudio: Boolean(message.audioExt) });
     return NextResponse.json({ message: toMessageDto(message, viewer) }, { status: 201 });
   } catch (error) {
     if (audioExt) await storage().delete(audioKey(draft));

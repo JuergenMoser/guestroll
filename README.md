@@ -71,7 +71,7 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 - 📊 Stats: uploads over time, views, downloads, storage, top photographers.
 - 🔑 **Gallery links**: a private link + password to the album, for family or for guests afterwards. Expiry, view-only or downloads, revocable.
 - ✉️ **Automatic emails** through your SMTP server: when uploads close, a summary for you and the album link for guests who asked for it. You choose what goes out.
-- 🔔 Admin alerts: photos waiting for approval, failed sign-ins, disk almost full.
+- 🔔 Admin alerts by email or **webhook** (ntfy, Discord, Slack, signed JSON for Home Assistant): photos waiting for approval, new guestbook messages, failed sign-ins, disk almost full.
 
 **For whoever runs the server**
 - 🐳 A single container, multi-arch (`amd64`, `arm64`, so a Raspberry Pi works too).

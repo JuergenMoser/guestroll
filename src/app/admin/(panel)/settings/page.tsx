@@ -1,5 +1,6 @@
 import { AccountsPanel } from "@/components/admin/AccountsPanel";
 import { MailSettings } from "@/components/admin/MailSettings";
+import { WebhookSettings } from "@/components/admin/WebhookSettings";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { PasswordForm } from "@/components/admin/PasswordForm";
 import { ProfileForm } from "@/components/admin/ProfileForm";
@@ -43,6 +44,7 @@ export default async function SettingsPage() {
         <>
           <AccountsPanel selfId={admin.id} events={listEvents(admin.scope).map((e) => ({ id: e.id, name: e.name }))} locale={locale} />
           <MailSettings locale={locale} />
+          <WebhookSettings locale={locale} />
           <Card className="space-y-3">
             <CardTitle>{t("admin.settingsPage.about")}</CardTitle>
             <dl className="grid grid-cols-[auto_1fr] gap-x-6 gap-y-2 text-sm tabular-nums">

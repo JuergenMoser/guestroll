@@ -48,6 +48,13 @@ const en = {
     body: "{count} wrong admin passwords were entered in the last 15 minutes. If it wasn't you, check that your password is long and unique; sign-in attempts are rate limited.",
     cta: "Open the admin",
   },
+  notice: {
+    guestbook: "{event}: a new guestbook message",
+    from: "From {name}",
+    voiceNote: "(voice note)",
+    testTitle: "{app}: test notification",
+    testBody: "If you can read this, the webhook works.",
+  },
   storage: {
     subject: "{app}: the disk is {percent}% full",
     title: "Storage is running out.",
@@ -103,6 +110,13 @@ const fr: Strings<MailMessages> = {
     body: "{count} mauvais mots de passe admin ont été saisis ces 15 dernières minutes. Si ce n'était pas vous, vérifiez que votre mot de passe est long et unique ; les tentatives sont limitées en débit.",
     cta: "Ouvrir l'admin",
   },
+  notice: {
+    guestbook: "{event} : un nouveau message dans le livre d'or",
+    from: "De {name}",
+    voiceNote: "(message vocal)",
+    testTitle: "{app} : notification de test",
+    testBody: "Si vous lisez ceci, le webhook fonctionne.",
+  },
   storage: {
     subject: "{app} : disque plein à {percent} %",
     title: "L'espace disque s'épuise.",
@@ -155,6 +169,13 @@ const it: Strings<MailMessages> = {
     body: "Negli ultimi 15 minuti sono state inserite {count} password admin errate. Se non sei stato tu, verifica che la password sia lunga e unica; i tentativi sono limitati.",
     cta: "Apri l'admin",
   },
+  notice: {
+    guestbook: "{event}: un nuovo messaggio nel libro degli ospiti",
+    from: "Da {name}",
+    voiceNote: "(messaggio vocale)",
+    testTitle: "{app}: notifica di prova",
+    testBody: "Se leggi questo messaggio, il webhook funziona.",
+  },
   storage: {
     subject: "{app}: disco pieno al {percent}%",
     title: "Lo spazio sta finendo.",
@@ -206,6 +227,13 @@ const es: Strings<MailMessages> = {
     title: "Alguien está probando contraseñas de admin.",
     body: "Se han introducido {count} contraseñas de admin incorrectas en los últimos 15 minutos. Si no has sido tú, comprueba que tu contraseña sea larga y única; los intentos están limitados.",
     cta: "Abrir el admin",
+  },
+  notice: {
+    guestbook: "{event}: un nuevo mensaje en el libro de visitas",
+    from: "De {name}",
+    voiceNote: "(nota de voz)",
+    testTitle: "{app}: notificación de prueba",
+    testBody: "Si puedes leer esto, el webhook funciona.",
   },
   storage: {
     subject: "{app}: disco al {percent} %",

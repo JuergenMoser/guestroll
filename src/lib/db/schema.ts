@@ -209,6 +209,27 @@ export const accountEvents = sqliteTable(
   (t) => [primaryKey({ columns: [t.accountId, t.eventId] }), index("account_events_event_idx").on(t.eventId)],
 );
 
+/** Same queue as `outbox`, for webhooks: retried with backoff, deduplicated, kept for the admin to inspect. */
+export const webhookDeliveries = sqliteTable(
+  "webhook_deliveries",
+  {
+    id: text("id").primaryKey(),
+    /** Id of the webhook in the `webhooks` setting; deliveries of a deleted webhook are dropped when processed. */
+    webhookId: text("webhook_id").notNull(),
+    kind: text("kind").notNull(),
+    /** The notice as JSON; formatted for the webhook's type when sent, so a type change applies to retries. */
+    payload: text("payload").notNull(),
+    dedupeKey: text("dedupe_key").unique(),
+    status: text("status", { enum: ["pending", "sent", "failed"] }).notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    nextAttemptAt: integer("next_attempt_at").notNull().default(now),
+    lastError: text("last_error"),
+    createdAt: integer("created_at").notNull().default(now),
+    sentAt: integer("sent_at"),
+  },
+  (t) => [index("webhook_deliveries_status_idx").on(t.status, t.nextAttemptAt)],
+);
+
 export const settings = sqliteTable("settings", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
@@ -221,5 +242,6 @@ export type ShareLinkRow = typeof shareLinks.$inferSelect;
 export type MessageRow = typeof messages.$inferSelect;
 export type GuestContactRow = typeof guestContacts.$inferSelect;
 export type OutboxRow = typeof outbox.$inferSelect;
+export type WebhookDeliveryRow = typeof webhookDeliveries.$inferSelect;
 export type AccountRow = typeof accounts.$inferSelect;
 export type AccountRole = AccountRow["role"];

@@ -51,6 +51,17 @@ whatever the settings: this is a design decision, not an option.
 - Generated passwords (`xxxx-xxxx-xxxx-xxxx`, ~82 bits) are shown once and
   never stored in clear.
 
+## Webhooks
+
+- Only owners manage them. URLs and signing secrets are encrypted at rest
+  (a Discord or Slack webhook URL is a credential) and never sent back to the
+  browser, which only sees a masked hint.
+- Requests are plain `POST`s with a 10-second timeout and no redirects
+  followed. Owners may point them at the local network on purpose (Home
+  Assistant), so treat the owner role as trusted with outbound requests.
+- Notices carry event names, counts and admin links, never photos, guest
+  emails or message audio.
+
 ## Guestbook
 
 - Messages are private like photos: a guest reads and hears only their own,
