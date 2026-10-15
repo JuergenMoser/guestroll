@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  albumShared,
   isEventAdmin,
   shareShows,
   canDownloadAlbum,
@@ -156,5 +157,41 @@ describe("favorites-only links", () => {
     expect(canViewPhoto(event(), photo({ favorite: false }), both, "display")).toBe(true);
     expect(canViewPhoto(event(), photo({ favorite: false }), both, "original")).toBe(false);
     expect(canViewPhoto(event(), photo({ favorite: true }), both, "original")).toBe(true);
+  });
+});
+
+describe("shared album", () => {
+  const during = event({ sharedAlbum: "during" });
+
+  it("is off unless the hosts turn it on: the private album stays the default", () => {
+    expect(albumShared(event())).toBe(false);
+    expect(albumShared(event({ sharedAlbum: "off" }))).toBe(false);
+    expect(canViewPhoto(event(), photo(), guest(), "thumb")).toBe(false);
+  });
+
+  it("shows guests the others' visible photos, never their originals", () => {
+    expect(canViewPhoto(during, photo(), guest(), "thumb")).toBe(true);
+    expect(canViewPhoto(during, photo(), guest(), "display")).toBe(true);
+    expect(canViewPhoto(during, photo(), guest(), "original")).toBe(false);
+    // Their own originals stay theirs to download.
+    expect(canViewPhoto(during, photo({ guestId: "guest-1" }), guest(), "original")).toBe(true);
+  });
+
+  it("never shows the others' pending or hidden photos", () => {
+    expect(canViewPhoto(during, photo({ status: "pending" }), guest(), "thumb")).toBe(false);
+    expect(canViewPhoto(during, photo({ status: "hidden" }), guest(), "thumb")).toBe(false);
+  });
+
+  it("still needs the event joined, and stays within its event", () => {
+    expect(canViewPhoto(during, photo(), stranger, "thumb")).toBe(false);
+    expect(canViewPhoto(during, photo({ eventId: "event-2" }), guest(), "thumb")).toBe(false);
+  });
+
+  it("with `after`, opens once the event has ended, by hand or past its closing time", () => {
+    const now = 1_000_000;
+    expect(albumShared(event({ sharedAlbum: "after" }), now)).toBe(false);
+    expect(albumShared(event({ sharedAlbum: "after", endedAt: now - 1 }), now)).toBe(true);
+    expect(albumShared(event({ sharedAlbum: "after", uploadsCloseAt: now - 1 }), now)).toBe(true);
+    expect(albumShared(event({ sharedAlbum: "after", uploadsCloseAt: now + 1 }), now)).toBe(false);
   });
 });

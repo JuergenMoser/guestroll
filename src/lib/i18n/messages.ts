@@ -83,6 +83,10 @@ const en = {
     delete: "Delete",
     deleteConfirm: "Delete for good?",
     deleteHint: "Tap a photo to see it, download it or delete it.",
+    albumTitle: "The whole album",
+    sharedNotice: "Your approved photos are shared with the other guests.",
+    sharedLaterNotice: "Only you and the hosts see your photos for now. Once the event is over, the approved ones will be shared with the other guests.",
+    emptyAlbum: "No photos in the album yet.",
   },
   admin: {
     title: "Admin",
@@ -157,6 +161,13 @@ const en = {
       guestbookVoiceHint: "Up to 2 minutes each, recorded in the browser.",
       guestbookInGallery: "Show the messages behind gallery links",
       guestbookInGalleryHint: "Only approved messages. Off by default: they were written for you.",
+      sharedAlbum: "Guests see each other's photos",
+      sharedAlbumHint: "Only approved photos, never pending or hidden ones. Guests can't download the others' originals.",
+      sharedAlbumModes: {
+        off: "No: each guest sees only their own",
+        during: "Yes, during and after the event",
+        after: "Yes, once the event is over",
+      },
     },
     gallery: {
       title: "Gallery links",
@@ -746,6 +757,10 @@ const fr: DeepPartialStrings<Messages> = {
     delete: "Supprimer",
     deleteConfirm: "Supprimer pour de bon ?",
     deleteHint: "Touche une photo pour la voir, la télécharger ou la supprimer.",
+    albumTitle: "Tout l'album",
+    sharedNotice: "Tes photos validées sont partagées avec les autres invités.",
+    sharedLaterNotice: "Pour l'instant, seuls toi et les organisateurs voyez tes photos. Après l'évènement, celles qui sont validées seront partagées avec les autres invités.",
+    emptyAlbum: "Pas encore de photos dans l'album.",
   },
   admin: {
     title: "Admin",
@@ -820,6 +835,13 @@ const fr: DeepPartialStrings<Messages> = {
       guestbookVoiceHint: "Jusqu'à 2 minutes chacun, enregistrés dans le navigateur.",
       guestbookInGallery: "Montrer les messages derrière les liens de galerie",
       guestbookInGalleryHint: "Seulement les messages validés. Désactivé par défaut : ils vous étaient adressés.",
+      sharedAlbum: "Les invités voient les photos des autres",
+      sharedAlbumHint: "Uniquement les photos validées, jamais celles en attente ou masquées. Les invités ne peuvent pas télécharger les originaux des autres.",
+      sharedAlbumModes: {
+        off: "Non : chacun ne voit que les siennes",
+        during: "Oui, pendant et après l'évènement",
+        after: "Oui, une fois l'évènement terminé",
+      },
     },
     gallery: {
       title: "Liens de galerie",
@@ -1405,6 +1427,10 @@ const it: DeepPartialStrings<Messages> = {
     delete: "Elimina",
     deleteConfirm: "Eliminare definitivamente?",
     deleteHint: "Tocca una foto per vederla, scaricarla o eliminarla.",
+    albumTitle: "Tutto l'album",
+    sharedNotice: "Le tue foto approvate sono condivise con gli altri invitati.",
+    sharedLaterNotice: "Per ora le tue foto le vedete solo tu e gli organizzatori. Dopo l'evento, quelle approvate saranno condivise con gli altri invitati.",
+    emptyAlbum: "Ancora nessuna foto nell'album.",
   },
   admin: {
     title: "Admin",
@@ -1479,6 +1505,13 @@ const it: DeepPartialStrings<Messages> = {
       guestbookVoiceHint: "Fino a 2 minuti ciascuno, registrati nel browser.",
       guestbookInGallery: "Mostra i messaggi dietro i link alla galleria",
       guestbookInGalleryHint: "Solo i messaggi approvati. Disattivato di default: erano scritti per voi.",
+      sharedAlbum: "Gli invitati vedono le foto degli altri",
+      sharedAlbumHint: "Solo le foto approvate, mai quelle in attesa o nascoste. Gli invitati non possono scaricare gli originali degli altri.",
+      sharedAlbumModes: {
+        off: "No: ognuno vede solo le proprie",
+        during: "Sì, durante e dopo l'evento",
+        after: "Sì, a evento concluso",
+      },
     },
     gallery: {
       title: "Link alla galleria",
@@ -2064,6 +2097,10 @@ const es: DeepPartialStrings<Messages> = {
     delete: "Eliminar",
     deleteConfirm: "¿Eliminar definitivamente?",
     deleteHint: "Toca una foto para verla, descargarla o eliminarla.",
+    albumTitle: "Todo el álbum",
+    sharedNotice: "Tus fotos aprobadas se comparten con los demás invitados.",
+    sharedLaterNotice: "Por ahora, solo tú y los anfitriones veis tus fotos. Después del evento, las aprobadas se compartirán con los demás invitados.",
+    emptyAlbum: "Todavía no hay fotos en el álbum.",
   },
   admin: {
     title: "Admin",
@@ -2138,6 +2175,13 @@ const es: DeepPartialStrings<Messages> = {
       guestbookVoiceHint: "Hasta 2 minutos cada una, grabadas en el navegador.",
       guestbookInGallery: "Mostrar los mensajes en los enlaces de galería",
       guestbookInGalleryHint: "Solo los mensajes aprobados. Desactivado por defecto: iban dirigidos a ustedes.",
+      sharedAlbum: "Los invitados ven las fotos de los demás",
+      sharedAlbumHint: "Solo las fotos aprobadas, nunca las pendientes ni las ocultas. Los invitados no pueden descargar los originales de los demás.",
+      sharedAlbumModes: {
+        off: "No: cada uno ve solo las suyas",
+        during: "Sí, durante y después del evento",
+        after: "Sí, cuando termine el evento",
+      },
     },
     gallery: {
       title: "Enlaces a la galería",

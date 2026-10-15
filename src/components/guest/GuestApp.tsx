@@ -1,10 +1,10 @@
 "use client";
 
-import { EyeOff } from "lucide-react";
+import { EyeOff, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useT } from "@/components/I18nProvider";
 import { CaptureHost } from "@/components/upload/CaptureHost";
-import { Button, EmptyState } from "@/components/ui";
+import { Button, EmptyState, SegmentedControl } from "@/components/ui";
 import type { PublicEvent } from "@/lib/events";
 import type { PhotoDto } from "@/lib/photos";
 import { GuestbookCard } from "@/components/guestbook/GuestbookCard";
@@ -39,6 +39,9 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
   const [remaining, setRemaining] = useState(initialRemaining);
   const [sent, setSent] = useState(sentCount);
   const [open, setOpen] = useState<number | null>(null);
+  // The shared album: loaded the first time the guest opens it.
+  const [view, setView] = useState<"mine" | "all">("mine");
+  const [album, setAlbum] = useState<{ photos: PhotoDto[]; cursor: number | null } | null>(null);
   // From the photos loaded so far: a guest with hundreds of photos may see a tick appear only after "Load more".
   const doneChallenges = useMemo(() => new Set(photos.map((p) => p.challengeId).filter((id): id is string => Boolean(id))), [photos]);
 
@@ -54,21 +57,48 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
 
   const onUploaded = useCallback((photo: PhotoDto) => {
     setPhotos((list) => [photo, ...list]);
+    setAlbum((a) => (a && photo.status === "visible" ? { ...a, photos: [photo, ...a.photos] } : a));
     setRemaining((n) => (n === null ? null : Math.max(n - 1, 0)));
     setSent((n) => n + 1);
   }, []);
 
+  async function fetchPage(scope: "mine" | "all", before: number | null) {
+    const query = new URLSearchParams(scope === "all" ? { scope: "all" } : {});
+    if (before !== null) query.set("before", String(before));
+    const res = await fetch(`/api/e/${event.slug}/photos?${query}`).catch(() => null);
+    return res?.ok ? ((await res.json()) as { photos: PhotoDto[]; nextCursor: number | null }) : null;
+  }
+
+  const merge = (list: PhotoDto[], more: PhotoDto[]) => [...list, ...more.filter((p) => !list.some((q) => q.id === p.id))];
+
   async function loadMore() {
-    if (cursor === null) return;
     setLoadingMore(true);
-    const res = await fetch(`/api/e/${event.slug}/photos?before=${cursor}`).catch(() => null);
-    if (res?.ok) {
-      const data = (await res.json()) as { photos: PhotoDto[]; nextCursor: number | null };
-      setPhotos((list) => [...list, ...data.photos.filter((p) => !list.some((q) => q.id === p.id))]);
-      setCursor(data.nextCursor);
+    if (view === "all" && album && album.cursor !== null) {
+      const data = await fetchPage("all", album.cursor);
+      if (data) setAlbum({ photos: merge(album.photos, data.photos), cursor: data.nextCursor });
+    } else if (view === "mine" && cursor !== null) {
+      const data = await fetchPage("mine", cursor);
+      if (data) {
+        setPhotos((list) => merge(list, data.photos));
+        setCursor(data.nextCursor);
+      }
     }
     setLoadingMore(false);
   }
+
+  async function showView(next: "mine" | "all") {
+    setView(next);
+    setOpen(null);
+    if (next === "all" && !album) {
+      setLoadingMore(true);
+      const data = await fetchPage("all", null);
+      setAlbum(data ? { photos: data.photos, cursor: data.nextCursor } : { photos: [], cursor: null });
+      setLoadingMore(false);
+    }
+  }
+
+  const shown = view === "all" ? (album?.photos ?? []) : photos;
+  const shownCursor = view === "all" ? (album?.cursor ?? null) : cursor;
 
   if (askName) {
     return (
@@ -93,23 +123,34 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
 
       <section className="space-y-4">
         <div className="space-y-1">
-          <h2 className="text-xl font-bold tracking-tight">{t("guest.yourPhotos")}</h2>
+          <h2 className="text-xl font-bold tracking-tight">{view === "all" ? t("guest.albumTitle") : t("guest.yourPhotos")}</h2>
           <p className="flex items-center gap-1.5 text-sm text-ink-muted">
-            <EyeOff className="size-3.5 shrink-0" aria-hidden />
-            {t("guest.privateNotice")}
+            {event.sharedAlbum === "off" ? <EyeOff className="size-3.5 shrink-0" aria-hidden /> : <Users className="size-3.5 shrink-0" aria-hidden />}
+            {event.sharedAlbum === "off" ? t("guest.privateNotice") : event.albumShared ? t("guest.sharedNotice") : t("guest.sharedLaterNotice")}
           </p>
         </div>
 
-        {photos.length === 0 ? (
-          <EmptyState>{t("guest.emptyMine")}</EmptyState>
+        {event.albumShared && (
+          <SegmentedControl
+            role="tabs"
+            name={t("guest.albumTitle")}
+            value={view}
+            options={["mine", "all"] as const}
+            onChange={showView}
+            label={(v) => (v === "mine" ? t("guest.yourPhotos") : t("guest.albumTitle"))}
+          />
+        )}
+
+        {shown.length === 0 ? (
+          <EmptyState>{view === "all" ? (loadingMore ? t("common.loading") : t("guest.emptyAlbum")) : t("guest.emptyMine")}</EmptyState>
         ) : (
           <>
-            <PhotoGrid photos={photos} onOpen={setOpen} />
-            <p className="text-sm text-ink-muted">{t("guest.deleteHint")}</p>
+            <PhotoGrid photos={shown} onOpen={setOpen} />
+            {view === "mine" && <p className="text-sm text-ink-muted">{t("guest.deleteHint")}</p>}
           </>
         )}
 
-        {cursor !== null && (
+        {shownCursor !== null && (
           <div className="flex justify-center">
             <Button variant="secondary" onClick={loadMore} loading={loadingMore}>
               {t("common.loadMore")}
@@ -135,7 +176,7 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
 
       {open !== null && (
         <Lightbox
-          photos={photos}
+          photos={shown}
           index={open}
           onIndex={setOpen}
           canDownload={(p) => p.mine}
@@ -143,10 +184,11 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
             const res = await fetch(`/api/e/${event.slug}/photos/${photo.id}`, { method: "DELETE" }).catch(() => null);
             if (!res?.ok) return;
             setPhotos((list) => list.filter((p) => p.id !== photo.id));
+            setAlbum((a) => (a ? { ...a, photos: a.photos.filter((p) => p.id !== photo.id) } : a));
             // A deleted photo gives its slot back when there's a per-guest limit.
             setRemaining((n) => (n === null ? null : n + 1));
             setSent((n) => Math.max(n - 1, 0));
-            setOpen(photos.length > 1 ? Math.min(open, photos.length - 2) : null);
+            setOpen(shown.length > 1 ? Math.min(open, shown.length - 2) : null);
           }}
         />
       )}

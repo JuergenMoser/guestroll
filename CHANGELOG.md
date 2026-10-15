@@ -11,6 +11,12 @@ always run on their own at startup; take a backup first all the same
 
 ## [Unreleased]
 
+### Added
+
+- Shared album, per event and off by default: guests can also see the others'
+  approved photos, during and after the event or only once it is over. Never
+  pending or hidden photos, never the others' originals.
+
 ## [0.4.0] - 2026-10-15
 
 ### Upgrading

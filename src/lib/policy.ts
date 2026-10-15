@@ -12,6 +12,9 @@ export interface PolicyEvent {
   uploadsOpen: boolean;
   uploadsCloseAt: number | null;
   maxPhotosPerGuest: number;
+  /** Absent means `off`: callers that predate the shared album keep the private one. */
+  sharedAlbum?: "off" | "during" | "after";
+  endedAt?: number | null;
 }
 
 export interface PolicyPhoto {
@@ -78,8 +81,20 @@ export function uploadState(event: PolicyEvent, viewer: Viewer, uploadedByGuest:
 }
 
 /**
- * Guests only ever see the photos they took themselves (pending moderation
- * included, hidden ones excluded). The rest of the album is the hosts': the
+ * Whether the hosts let guests see each other's photos right now: `during` from
+ * the start, `after` once the event has ended (ended by hand or by the scheduler,
+ * or past its closing time).
+ */
+export function albumShared(event: PolicyEvent, now = Date.now()): boolean {
+  if (event.sharedAlbum === "during") return true;
+  if (event.sharedAlbum !== "after") return false;
+  return (event.endedAt ?? null) !== null || (event.uploadsCloseAt !== null && now >= event.uploadsCloseAt);
+}
+
+/**
+ * Guests see the photos they took themselves (pending moderation included,
+ * hidden ones excluded), and, when the hosts share the album, the others' visible
+ * ones. The rest of the album is the hosts': the
  * event's admins see everything, and a gallery link the admin created (unlocked with
  * its password) shows the visible photos, originals only if it allows downloads.
  */
@@ -89,7 +104,10 @@ export function canViewPhoto(event: PolicyEvent, photo: PolicyPhoto, viewer: Vie
   // Several links to one event can be unlocked in one browser: any of them may grant the photo.
   if (sharesFor(event, viewer).some((s) => shareShows(s, photo) && (variant !== "original" || s.allowDownload))) return true;
   if (!canEnterEvent(event, viewer) || photo.status === "hidden") return false;
-  return viewer.guestId !== undefined && photo.guestId === viewer.guestId;
+  if (viewer.guestId !== undefined && photo.guestId === viewer.guestId) return true;
+  // A shared album shows the others' visible photos, never their originals: downloading
+  // full-size copies of everyone's photos stays the hosts' and gallery links' business.
+  return albumShared(event) && photo.status === "visible" && variant !== "original";
 }
 
 /** Album ZIP: the admin, or a gallery link that allows downloads (its ZIP holds what the link shows). */

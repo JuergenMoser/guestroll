@@ -64,7 +64,7 @@ driven entirely by a `.env` file.
 
 **For guests**: the camera opens straight from the QR code; uploads survive a
 crowded room's 4G (resized on the phone, queued, retried, resumed offline);
-they only ever see their own photos; English, French, Italian and Spanish;
+they see their own photos, and the others' only if the hosts share the album; English, French, Italian and Spanish;
 light and dark themes.
 
 **For hosts**: as many events as you like, each with its own link, QR code,

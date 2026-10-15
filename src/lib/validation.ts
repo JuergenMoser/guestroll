@@ -30,6 +30,7 @@ export interface EventInput {
   guestbookEnabled: boolean;
   guestbookVoice: boolean;
   guestbookInGallery: boolean;
+  sharedAlbum: "off" | "during" | "after";
   captureFilters: boolean;
   frame: Frame;
   /** JSON, already normalised by `parseChallenges`. */
@@ -112,6 +113,7 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
 
   const enums = {
     moderation: ["post", "pre"],
+    sharedAlbum: ["off", "during", "after"],
     captureMode: CAPTURE_MODES,
     frame: FRAMES,
   } as const;

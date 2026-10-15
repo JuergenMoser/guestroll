@@ -24,6 +24,17 @@ export function GuestsSection({ form, set }: SectionProps) {
           </Select>
         )}
       </Field>
+      <Field label={t("admin.form.sharedAlbum")} hint={t("admin.form.sharedAlbumHint")}>
+        {(id, describedBy) => (
+          <Select id={id} aria-describedby={describedBy} value={form.sharedAlbum} onChange={(e) => set("sharedAlbum", e.target.value as EventFormState["sharedAlbum"])}>
+            {(["off", "during", "after"] as const).map((mode) => (
+              <option key={mode} value={mode}>
+                {t(`admin.form.sharedAlbumModes.${mode}`)}
+              </option>
+            ))}
+          </Select>
+        )}
+      </Field>
       <Switch label={t("admin.form.askGuestName")} checked={form.askGuestName} onChange={(v) => set("askGuestName", v)} />
     </FormSection>
   );

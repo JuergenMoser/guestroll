@@ -47,6 +47,12 @@ export const events = sqliteTable("events", {
   guestbookVoice: integer("guestbook_voice", { mode: "boolean" }).notNull().default(true),
   /** Visible messages also appear behind gallery links (they're the guests' words: off by default). */
   guestbookInGallery: integer("guestbook_in_gallery", { mode: "boolean" }).notNull().default(false),
+  /**
+   * Whether guests see each other's visible photos: `off` (each guest only their
+   * own, the default), `during` (as soon as they are visible), `after` (once the
+   * event has ended). Never pending or hidden ones, never others' originals.
+   */
+  sharedAlbum: text("shared_album", { enum: ["off", "during", "after"] }).notNull().default("off"),
   /** Set once the end-of-event automation ran: it never runs twice for the same event. */
   endedAt: integer("ended_at"),
   createdAt: integer("created_at").notNull().default(now),

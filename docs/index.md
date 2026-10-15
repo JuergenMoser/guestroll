@@ -30,7 +30,7 @@ features:
     linkText: Install it
   - icon: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>'
     title: Private by design
-    details: Guests only ever see their own photos. Every photo request is checked, GPS and camera metadata are stripped, and links can be rotated if a code leaks.
+    details: Guests see their own photos, and the others' only if you share the album. Every photo request is checked, GPS and camera metadata are stripped, and links can be rotated if a code leaks.
     link: /security
     linkText: How photos stay private
   - icon: '<svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 11-1.296-1.296a2.4 2.4 0 0 0-3.408 0L11 16"/><path d="M4 8a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2"/><circle cx="13" cy="7" r="1" fill="currentColor"/><rect x="8" y="2" width="14" height="14" rx="2"/></svg>'
@@ -104,9 +104,9 @@ Everything lands in your album, with who took it. Approve, project, download, se
 <section class="home-section home-row">
 <div>
 
-## Guests only ever see their own photos.
+## The album belongs to the hosts.
 
-<p class="lead">The album belongs to the hosts. Every photo request is checked, a copied link opens nothing elsewhere, and GPS position and camera metadata are stripped from every upload. Challenges, filters and a guestbook give guests something to do besides scrolling.</p>
+<p class="lead">Guests see their own photos, and the others' approved ones only if you choose to share the album. Every photo request is checked, a copied link opens nothing elsewhere, and GPS position and camera metadata are stripped from every upload. Challenges, filters and a guestbook give guests something to do besides scrolling.</p>
 
 [How photos stay private →](./security)
 

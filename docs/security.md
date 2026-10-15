@@ -9,12 +9,17 @@ please report it privately (see [SECURITY.md](../SECURITY.md)).
 | Asset | Who may access it |
 |---|---|
 | A guest's photos | That guest (from the browser that took them) and the admins |
-| Everyone else's photos | Admins only. Never another guest. |
+| Everyone else's photos | Admins only, unless the hosts share the album (below) |
 | Event settings, stats, QR codes | Admins only |
 | The event page itself | Anyone with the QR code, plus the access code if one is set |
 
-There is no public gallery and no guest download of other people's photos,
-whatever the settings: this is a design decision, not an option.
+By default there is no shared gallery: each guest sees their own photos and
+nothing else. The hosts can **share the album** with the guests of an event,
+from the start or once it has ended. Guests who joined the event then also see
+the others' **approved** photos, in screen size: never the pending or hidden
+ones, never the originals, and no download button for them. The guest page
+says which mode is on. It is off by default, per event, and leaves gallery
+links unchanged.
 
 ## How photos stay private
 

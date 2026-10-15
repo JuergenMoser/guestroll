@@ -7,7 +7,7 @@ import { config } from "@/lib/config";
 import { eventSlug, newId } from "@/lib/security/ids";
 import { deleteEventFiles, readLogo, writeLogo } from "@/lib/storage/files";
 import type { EventInput } from "@/lib/validation";
-import type { AdminScope } from "@/lib/policy";
+import { albumShared, type AdminScope } from "@/lib/policy";
 import { parseQrStyle, type QrStyle } from "@/lib/qr/style";
 import { readChallenges, type Challenge } from "@/lib/challenges";
 import { readWallStyle, type WallStyle } from "@/lib/wall";
@@ -33,6 +33,9 @@ export interface PublicEvent {
   guestbookVoice: boolean;
   captureFilters: boolean;
   frame: EventRow["frame"];
+  sharedAlbum: EventRow["sharedAlbum"];
+  /** The setting applied now: with `after`, false until the event has ended. */
+  albumShared: boolean;
 }
 
 export function toPublicEvent(event: EventRow): PublicEvent {
@@ -56,6 +59,8 @@ export function toPublicEvent(event: EventRow): PublicEvent {
     guestbookVoice: event.guestbookVoice,
     captureFilters: event.captureFilters,
     frame: event.frame,
+    sharedAlbum: event.sharedAlbum,
+    albumShared: albumShared(event),
   };
 }
 

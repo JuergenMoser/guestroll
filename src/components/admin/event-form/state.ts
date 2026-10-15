@@ -28,6 +28,7 @@ export interface EventFormState {
   guestbookEnabled: boolean;
   guestbookVoice: boolean;
   guestbookInGallery: boolean;
+  sharedAlbum: "off" | "during" | "after";
   captureFilters: boolean;
   frame: Frame;
   /** New rows have an empty id: the server assigns one. */
@@ -75,6 +76,7 @@ export function initialState(event?: AdminEvent): EventFormState {
     guestbookEnabled: event?.guestbookEnabled ?? false,
     guestbookVoice: event?.guestbookVoice ?? true,
     guestbookInGallery: event?.guestbookInGallery ?? false,
+    sharedAlbum: event?.sharedAlbum ?? "off",
     captureFilters: event?.captureFilters ?? false,
     frame: event?.frame ?? "none",
   };

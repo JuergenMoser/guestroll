@@ -103,6 +103,7 @@ and photos per challenge.
 | | Photos per guest | 0 for no limit. Guests see a counter of photos left. |
 | | Moderation | Publish immediately and hide later, or approve each photo first. |
 | Guests | Album language | Automatic (each guest's phone) or one fixed language. Guests can still switch. |
+| | Guests see each other's photos | No (the default: each guest sees only their own), yes during and after the event, or yes once it is over. Guests then get a *The whole album* tab with the approved photos, in screen size: pending and hidden photos and the originals stay yours. |
 | | Ask guests for their name | Shown next to their photos in the admin and on the live wall. |
 | Look | Frame | **Instant print** (white border, event name and date below, logo), **Event color** (a border in the accent color with the name), or **Logo stamp** in a corner. Drawn on the phone before sending. |
 | | Let guests pick a filter | Black & white, warm, vintage or vivid, chosen above the shutter. Frames and filters are part of the photo sent: the original isn't kept. Phones that can't decode a format in the browser (rare) send it plain. |

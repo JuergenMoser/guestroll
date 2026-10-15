@@ -1,0 +1,1 @@
+ALTER TABLE `events` ADD `shared_album` text DEFAULT 'off' NOT NULL;

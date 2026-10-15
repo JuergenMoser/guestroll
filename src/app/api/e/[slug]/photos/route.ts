@@ -12,7 +12,7 @@ import {
   listPhotos,
   toPhotoDto,
 } from "@/lib/photos";
-import { canEnterEvent, uploadState, type Viewer } from "@/lib/policy";
+import { albumShared, canEnterEvent, uploadState, type Viewer } from "@/lib/policy";
 import { readChallenges } from "@/lib/challenges";
 import type { EventRow } from "@/lib/db/schema";
 import { newId } from "@/lib/security/ids";
@@ -44,7 +44,9 @@ export async function GET(
   const asGuest = { ...viewer, admin: undefined };
   const before =
     Number(new URL(request.url).searchParams.get("before")) || undefined;
-  const rows = listPhotos(event, asGuest, { before, limit: 48 });
+  // `scope=all`: the whole shared album, when the hosts share it; otherwise the guest's own photos.
+  const shared = new URL(request.url).searchParams.get("scope") === "all" && albumShared(event);
+  const rows = listPhotos(event, { ...asGuest, shared }, { before, limit: 48 });
   return NextResponse.json(
     {
       photos: rows.map((p) => toPhotoDto(p, asGuest)),

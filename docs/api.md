@@ -30,7 +30,7 @@ Authenticated by the `gr_guest` cookie.
 | `POST /api/e/:slug/guest` | `{ name }` | `{ name }`. Stored in the cookie. |
 | `POST /api/e/:slug/photos` | multipart, field `photo`, optional `challenge` (a challenge id) | `201 { photo: PhotoDto }`; an unknown challenge is ignored |
 | `DELETE /api/e/:slug/photos/:id` | | `{ ok }`: the guest's own photo, files included; `404` otherwise |
-| `GET /api/e/:slug/photos?before=<ms>` | | `{ photos: PhotoDto[], nextCursor }`, the guest's own photos only |
+| `GET /api/e/:slug/photos?before=<ms>&scope=all` | | `{ photos: PhotoDto[], nextCursor }`: the guest's own photos; with `scope=all` and a shared album, the others' approved ones too |
 | `GET /api/e/:slug/logo?v=<n>` | | The event logo (PNG), public with the slug |
 | `GET /api/media/:id?v=thumb\|display\|original[&download=1]` | | The image, if the viewer may see it |
 

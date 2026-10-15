@@ -1,5 +1,5 @@
 import "server-only";
-import { and, count, desc, eq, inArray, lt, ne, sql, type SQL } from "drizzle-orm";
+import { and, count, desc, eq, inArray, lt, ne, or, sql, type SQL } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { photos, type EventRow, type PhotoRow } from "@/lib/db/schema";
 import { isEventAdmin, type Viewer } from "@/lib/policy";
@@ -64,9 +64,10 @@ export interface ListOptions {
 /**
  * `"album"` lists the whole album (the caller already checked it may: an admin
  * of the event, or a gallery link with `status: "visible"`). A guest id lists
- * that guest's own photos, with the same rule as `canViewPhoto`.
+ * that guest's own photos, with the same rule as `canViewPhoto`; with `shared`
+ * (the caller checked `albumShared`), the others' visible photos too.
  */
-export function listPhotos(event: EventRow, who: "album" | { guestId?: string }, options: ListOptions = {}): PhotoRow[] {
+export function listPhotos(event: EventRow, who: "album" | { guestId?: string; shared?: boolean }, options: ListOptions = {}): PhotoRow[] {
   const limit = Math.min(Math.max(options.limit ?? 60, 1), 200);
   const filters: SQL[] = [eq(photos.eventId, event.id)];
 
@@ -74,6 +75,9 @@ export function listPhotos(event: EventRow, who: "album" | { guestId?: string },
   if (who === "album") {
     if (options.status) filters.push(eq(photos.status, options.status));
     if (options.favorite) filters.push(eq(photos.favorite, true));
+  } else if (who.shared) {
+    const own = who.guestId ? and(eq(photos.guestId, who.guestId), ne(photos.status, "hidden")) : undefined;
+    filters.push(or(eq(photos.status, "visible"), own)!);
   } else {
     if (!who.guestId) return [];
     filters.push(eq(photos.guestId, who.guestId), ne(photos.status, "hidden"));
