@@ -58,6 +58,30 @@ Each visitor gets, in this order:
 | `WEBHOOK_ALLOW_PRIVATE` | `false` | Let webhooks reach private, loopback and link-local addresses (a self-hosted ntfy or Home Assistant on your network). Off, a webhook to such an address fails with a message saying so: an owner's webhook can't probe the server's own network or cloud metadata. |
 | `CLOUD_ALLOW_PRIVATE` | `false` | Let the cloud export reach a WebDAV server on your own network (a Nextcloud at home). Off, such an address is refused, like for webhooks. |
 
+## Metrics
+
+| Variable | Default | Description |
+|---|---|---|
+| `METRICS_TOKEN` | | Turns on `/api/metrics` for Prometheus, behind `Authorization: Bearer <token>` (16 characters or more). Without it, or with a wrong token, the endpoint answers `404`. |
+
+A scrape job:
+
+```yaml
+scrape_configs:
+  - job_name: guestroll
+    scheme: https
+    metrics_path: /api/metrics
+    authorization:
+      credentials: <METRICS_TOKEN>
+    static_configs:
+      - targets: ["photos.example.com"]
+```
+
+It reports events (total, open), photos by status and their size, guests,
+guestbook messages, the email, webhook and cloud export queues, the photos'
+disk, the last scheduled backup, the version, memory and uptime. Nothing that
+names an event or a person.
+
 ## Single sign-on
 
 Sign in with Authentik, Authelia, Keycloak, Google Workspace or any OpenID

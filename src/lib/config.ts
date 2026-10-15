@@ -85,6 +85,9 @@ export const config = {
   /** Lets a relay without TLS receive the SMTP login (same machine or trusted network only). */
   smtpAllowPlain: bool("SMTP_ALLOW_PLAIN", false),
 
+  /** Bearer token of `/api/metrics` (Prometheus); the endpoint answers 404 without one. */
+  metricsToken: process.env.METRICS_TOKEN || "",
+
   /**
    * Single sign-on (OpenID Connect): Authentik, Authelia, Keycloak, Google…
    * On when issuer, client id and secret are all set.

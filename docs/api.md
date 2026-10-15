@@ -103,6 +103,7 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | `DELETE /api/admin/invitations/:id` | | `{ ok }` |
 | `POST /api/admin/invite/:token` | `{ username, name, password }` (public, the token is the credential) | `201 { ok }` and signed in; `404` for a spent, expired or revoked link |
 | `GET /api/admin/events/:id/album?layout=1\|2\|4&scope=visible\|favorites` | | The printable album, a streamed PDF; `404` without photos, `429` while another album is being made |
+| `GET /api/metrics` | `Authorization: Bearer <METRICS_TOKEN>` | Prometheus text format; `404` without the token |
 | `GET /api/admin/events/:id/cloud` | | `{ configured, exports }`: the latest cloud exports with their progress |
 | `POST /api/admin/events/:id/cloud` | `{ scope: "visible" \| "favorites" }` | `202 { export }`: queued, sent in the background |
 | `GET/PUT/DELETE /api/admin/cloud` | `{ url, user, password, folder, autoExport }` | The WebDAV settings (owners; the password is never returned) |

@@ -35,6 +35,7 @@ always run on their own at startup; take a backup first all the same
   automatically when the event ends.
 - Single sign-on with any OpenID Connect provider (Authentik, Authelia,
   Keycloak…): `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`.
+- Prometheus metrics at `/api/metrics`, behind `METRICS_TOKEN`.
 
 ## [0.4.0] - 2026-10-15
 

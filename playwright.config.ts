@@ -44,6 +44,7 @@ export default defineConfig({
       RATE_LIMIT_LOGIN_PER_MINUTE: "50",
       // The webhook receiver in the tests listens on 127.0.0.1.
       WEBHOOK_ALLOW_PRIVATE: "true",
+      METRICS_TOKEN: "e2e-metrics-token-0123456789",
       // Small, so the size limit can be tested without sending 25 MB.
       MAX_UPLOAD_MB: "2",
       SMTP_HOST: "127.0.0.1",
