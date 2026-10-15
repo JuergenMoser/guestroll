@@ -96,11 +96,13 @@ scopes `openid email profile`.
 | `OIDC_CLIENT_SECRET` | | |
 | `OIDC_NAME` | `SSO` | What the button says: *Sign in with Authentik*. |
 | `OIDC_AUTO_CREATE` | `false` | Someone the provider knows but Guestroll doesn't gets an organizer account without events (an owner then gives them some). Off, they're refused until an owner invites them. |
+| `OIDC_LINK_BY_EMAIL` | `false` | A first sign-in links the organizer account with the same verified email. Only for a provider where people can't change their own email: many let them, and still call it verified. Owner accounts are never linked this way. |
 
-An identity signs in as the account it was linked to the first time; the
-first time, as the account with the same email address, if the provider says
-it verified that address. Password sign-in stays available. An account with
-two-step verification still asks for its code after the provider.
+Each person links their identity once, from **Settings → Your account →
+Single sign-on**, signed in with their password: that proves they hold both.
+After that, *Sign in with …* signs them in. Password sign-in stays available.
+An account with two-step verification still asks for its code after the
+provider.
 
 ## Uploads
 

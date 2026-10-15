@@ -96,23 +96,24 @@ function identityOf(claims: JWTPayload): Identity {
 export type Resolution = { account: AccountRow } | { refused: "unknown" };
 
 /**
- * The account this identity signs in as: the one already linked to it; else the
- * one with the same email, if the provider verified that email (it gets linked);
- * else a new organizer without events with OIDC_AUTO_CREATE; else none.
+ * The account this identity signs in as: the one linked to it (from the
+ * account's own page, signed in, see `linkAccount`). With OIDC_LINK_BY_EMAIL, an
+ * organizer account with the same verified email gets linked on first sign-in;
+ * never an owner: a provider that lets people pick their own email would hand
+ * the instance over. With OIDC_AUTO_CREATE, a new organizer without events.
  */
 export function resolveAccount(identity: Identity): Resolution {
   const db = getDb();
   const linked = db.select().from(accounts).where(eq(accounts.oidcSubject, identity.subject)).get();
   if (linked) return { account: linked };
 
-  if (identity.email && identity.emailVerified) {
+  if (config.oidc.linkByEmail && identity.email && identity.emailVerified) {
     const byEmail = db
       .select()
       .from(accounts)
       .where(sql`lower(${accounts.email}) = ${identity.email}`)
       .get();
-    // Only an account not linked to another identity yet: never move a link silently.
-    if (byEmail && !byEmail.oidcSubject) {
+    if (byEmail && byEmail.role === "organizer" && !byEmail.oidcSubject) {
       return { account: db.update(accounts).set({ oidcSubject: identity.subject }).where(eq(accounts.id, byEmail.id)).returning().get() };
     }
   }
@@ -129,6 +130,19 @@ export function resolveAccount(identity: Identity): Resolution {
     passwordHash: hashPassword(randomToken(32)),
   });
   return { account: db.update(accounts).set({ oidcSubject: identity.subject }).where(eq(accounts.id, account.id)).returning().get() };
+}
+
+/** Links the signed-in account to this identity; refused when the identity already belongs to another account. */
+export function linkAccount(accountId: string, identity: Identity): "linked" | "taken" {
+  const db = getDb();
+  const owner = db.select({ id: accounts.id }).from(accounts).where(eq(accounts.oidcSubject, identity.subject)).get();
+  if (owner && owner.id !== accountId) return "taken";
+  db.update(accounts).set({ oidcSubject: identity.subject }).where(eq(accounts.id, accountId)).run();
+  return "linked";
+}
+
+export function unlinkAccount(accountId: string): void {
+  getDb().update(accounts).set({ oidcSubject: null }).where(eq(accounts.id, accountId)).run();
 }
 
 function freeUsername(identity: Identity): string {

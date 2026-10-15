@@ -2,7 +2,8 @@ import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import { touchLogin } from "@/lib/accounts";
 import { track } from "@/lib/activity";
-import { finishLogin, oidcEnabled, resolveAccount } from "@/lib/auth/oidc";
+import { getAdmin } from "@/lib/auth/admin";
+import { finishLogin, linkAccount, oidcEnabled, resolveAccount } from "@/lib/auth/oidc";
 import { getAdminSession, getOidcSession } from "@/lib/auth/session";
 import { hasTwoFactor } from "@/lib/auth/twoFactor";
 import { baseUrl } from "@/lib/urls";
@@ -21,6 +22,7 @@ export async function GET(request: Request) {
   const search = new URL(request.url).searchParams;
   const oidc = await getOidcSession();
   const expected = { state: oidc.state, nonce: oidc.nonce, verifier: oidc.verifier };
+  const linkAccountId = oidc.linkAccountId;
   // Used once, whatever happens next.
   oidc.destroy();
   const code = search.get("code");
@@ -35,6 +37,13 @@ export async function GET(request: Request) {
     track("login_failed", null);
     return fail("failed");
   }
+  if (linkAccountId) {
+    // Linking: only for the account still signed in in this browser, the one that asked.
+    const admin = await getAdmin();
+    if (admin?.id !== linkAccountId) return fail("expired");
+    return NextResponse.redirect(`${origin}/admin/settings/account?sso=${linkAccount(admin.id, identity)}#sso`);
+  }
+
   const resolved = resolveAccount(identity);
   if ("refused" in resolved) {
     track("login_failed", null);

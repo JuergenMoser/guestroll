@@ -100,6 +100,11 @@ export const config = {
     name: process.env.OIDC_NAME?.trim() || "SSO",
     /** Unknown people get an organizer account without events instead of a refusal. */
     autoCreate: bool("OIDC_AUTO_CREATE", false),
+    /**
+     * A first sign-in may link an organizer account by its email. Off by default:
+     * many providers let people set their own email and still call it verified.
+     */
+    linkByEmail: bool("OIDC_LINK_BY_EMAIL", false),
   },
 
   /** Recipient of admin alerts and summaries; Admin → Settings when unset. */

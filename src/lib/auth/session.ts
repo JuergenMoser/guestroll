@@ -58,6 +58,8 @@ export interface OidcSession {
   nonce?: string;
   verifier?: string;
   at?: number;
+  /** Set when a signed-in account is linking its identity, rather than signing in. */
+  linkAccountId?: string;
 }
 
 export async function getOidcSession() {

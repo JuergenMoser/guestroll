@@ -72,18 +72,40 @@ describe("single sign-on", () => {
     await expect(signIn({ sub: "u-1" }, { nonce: "replayed" })).rejects.toThrow("nonce");
   });
 
-  it("links an existing account by its verified email only, and creates one only when allowed", async () => {
+  it("never links by email unless told to, and then never an owner", async () => {
     env = await sso();
     const oidc = await import("@/lib/auth/oidc");
     const accounts = await import("@/lib/accounts");
-    const lea = accounts.createAccount({ username: "lea", name: "Léa", email: "lea@example.test", role: "organizer", eventIds: [], passwordHash: "x" });
+    accounts.createAccount({ username: "lea", name: "Léa", email: "lea@example.test", role: "organizer", eventIds: [], passwordHash: "x" });
+    accounts.createAccount({ username: "boss", name: "", email: "boss@example.test", role: "owner", eventIds: [], passwordHash: "x" });
+    const identity = (sub: string, email: string) => ({ subject: `${issuer}|${sub}`, email, emailVerified: true, name: "", username: null });
+    // Default: a provider letting people set their own email can't hand over an account.
+    expect(oidc.resolveAccount(identity("u-1", "lea@example.test"))).toEqual({ refused: "unknown" });
 
-    const unverified = { subject: `${issuer}|u-2`, email: "lea@example.test", emailVerified: false, name: "", username: null };
-    expect(oidc.resolveAccount(unverified)).toEqual({ refused: "unknown" });
-    const verified = { ...unverified, emailVerified: true };
-    expect("account" in oidc.resolveAccount(verified) && oidc.resolveAccount(verified)).toMatchObject({ account: { id: lea.id, oidcSubject: `${issuer}|u-2` } });
+    env.cleanup();
+    env = await sso({ OIDC_LINK_BY_EMAIL: "true" });
+    const again = await import("@/lib/auth/oidc");
+    const accountsAgain = await import("@/lib/accounts");
+    const lea = accountsAgain.createAccount({ username: "lea", name: "Léa", email: "lea@example.test", role: "organizer", eventIds: [], passwordHash: "x" });
+    accountsAgain.createAccount({ username: "boss", name: "", email: "boss@example.test", role: "owner", eventIds: [], passwordHash: "x" });
+    expect(again.resolveAccount(identity("u-1", "lea@example.test"))).toMatchObject({ account: { id: lea.id, oidcSubject: `${issuer}|u-1` } });
+    expect(again.resolveAccount(identity("u-2", "boss@example.test"))).toEqual({ refused: "unknown" });
     // Linked: another identity with the same email doesn't take it over.
-    expect(oidc.resolveAccount({ ...verified, subject: `${issuer}|u-3` })).toEqual({ refused: "unknown" });
+    expect(again.resolveAccount(identity("u-3", "lea@example.test"))).toEqual({ refused: "unknown" });
+  });
+
+  it("links from the signed-in account, refuses an identity already taken, and creates only when allowed", async () => {
+    env = await sso();
+    const oidc = await import("@/lib/auth/oidc");
+    const accounts = await import("@/lib/accounts");
+    const a = accounts.createAccount({ username: "anna", name: "", email: null, role: "owner", eventIds: [], passwordHash: "x" });
+    const b = accounts.createAccount({ username: "bob", name: "", email: null, role: "organizer", eventIds: [], passwordHash: "x" });
+    const identity = { subject: `${issuer}|u-5`, email: null, emailVerified: false, name: "", username: null };
+    expect(oidc.linkAccount(a.id, identity)).toBe("linked");
+    expect(oidc.resolveAccount(identity)).toMatchObject({ account: { id: a.id } });
+    expect(oidc.linkAccount(b.id, identity)).toBe("taken");
+    oidc.unlinkAccount(a.id);
+    expect(oidc.resolveAccount(identity)).toEqual({ refused: "unknown" });
 
     env.cleanup();
     env = await sso({ OIDC_AUTO_CREATE: "true" });

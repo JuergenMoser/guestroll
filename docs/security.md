@@ -48,9 +48,11 @@ links unchanged.
   encrypted cookie for ten minutes and used once. The ID token's signature is
   checked against the provider's published keys, with its issuer, audience,
   expiry and nonce.
-- An identity is linked to one account and stays so. The first link goes by
-  email only when the provider marks the address verified, and never moves an
-  account already linked to another identity.
+- An identity is linked to one account, by its holder, signed in, from their
+  account page: whoever controls an identity at the provider can't claim an
+  account by setting its email there. Matching by email is opt-in
+  (`OIDC_LINK_BY_EMAIL`, verified addresses only), never for owners, and never
+  moves an account already linked to another identity.
 - Accounts created by single sign-on get a random password nobody knows.
   Guestroll's own two-step verification still applies after the provider.
 

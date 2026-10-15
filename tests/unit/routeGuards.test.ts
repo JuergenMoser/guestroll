@@ -32,7 +32,7 @@ describe("admin guards", () => {
 
   it("every admin API route except login/logout and invitation acceptance calls requireAdmin", () => {
     const routes = files(path.join(root, "api/admin"), "route.ts").filter(
-      (f) => !/login|logout/.test(f) && !f.includes(`${path.sep}invite${path.sep}`) && !f.includes(`${path.sep}oidc${path.sep}`),
+      (f) => !/login|logout/.test(f) && !f.includes(`${path.sep}invite${path.sep}`) && !f.includes(`api${path.sep}admin${path.sep}oidc${path.sep}`),
     );
     expect(routes.length).toBeGreaterThan(5);
     for (const route of routes) {
