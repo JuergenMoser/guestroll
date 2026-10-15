@@ -26,6 +26,7 @@ import {
   type MemoryHold,
 } from "@/lib/security/request";
 import { storageFull } from "@/lib/storage";
+import { getSpot } from "@/lib/spots";
 import { deletePhotoFiles, writePhotoFiles } from "@/lib/storage/files";
 
 // Multipart framing around a single file stays far below this.
@@ -157,7 +158,7 @@ async function receive(
     throw error;
   }
 
-  return await store(event, guestId, session, viewer, processed, challengeId);
+  return await store(event, guestId, session, viewer, processed, challengeId, getSpot(event.id, new URL(request.url).searchParams.get("at"))?.id ?? null);
 }
 
 async function store(
@@ -167,6 +168,7 @@ async function store(
   viewer: Viewer,
   processed: ProcessedPhoto,
   challengeId: string | null,
+  spotId: string | null,
 ) {
   const id = newId();
   await writePhotoFiles(event.id, id, processed.files);
@@ -181,6 +183,7 @@ async function store(
       bytes: processed.files.original.length,
       status: event.moderation === "pre" ? "pending" : "visible",
       challengeId,
+      spotId,
     });
     track("upload", event.id, guestId);
     return NextResponse.json(

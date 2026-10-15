@@ -64,6 +64,12 @@ and photos per challenge.
 - **QR code design**: presets, colors, dot and corner shapes, margin, a logo in
   the middle and a caption. The preview is the exact file you download, as PNG
   (512 to 4096 px) or SVG. Remember to **Save** before downloading.
+- **QR codes per table**: one code per table or place ("Table 5", "Dance
+  floor"), with the same design and the place's name as its caption. Photos sent
+  after scanning one are tagged with it: the *Photos* tab filters by place and
+  *Stats* counts the photos of each. The guest's phone remembers the last place
+  scanned for that event. Renaming a place keeps its code; deleting it keeps
+  its photos, untagged. A duplicated event gets the same places with new codes.
 - **Printable poster**: an A4 card with the event name, date and QR code.
 - **Slideshow video**: an MP4 of the visible photos (or the favorites) in the
   order they were taken, with a title card, slow zooms and crossfades, 16:9 or

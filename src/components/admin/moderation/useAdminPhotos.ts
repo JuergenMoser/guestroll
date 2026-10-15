@@ -9,7 +9,7 @@ export type PhotoFilter = "all" | "visible" | "pending" | "hidden" | "favorites"
 type Page = { photos: PhotoDto[]; nextCursor: number | null };
 
 /** Paginated admin photo list for one event and one status filter. */
-export function useAdminPhotos(eventId: string, filter: PhotoFilter, challengeId = "") {
+export function useAdminPhotos(eventId: string, filter: PhotoFilter, challengeId = "", spotId = "") {
   const [photos, setPhotos] = useState<PhotoDto[]>([]);
   const [cursor, setCursor] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
@@ -20,10 +20,11 @@ export function useAdminPhotos(eventId: string, filter: PhotoFilter, challengeId
       if (filter === "favorites") query.set("favorites", "1");
       else if (filter !== "all") query.set("status", filter);
       if (challengeId) query.set("challenge", challengeId);
+      if (spotId) query.set("spot", spotId);
       if (before) query.set("before", String(before));
       return api<Page>(`/api/admin/events/${eventId}/photos?${query}`).catch((): Page => ({ photos: [], nextCursor: null }));
     },
-    [eventId, filter, challengeId],
+    [eventId, filter, challengeId, spotId],
   );
 
   const reload = useCallback(

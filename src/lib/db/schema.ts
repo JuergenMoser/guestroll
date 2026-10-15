@@ -76,9 +76,29 @@ export const photos = sqliteTable(
     favorite: integer("favorite", { mode: "boolean" }).notNull().default(false),
     /** One of the event's challenge ids, or null. Kept when the challenge is later removed: the photo still answered it. */
     challengeId: text("challenge_id"),
+    /** Where the guest scanned from (a table's own QR code), null from the event's main code. */
+    spotId: text("spot_id").references(() => spots.id, { onDelete: "set null" }),
     createdAt: integer("created_at").notNull().default(now),
   },
-  (t) => [index("photos_event_idx").on(t.eventId, t.createdAt), index("photos_guest_idx").on(t.eventId, t.guestId)],
+  (t) => [index("photos_event_idx").on(t.eventId, t.createdAt), index("photos_guest_idx").on(t.eventId, t.guestId), index("photos_spot_idx").on(t.spotId)],
+);
+
+/**
+ * A place of the event with its own QR code ("Table 5", "Dance floor"): photos
+ * sent after scanning it are tagged with it. Deleting one keeps its photos.
+ */
+export const spots = sqliteTable(
+  "spots",
+  {
+    /** Short and random: it goes in the QR code (`?at=`), and a short URL keeps the code easy to scan. */
+    id: text("id").primaryKey(),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    label: text("label").notNull(),
+    createdAt: integer("created_at").notNull().default(now),
+  },
+  (t) => [index("spots_event_idx").on(t.eventId)],
 );
 
 /**
@@ -255,6 +275,7 @@ export const settings = sqliteTable("settings", {
 
 export type EventRow = typeof events.$inferSelect;
 export type PhotoRow = typeof photos.$inferSelect;
+export type SpotRow = typeof spots.$inferSelect;
 export type ActivityType = (typeof activity.$inferInsert)["type"];
 export type ShareLinkRow = typeof shareLinks.$inferSelect;
 export type MessageRow = typeof messages.$inferSelect;

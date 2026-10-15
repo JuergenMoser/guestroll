@@ -14,11 +14,12 @@ import { useAdminPhotos, type PhotoFilter } from "./useAdminPhotos";
 const FILTERS: PhotoFilter[] = ["all", "pending", "visible", "hidden", "favorites"];
 
 /** The contact sheet: filter, select, then approve, hide or delete in bulk. */
-export function ModerationPanel({ eventId, pendingCount, challenges = [] }: { eventId: string; pendingCount: number; challenges?: Challenge[] }) {
+export function ModerationPanel({ eventId, pendingCount, challenges = [], spots = [] }: { eventId: string; pendingCount: number; challenges?: Challenge[]; spots?: { id: string; label: string }[] }) {
   const t = useT();
   const [filter, setFilter] = useState<PhotoFilter>(pendingCount > 0 ? "pending" : "all");
   const [challengeId, setChallengeId] = useState("");
-  const { photos, cursor, loading, setLoading, reload, loadMore } = useAdminPhotos(eventId, filter, challengeId);
+  const [spotId, setSpotId] = useState("");
+  const { photos, cursor, loading, setLoading, reload, loadMore } = useAdminPhotos(eventId, filter, challengeId, spotId);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
 
@@ -71,6 +72,25 @@ export function ModerationPanel({ eventId, pendingCount, challenges = [] }: { ev
               {challenges.map((c) => (
                 <option key={c.id} value={c.id}>
                   {c.label}
+                </option>
+              ))}
+            </Select>
+          )}
+          {spots.length > 0 && (
+            <Select
+              aria-label={t("admin.spots.filter")}
+              value={spotId}
+              onChange={(e) => {
+                setSelected(new Set());
+                setLoading(true);
+                setSpotId(e.target.value);
+              }}
+              className="h-8 w-auto max-w-56 py-1 text-sm"
+            >
+              <option value="">{t("admin.spots.allSpots")}</option>
+              {spots.map((s) => (
+                <option key={s.id} value={s.id}>
+                  {s.label}
                 </option>
               ))}
             </Select>

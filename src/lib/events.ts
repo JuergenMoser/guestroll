@@ -11,6 +11,7 @@ import { albumShared, type AdminScope } from "@/lib/policy";
 import { parseQrStyle, type QrStyle } from "@/lib/qr/style";
 import { readChallenges, type Challenge } from "@/lib/challenges";
 import { readWallStyle, type WallStyle } from "@/lib/wall";
+import { copySpots } from "@/lib/spots";
 
 /** What the guest page may know about an event: no hash, no internal settings. */
 export interface PublicEvent {
@@ -246,6 +247,7 @@ export async function duplicateEvent(source: EventRow, name: string): Promise<Ev
       .get();
     const organizers = getDb().select({ accountId: accountEvents.accountId }).from(accountEvents).where(eq(accountEvents.eventId, source.id)).all();
     if (organizers.length) getDb().insert(accountEvents).values(organizers.map((o) => ({ accountId: o.accountId, eventId: row.id }))).run();
+    copySpots(source.id, row.id);
     return row;
   });
   if (logoVersion) {

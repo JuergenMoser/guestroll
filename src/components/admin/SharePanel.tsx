@@ -13,8 +13,10 @@ import { GalleryLinks } from "./GalleryLinks";
 import { QrDesigner } from "./qr/QrDesigner";
 import { SlideshowExport } from "./SlideshowExport";
 import { WallSettings } from "./WallSettings";
+import { SpotsCard } from "./SpotsCard";
+import type { SpotDto } from "@/lib/spots";
 
-export function SharePanel({ event, url, locale, purgeAt, favoriteCount }: { event: AdminEvent; url: string; locale: string; purgeAt: number | null; favoriteCount: number }) {
+export function SharePanel({ event, url, locale, purgeAt, favoriteCount, spots }: { event: AdminEvent; url: string; locale: string; purgeAt: number | null; favoriteCount: number; spots: SpotDto[] }) {
   const t = useT();
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -43,6 +45,8 @@ export function SharePanel({ event, url, locale, purgeAt, favoriteCount }: { eve
 
       {/* Keyed on the slug: a new link means a new code, so the designer restarts from it. */}
       <QrDesigner key={event.slug} event={event} url={url} />
+
+      <SpotsCard eventId={event.id} initial={spots} />
 
       <SlideshowExport eventId={event.id} eventName={event.name} eventDate={event.eventDate} accent={event.accentColor} hasFavorites={favoriteCount > 0} />
 

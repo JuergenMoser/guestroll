@@ -38,7 +38,7 @@ export function getPhoto(id: string): PhotoRow | undefined {
   return getDb().select().from(photos).where(eq(photos.id, id)).get();
 }
 
-export function insertPhoto(photo: Omit<PhotoRow, "downloads" | "createdAt" | "favorite" | "challengeId"> & { challengeId?: string | null }): PhotoRow {
+export function insertPhoto(photo: Omit<PhotoRow, "downloads" | "createdAt" | "favorite" | "challengeId" | "spotId"> & { challengeId?: string | null; spotId?: string | null }): PhotoRow {
   return getDb().insert(photos).values(photo).returning().get();
 }
 
@@ -59,6 +59,7 @@ export interface ListOptions {
   status?: PhotoRow["status"];
   favorite?: boolean;
   challengeId?: string;
+  spotId?: string;
 }
 
 /**
@@ -72,6 +73,7 @@ export function listPhotos(event: EventRow, who: "album" | { guestId?: string; s
   const filters: SQL[] = [eq(photos.eventId, event.id)];
 
   if (options.challengeId) filters.push(eq(photos.challengeId, options.challengeId));
+  if (options.spotId) filters.push(eq(photos.spotId, options.spotId));
   if (who === "album") {
     if (options.status) filters.push(eq(photos.status, options.status));
     if (options.favorite) filters.push(eq(photos.favorite, true));

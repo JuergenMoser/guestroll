@@ -1,6 +1,6 @@
 "use client";
 
-import { EyeOff, Users } from "lucide-react";
+import { EyeOff, MapPin, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useT } from "@/components/I18nProvider";
 import { CaptureHost } from "@/components/upload/CaptureHost";
@@ -25,11 +25,14 @@ interface GuestAppProps {
   contactEmail: string | null;
   locale: string;
   initialMessages: MessageDto[];
+  /** From the table's QR code just scanned; null from the main code. */
+  spot: { id: string; label: string } | null;
 }
 
 const skipKey = (slug: string) => `guestroll:skip-name:${slug}`;
+const spotKey = (slug: string) => `guestroll:spot:${slug}`;
 
-export function GuestApp({ event, guestName, initialPhotos, initialCursor, closedReason, remaining: initialRemaining, sentCount, contactEmail, locale, initialMessages }: GuestAppProps) {
+export function GuestApp({ event, guestName, initialPhotos, initialCursor, closedReason, remaining: initialRemaining, sentCount, contactEmail, locale, initialMessages, spot: scanned }: GuestAppProps) {
   const t = useT();
   const [name, setName] = useState(guestName);
   const [askName, setAskName] = useState(false);
@@ -44,6 +47,20 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
   const [album, setAlbum] = useState<{ photos: PhotoDto[]; cursor: number | null } | null>(null);
   // From the photos loaded so far: a guest with hundreds of photos may see a tick appear only after "Load more".
   const doneChallenges = useMemo(() => new Set(photos.map((p) => p.challengeId).filter((id): id is string => Boolean(id))), [photos]);
+
+  // The last table scanned for this event, so photos sent after reopening the page
+  // without the QR code's parameter still say where they were taken.
+  const [spot, setSpot] = useState(scanned);
+  useEffect(() => {
+    try {
+      if (scanned) localStorage.setItem(spotKey(event.slug), JSON.stringify(scanned));
+      else {
+        const stored = JSON.parse(localStorage.getItem(spotKey(event.slug)) ?? "null") as { id?: unknown; label?: unknown } | null;
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- localStorage is only readable after mount
+        if (typeof stored?.id === "string" && typeof stored.label === "string") setSpot({ id: stored.id, label: stored.label });
+      }
+    } catch {}
+  }, [scanned, event.slug]);
 
   useEffect(() => {
     if (!event.askGuestName || guestName) return;
@@ -119,7 +136,13 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
 
   return (
     <div className="space-y-9">
-      <CaptureHost event={event} doneChallenges={doneChallenges} closedReason={closedReason} remaining={remaining} sent={sent} onUploaded={onUploaded} />
+      <CaptureHost event={event} spotId={spot?.id ?? null} doneChallenges={doneChallenges} closedReason={closedReason} remaining={remaining} sent={sent} onUploaded={onUploaded} />
+      {spot && (
+        <p className="-mt-6 flex items-center gap-1.5 text-sm text-ink-muted">
+          <MapPin className="size-3.5 shrink-0" aria-hidden />
+          {t("guest.spot", { spot: spot.label })}
+        </p>
+      )}
 
       <section className="space-y-4">
         <div className="space-y-1">

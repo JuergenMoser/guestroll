@@ -21,10 +21,11 @@ import { countGuestPhotos, listPhotos, toPhotoDto } from "@/lib/photos";
 import { listMessages, toMessageDto } from "@/lib/messages";
 import { canEnterEvent, canJoinFreely, uploadState } from "@/lib/policy";
 import { SLUG_PATTERN } from "@/lib/security/ids";
+import { getSpot } from "@/lib/spots";
 
 export const dynamic = "force-dynamic";
 
-type Props = { params: Promise<{ slug: string }> };
+type Props = { params: Promise<{ slug: string }>; searchParams: Promise<{ at?: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -33,12 +34,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: event.name, description: event.description || undefined, openGraph: { title: event.name, description: event.description || undefined } };
 }
 
-export default async function GuestPage({ params }: Props) {
-  const { slug } = await params;
+export default async function GuestPage({ params, searchParams }: Props) {
+  const [{ slug }, { at }] = await Promise.all([params, searchParams]);
   const event = SLUG_PATTERN.test(slug) ? getEventBySlug(slug) : undefined;
   if (!event) notFound();
 
   const viewer = await getViewer();
+  // A table's own QR code: checked against this event, anything else is ignored.
+  const spotFromUrl = getSpot(event.id, at);
   const guest = await getGuestSession();
   track("view", event.id, viewer.guestId);
   const publicEvent = toPublicEvent(event);
@@ -68,6 +71,7 @@ export default async function GuestPage({ params }: Props) {
         contactEmail={viewer.guestId && event.collectGuestEmails ? (getGuestContact(event.id, viewer.guestId)?.email ?? null) : null}
         locale={locale}
         initialMessages={event.guestbookEnabled ? listMessages(event, asGuest).map((m) => toMessageDto(m, asGuest)) : []}
+        spot={spotFromUrl ? { id: spotFromUrl.id, label: spotFromUrl.label } : null}
       />
     );
   }

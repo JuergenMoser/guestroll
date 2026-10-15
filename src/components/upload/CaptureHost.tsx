@@ -14,6 +14,8 @@ import { useUploadQueue } from "./useUploadQueue";
 
 interface CaptureHostProps {
   event: PublicEvent;
+  /** The table the guest scanned: sent with each photo (`?at=`), checked by the server. */
+  spotId: string | null;
   /** Challenges this guest already answered, from their own photos. */
   doneChallenges: ReadonlySet<string>;
   closedReason: "closed" | "quota" | null;
@@ -27,13 +29,13 @@ interface CaptureHostProps {
  * capture component the event uses (see `capture/registry.ts`). Swapping the
  * capture component never touches the upload queue wired here.
  */
-export function CaptureHost({ event, doneChallenges, closedReason, remaining, sent, onUploaded }: CaptureHostProps) {
+export function CaptureHost({ event, spotId, doneChallenges, closedReason, remaining, sent, onUploaded }: CaptureHostProps) {
   const t = useT();
   const [challengeId, setChallengeId] = useState<string | null>(null);
   const challenge = event.challenges.find((c) => c.id === challengeId);
   const [filter, setFilter] = useState<Filter>("none");
   const effects = useMemo(() => ({ frame: event.frame, event }), [event]);
-  const queue = useUploadQueue(`/api/e/${event.slug}/photos`, onUploaded, effects);
+  const queue = useUploadQueue(`/api/e/${event.slug}/photos${spotId ? `?at=${encodeURIComponent(spotId)}` : ""}`, onUploaded, effects);
   const Capture = captureComponents[event.captureMode];
 
   // Don't let a guest queue more files than their quota allows: the extra ones would only fail.

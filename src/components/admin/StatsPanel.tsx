@@ -9,7 +9,7 @@ import { StatGrid } from "./StatGrid";
 import { TopGuests } from "./TopGuests";
 import { UploadsChart } from "./UploadsChart";
 
-export function StatsPanel({ stats, locale, challenges = [] }: { stats: Stats; locale: string; challenges?: Challenge[] }) {
+export function StatsPanel({ stats, locale, challenges = [], spots = [] }: { stats: Stats; locale: string; challenges?: Challenge[]; spots?: { id: string; label: string; photos: number }[] }) {
   const t = useT();
   return (
     <div className="space-y-4">
@@ -27,6 +27,12 @@ export function StatsPanel({ stats, locale, challenges = [] }: { stats: Stats; l
           <Card className="lg:col-span-3">
             <CardTitle className="mb-4">{t("admin.challenges.statsTitle")}</CardTitle>
             <ChallengeStats challenges={challenges} counts={stats.challenges} />
+          </Card>
+        )}
+        {spots.length > 0 && (
+          <Card className="lg:col-span-3">
+            <CardTitle className="mb-4">{t("admin.spots.statsTitle")}</CardTitle>
+            <ChallengeStats challenges={spots} counts={spots.map((s) => ({ id: s.id, photos: s.photos }))} />
           </Card>
         )}
       </div>

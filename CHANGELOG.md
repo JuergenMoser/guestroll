@@ -16,6 +16,9 @@ always run on their own at startup; take a backup first all the same
 - Shared album, per event and off by default: guests can also see the others'
   approved photos, during and after the event or only once it is over. Never
   pending or hidden photos, never the others' originals.
+- QR codes per table or place: each with the event's design and the place's
+  name, photos sent after scanning one are tagged with it, with a filter in the
+  Photos tab and a count per place in Stats.
 
 ## [0.4.0] - 2026-10-15
 
