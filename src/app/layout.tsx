@@ -5,6 +5,9 @@ import { config } from "@/lib/config";
 import { getLocale, getMessages } from "@/lib/i18n/server";
 import "./globals.css";
 
+// Locale and app name come from runtime env vars: nothing may be frozen at build time.
+export const dynamic = "force-dynamic";
+
 const sans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 const display = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-display-serif" });

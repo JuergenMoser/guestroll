@@ -36,7 +36,8 @@ export type Locale = (typeof LOCALES)[number];
 export const CAPTURE_MODES = ["camera", "picker", "both"] as const;
 export type CaptureMode = (typeof CAPTURE_MODES)[number];
 
-const dataDir = path.resolve(process.env.DATA_DIR || "./data");
+// The data folder is runtime state, not code: keep the build tracer out of it.
+const dataDir = path.resolve(/*turbopackIgnore: true*/ process.env.DATA_DIR || "./data");
 
 export const config = {
   appName: process.env.APP_NAME?.trim() || "Guestroll",
@@ -45,9 +46,9 @@ export const config = {
   locale: oneOf("DEFAULT_LOCALE", LOCALES, "en"),
 
   dataDir,
-  dbFile: path.join(dataDir, "guestroll.db"),
-  uploadsDir: path.join(dataDir, "uploads"),
-  secretFile: path.join(dataDir, ".session-secret"),
+  dbFile: path.join(/*turbopackIgnore: true*/ dataDir, "guestroll.db"),
+  uploadsDir: path.join(/*turbopackIgnore: true*/ dataDir, "uploads"),
+  secretFile: path.join(/*turbopackIgnore: true*/ dataDir, ".session-secret"),
 
   adminPassword: process.env.ADMIN_PASSWORD || "",
   sessionSecret: process.env.SESSION_SECRET || "",

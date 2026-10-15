@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
   agentRules: false,
   // Native modules must stay out of the bundle so the standalone build ships their binaries.
   serverExternalPackages: ["better-sqlite3", "sharp", "heic-convert"],
+  // The local data folder holds photos and the session secret: never ship it in a build.
+  outputFileTracingExcludes: { "*": ["data/**", "media/**", "tests/**"] },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];
   },

@@ -19,7 +19,7 @@ const SAFE_ID = /^[0-9a-f-]{36}$/;
 
 export function photoPath(eventId: string, photoId: string, variant: PhotoVariant): string {
   if (!SAFE_ID.test(eventId) || !SAFE_ID.test(photoId)) throw new Error("Invalid storage id");
-  return path.join(config.uploadsDir, eventId, `${photoId}.${variant}.${EXT[variant]}`);
+  return path.join(/*turbopackIgnore: true*/ config.uploadsDir, eventId, `${photoId}.${variant}.${EXT[variant]}`);
 }
 
 export async function writePhotoFiles(eventId: string, photoId: string, files: Record<PhotoVariant, Buffer>): Promise<void> {
@@ -46,7 +46,7 @@ export async function deleteEventFiles(eventId: string): Promise<void> {
 
 export function openPhotoStream(eventId: string, photoId: string, variant: PhotoVariant) {
   const file = photoPath(eventId, photoId, variant);
-  const stat = fs.statSync(file, { throwIfNoEntry: false });
+  const stat = fs.statSync(/*turbopackIgnore: true*/ file, { throwIfNoEntry: false });
   if (!stat) return null;
-  return { stream: fs.createReadStream(file), size: stat.size, file };
+  return { stream: fs.createReadStream(/*turbopackIgnore: true*/ file), size: stat.size, file };
 }
