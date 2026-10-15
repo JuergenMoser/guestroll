@@ -215,6 +215,11 @@ elsewhere.
 - Serve it over **HTTPS**. Phones need it for the camera, and cookies are
   `Secure` in production.
 - Set `TRUST_PROXY=true` behind your reverse proxy, and **only** then.
+- Let the proxy buffer request bodies before passing them on (nginx does by
+  default, `proxy_request_buffering on`): a client that sends most of an
+  upload and then stalls then ties up the proxy, not Guestroll's memory. The
+  app cuts such uploads after 2 minutes on its own, but a client reconnecting
+  over and over could keep its upload budget busy.
 - Back up `DATA_DIR` and keep it private: it holds every photo and the session
   secret.
 - Pin an image version and follow releases for security fixes.

@@ -72,6 +72,11 @@ export class MemoryBudget {
 
 export type MemoryHold = ReturnType<MemoryBudget["hold"]>;
 
+// Long enough for a phone's compressed photo over a weak 4G (a few MB), short
+// enough that a client sending most of a body and then stalling gives its share
+// of the memory budget back: without it, ten of them held the budget forever.
+const BUDGETED_READ_MS = 120_000;
+
 export async function readBodyCapped(request: Request, maxBytes: number, hold?: MemoryHold): Promise<Uint8Array<ArrayBuffer>> {
   const declared = Number(request.headers.get("content-length") ?? 0);
   if (declared > maxBytes) throw new BodyTooLargeError();
@@ -80,20 +85,28 @@ export async function readBodyCapped(request: Request, maxBytes: number, hold?: 
   const reader = request.body.getReader();
   const chunks: Uint8Array[] = [];
   let total = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    total += value.byteLength;
-    if (total > maxBytes) {
-      await reader.cancel();
-      throw new BodyTooLargeError();
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const deadline = hold
+    ? new Promise<never>((_, reject) => {
+        timer = setTimeout(() => reject(new ServerBusyError("Upload too slow")), BUDGETED_READ_MS);
+      })
+    : null;
+  try {
+    for (;;) {
+      const { done, value } = deadline ? await Promise.race([reader.read(), deadline]) : await reader.read();
+      if (done) break;
+      total += value.byteLength;
+      if (total > maxBytes) throw new BodyTooLargeError();
+      // Three copies live at once on the upload path: the chunks, the parsed form, the file's buffer.
+      if (hold && !hold.take(value.byteLength * 3)) throw new ServerBusyError();
+      chunks.push(value);
     }
-    // Three copies live at once on the upload path: the chunks, the parsed form, the file's buffer.
-    if (hold && !hold.take(value.byteLength * 3)) {
-      await reader.cancel();
-      throw new ServerBusyError();
-    }
-    chunks.push(value);
+  } catch (error) {
+    // The caller releases the hold; dropping the stream ends the slow client's request.
+    await reader.cancel().catch(() => {});
+    throw error;
+  } finally {
+    clearTimeout(timer);
   }
   const body = new Uint8Array(total);
   let offset = 0;
