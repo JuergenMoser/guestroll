@@ -11,7 +11,11 @@ export async function eventQrSvg(event: EventRow): Promise<string> {
   const style = eventQrStyle(event);
   const logo = style.logo && event.logoVersion ? await readLogo(event.id) : null;
   const matrix = qrMatrix(await eventUrl(event.slug), style);
-  return renderQrSvg(matrix, { ...style, logo: Boolean(logo) }, { logoHref: logo ? `data:image/png;base64,${logo.toString("base64")}` : undefined });
+  return renderQrSvg(matrix, { ...style, logo: Boolean(logo) }, {
+    logoHref: logo ? `data:image/png;base64,${logo.toString("base64")}` : undefined,
+    // The bundled font (see docker/fonts.conf): exports look the same on every server.
+    fontFamily: "'Bricolage Grotesque', sans-serif",
+  });
 }
 
 export async function eventQrPng(event: EventRow, width: number): Promise<Buffer> {

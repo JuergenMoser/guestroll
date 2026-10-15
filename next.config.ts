@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   serverExternalPackages: ["better-sqlite3", "sharp", "heic-convert"],
   // The local data folder holds photos and the session secret: never ship it in a build.
   // Read from disk by the social preview images (src/lib/og.tsx).
-  outputFileTracingIncludes: { "/**": ["./assets/fonts/*.woff"] },
+  outputFileTracingIncludes: { "/**": ["./assets/fonts/*.woff", "./assets/fonts/*.ttf"] },
   outputFileTracingExcludes: { "*": ["data/**", "media/**", "tests/**"] },
   async headers() {
     return [{ source: "/:path*", headers: securityHeaders }];

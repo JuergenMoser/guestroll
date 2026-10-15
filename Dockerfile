@@ -30,9 +30,9 @@ LABEL org.opencontainers.image.title="Guestroll" \
       org.opencontainers.image.licenses="MIT" \
       org.opencontainers.image.version="${VERSION}"
 
-# A font is needed to rasterise the QR caption into PNG (librsvg via sharp).
 # apk upgrade: security fixes published since the base image was built, on every build.
-RUN apk upgrade --no-cache && apk add --no-cache libstdc++ su-exec tzdata fontconfig ttf-dejavu && fc-cache -f && mkdir -p /data
+# No system font packages: sharp's own fontconfig reads the app's font (docker/fonts.conf).
+RUN apk upgrade --no-cache && apk add --no-cache libstdc++ su-exec tzdata && mkdir -p /data
 
 ENV NODE_ENV=production \
     NEXT_TELEMETRY_DISABLED=1 \
@@ -42,12 +42,14 @@ ENV NODE_ENV=production \
     PUID=1001 \
     PGID=1001 \
     TZ=UTC \
-    XDG_CACHE_HOME=/tmp/.cache
+    XDG_CACHE_HOME=/tmp/.cache \
+    FONTCONFIG_FILE=/app/fonts.conf
 
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/drizzle ./drizzle
 COPY docker/entrypoint.sh /usr/local/bin/guestroll-entrypoint
+COPY docker/fonts.conf /app/fonts.conf
 
 VOLUME ["/data"]
 EXPOSE 3000

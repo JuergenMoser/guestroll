@@ -1,6 +1,6 @@
 {
   "name": "guestroll",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "Self-hosted QR-code photo sharing for events: guests scan, shoot, and every picture lands in one private gallery.",
   "license": "MIT",

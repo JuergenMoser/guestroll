@@ -130,7 +130,10 @@ export function renderQrSvg(matrix: QrMatrix, style: QrStyle, options: RenderOpt
   let label = "";
   if (style.label) {
     const font = options.fontFamily ?? "Geist, Inter, 'DejaVu Sans', system-ui, sans-serif";
-    label = `<text x="${width / 2}" y="${width + labelHeight / 2}" text-anchor="middle" dominant-baseline="central" font-family="${escapeXml(font)}" font-size="${UNIT * 2.6}" font-weight="600" letter-spacing="1" fill="${style.foreground}">${escapeXml(style.label)}</text>`;
+    // A semibold sans averages ~0.6 em per character: shrink long captions so
+    // they stay inside the code's width instead of being cut at the edges.
+    const fontSize = Math.min(UNIT * 2.6, (width * 0.9) / (style.label.length * 0.6));
+    label = `<text x="${width / 2}" y="${width + labelHeight / 2}" text-anchor="middle" dominant-baseline="central" font-family="${escapeXml(font)}" font-size="${fontSize.toFixed(2)}" font-weight="600" fill="${style.foreground}">${escapeXml(style.label)}</text>`;
   }
 
   return (
