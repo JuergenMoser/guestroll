@@ -74,3 +74,40 @@ describe("webhooks", () => {
     expect(JSON.parse(send.mock.calls[0][0].body)).toMatchObject({ kind: "event_ended", event: { name: "Party" }, data: { photos: 0 } });
   });
 });
+
+describe("webhook HTTP delivery", () => {
+  it("refuses internal addresses unless allowed, and gives up on a server that trickles its answer", async () => {
+    const { createServer } = await import("node:http");
+    const server = createServer((_req, res) => {
+      res.writeHead(200);
+      // One byte a second: the idle timeout alone would never fire.
+      const drip = setInterval(() => res.write("."), 1_000);
+      res.on("close", () => clearInterval(drip));
+    });
+    await new Promise<void>((resolve) => server.listen(0, "127.0.0.1", resolve));
+    const url = `http://127.0.0.1:${(server.address() as import("node:net").AddressInfo).port}/`;
+    try {
+      const { httpSend } = await import("@/lib/webhooks/queue");
+      await expect(httpSend({ url, headers: {}, body: "{}" })).rejects.toThrow("WEBHOOK_ALLOW_PRIVATE");
+
+      env.cleanup();
+      env = await freshEnv({ ADMIN_EMAIL: "", WEBHOOK_ALLOW_PRIVATE: "true" });
+      const allowed = await import("@/lib/webhooks/queue");
+      // A 200 resolves at once; the deadline still closes the connection after 10 s.
+      await expect(allowed.httpSend({ url, headers: {}, body: "{}" })).resolves.toBeUndefined();
+      const started = Date.now();
+      await new Promise<void>((resolve) => server.getConnections(() => resolve()));
+      await vi.waitFor(
+        () =>
+          new Promise<void>((resolve, reject) =>
+            server.getConnections((_e, n) => (n === 0 ? resolve() : reject(new Error(`${n} open`)))),
+          ),
+        { timeout: 15_000, interval: 500 },
+      );
+      expect(Date.now() - started).toBeLessThan(14_000);
+    } finally {
+      server.closeAllConnections();
+      server.close();
+    }
+  }, 30_000);
+});

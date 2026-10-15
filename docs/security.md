@@ -135,11 +135,11 @@ whatever the settings: this is a design decision, not an option.
 - One upload at a time per guest, so parallel requests from one guest can't
   bypass the per-guest quota. A guest is a cookie, though: a script that drops
   it is a new guest every time. What holds then is the per-event and per-address
-  limits below, at most 3 images decoded at once with 12 waiting (past that the
-  upload is asked to retry, which guests' phones do on their own), and a
-  refusal once the disk has less than 512 MB free. The limit applies once a
-  photo is received, not while it is: a slot held during the upload would let a
-  few deliberately slow connections block every guest.
+  limits below; a memory budget for uploads being received, counted in bytes
+  as they arrive (a connection trickling its upload in costs next to nothing,
+  a burst of fast ones is asked to retry); at most 3 images decoded at once
+  with 12 waiting; and a refusal once the disk has less than 512 MB free.
+  Guests' phones retry a busy server on their own.
 
 ## Authentication
 
@@ -173,7 +173,7 @@ whatever the settings: this is a design decision, not an option.
 
 | Limit | Default |
 |---|---|
-| Admin login | 5 wrong passwords per minute per address and username, 30 attempts per minute per address (behind `TRUST_PROXY`) |
+| Admin login | 5 wrong passwords per minute per address and username, 30 wrong passwords per minute per address, 30 attempts per minute per address (behind `TRUST_PROXY`) |
 | Access code | 10 attempts per minute per guest, 30 wrong codes per minute per event, in-flight guesses included |
 | Uploads | 30 per minute per guest, 300 per event, 120 per address (behind `TRUST_PROXY`), plus the per-guest quota |
 | Guestbook | 10 messages per minute per guest, 60 per event, 30 per address (behind `TRUST_PROXY`) |

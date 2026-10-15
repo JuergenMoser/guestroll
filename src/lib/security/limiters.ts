@@ -1,6 +1,7 @@
 import "server-only";
 import { config } from "@/lib/config";
 import { RateLimiter } from "./rateLimit";
+import { MemoryBudget } from "./request";
 
 const MINUTE = 60_000;
 
@@ -35,6 +36,13 @@ function create() {
      * the same reason: anyone could lock a known account out from anywhere.
      */
     loginPerIp: new RateLimiter(config.rateLimit.loginPerMinute * 6, MINUTE),
+    /**
+     * Wrong passwords per address, whatever the username, everywhere (also
+     * "direct"): without it, guesses spread over many usernames had no ceiling.
+     * Deliberate trade-off, as for access codes: without TRUST_PROXY, someone
+     * flooding wrong passwords can make admins wait up to a minute.
+     */
+    loginFailures: new RateLimiter(config.rateLimit.loginPerMinute * 6, MINUTE),
     // Second step, per account: six digits are guessable without a ceiling.
     twoFactor: new RateLimiter(5, MINUTE),
     // Setting it up or off from the settings, per account: its own budget, so a
@@ -80,3 +88,8 @@ const globalForLocks = globalThis as unknown as {
 export const uploadLocks = (globalForLocks.guestrollUploadLocks ??=
   new Set<string>());
 
+
+const globalForMemory = globalThis as unknown as { guestrollUploadMemory?: MemoryBudget };
+
+// Room for about ten full-size uploads (three copies each) being received at once.
+export const uploadMemory = (globalForMemory.guestrollUploadMemory ??= new MemoryBudget(768 * 1024 * 1024));

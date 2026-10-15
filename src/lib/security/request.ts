@@ -38,7 +38,41 @@ export class BodyTooLargeError extends Error {}
  * alone is not enough: a chunked request doesn't send one, and `formData()`
  * would otherwise buffer whatever the client streams.
  */
-export async function readBodyCapped(request: Request, maxBytes: number): Promise<Uint8Array<ArrayBuffer>> {
+/** The server holds too many uploads in memory right now: ask the client to retry. */
+export class ServerBusyError extends Error {}
+
+/**
+ * Bytes of request bodies held in memory at once, across all requests. Counted
+ * as they arrive, so a connection trickling its upload in costs next to nothing,
+ * while a burst of fast ones reaches the ceiling and is turned away. Counting
+ * connections instead let a few deliberately slow ones block every guest;
+ * counting nothing let a burst of 25 MB bodies exhaust the memory.
+ */
+export class MemoryBudget {
+  private used = 0;
+  constructor(private readonly limit: number) {}
+
+  /** One request's share, given back with `release()` once its body is no longer needed. */
+  hold() {
+    let held = 0;
+    return {
+      take: (bytes: number) => {
+        if (this.used + bytes > this.limit) return false;
+        this.used += bytes;
+        held += bytes;
+        return true;
+      },
+      release: () => {
+        this.used -= held;
+        held = 0;
+      },
+    };
+  }
+}
+
+export type MemoryHold = ReturnType<MemoryBudget["hold"]>;
+
+export async function readBodyCapped(request: Request, maxBytes: number, hold?: MemoryHold): Promise<Uint8Array<ArrayBuffer>> {
   const declared = Number(request.headers.get("content-length") ?? 0);
   if (declared > maxBytes) throw new BodyTooLargeError();
   if (!request.body) return new Uint8Array();
@@ -53,6 +87,11 @@ export async function readBodyCapped(request: Request, maxBytes: number): Promis
     if (total > maxBytes) {
       await reader.cancel();
       throw new BodyTooLargeError();
+    }
+    // Three copies live at once on the upload path: the chunks, the parsed form, the file's buffer.
+    if (hold && !hold.take(value.byteLength * 3)) {
+      await reader.cancel();
+      throw new ServerBusyError();
     }
     chunks.push(value);
   }

@@ -29,12 +29,17 @@ export const httpSend: HttpSend = ({ url, headers, body }) =>
     const send = target.protocol === "https:" ? httpsRequest : httpRequest;
     const req = send(target, { method: "POST", headers: { ...headers, "Content-Length": Buffer.byteLength(body) }, timeout: 10_000, ...(guarded ? { lookup: publicLookup } : {}) }, (res) => {
       res.resume();
+      res.on("end", () => clearTimeout(deadline));
       const status = res.statusCode ?? 0;
       if (status >= 200 && status < 300) resolve();
       else reject(new Error(`HTTP ${status}${res.statusMessage ? ` ${res.statusMessage}` : ""}`));
     });
+    // `timeout` above only fires on silence: a server trickling a byte at a time
+    // would hold the delivery forever. This one counts from the start, DNS included.
+    const deadline = setTimeout(() => req.destroy(new Error("Timed out after 10 s")), 10_000);
     req.on("timeout", () => req.destroy(new Error("Timed out after 10 s")));
     req.on("error", reject);
+    req.on("close", () => clearTimeout(deadline));
     req.end(body);
   });
 

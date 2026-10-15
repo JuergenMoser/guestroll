@@ -19,12 +19,14 @@ import {
 import { canEnterEvent, uploadState } from "@/lib/policy";
 import { guestbookNotice } from "@/lib/mail/automation";
 import { newId } from "@/lib/security/ids";
-import { limiters } from "@/lib/security/limiters";
+import { limiters, uploadMemory } from "@/lib/security/limiters";
 import {
   BodyTooLargeError,
   clientIp,
   isSameOrigin,
   readBodyCapped,
+  ServerBusyError,
+  type MemoryHold,
 } from "@/lib/security/request";
 import { storage, storageFull } from "@/lib/storage";
 
@@ -49,8 +51,17 @@ export async function GET(_request: Request, { params }: Context) {
 }
 
 /** Multipart: `text` and/or `audio` (a recorded voice note), `seconds` its length. */
-export async function POST(request: Request, { params }: Context) {
+export async function POST(request: Request, context: Context) {
   if (!isSameOrigin(request)) return apiError("forbidden");
+  const hold = uploadMemory.hold();
+  try {
+    return await post(request, context, hold);
+  } finally {
+    hold.release();
+  }
+}
+
+async function post(request: Request, { params }: Context, hold: MemoryHold) {
   const event = getEventBySlug((await params).slug);
   if (!event) return apiError("not_found");
   if (!event.guestbookEnabled) return apiError("forbidden");
@@ -80,7 +91,7 @@ export async function POST(request: Request, { params }: Context) {
   let audio: Buffer | null = null;
   let seconds: number | null = null;
   try {
-    const body = await readBodyCapped(request, MAX_AUDIO_BYTES + 64 * 1024);
+    const body = await readBodyCapped(request, MAX_AUDIO_BYTES + 64 * 1024, hold);
     const form = await new Response(body, {
       headers: { "Content-Type": request.headers.get("content-type") ?? "" },
     }).formData();
@@ -99,6 +110,7 @@ export async function POST(request: Request, { params }: Context) {
         Number.isFinite(s) && s > 0 ? Math.min(Math.round(s), 600) : null;
     }
   } catch (error) {
+    if (error instanceof ServerBusyError) return rateLimited(2_000);
     return apiError(
       error instanceof BodyTooLargeError ? "too_large" : "bad_request",
     );

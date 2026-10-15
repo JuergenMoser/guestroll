@@ -16,12 +16,14 @@ import { canEnterEvent, uploadState, type Viewer } from "@/lib/policy";
 import { readChallenges } from "@/lib/challenges";
 import type { EventRow } from "@/lib/db/schema";
 import { newId } from "@/lib/security/ids";
-import { limiters, uploadLocks } from "@/lib/security/limiters";
+import { limiters, uploadLocks, uploadMemory } from "@/lib/security/limiters";
 import {
   BodyTooLargeError,
   clientIp,
   isSameOrigin,
   readBodyCapped,
+  ServerBusyError,
+  type MemoryHold,
 } from "@/lib/security/request";
 import { storageFull } from "@/lib/storage";
 import { deletePhotoFiles, writePhotoFiles } from "@/lib/storage/files";
@@ -96,7 +98,12 @@ export async function POST(
     }
     if (await storageFull()) return apiError("storage_full");
 
-    return await receive(request, event, guestId, session, viewer);
+    const hold = uploadMemory.hold();
+    try {
+      return await receive(request, event, guestId, session, viewer, hold);
+    } finally {
+      hold.release();
+    }
   } finally {
     uploadLocks.delete(guestId);
   }
@@ -108,6 +115,7 @@ async function receive(
   guestId: string,
   session: Awaited<ReturnType<typeof getGuestSession>>,
   viewer: Viewer,
+  hold: MemoryHold,
 ) {
   let file: File | null = null;
   let challengeId: string | null = null;
@@ -115,6 +123,7 @@ async function receive(
     const body = await readBodyCapped(
       request,
       config.maxUploadBytes + MULTIPART_OVERHEAD,
+      hold,
     );
     const form = await new Response(body, {
       headers: { "Content-Type": request.headers.get("content-type") ?? "" },
@@ -127,6 +136,7 @@ async function receive(
       ? (picked as string)
       : null;
   } catch (error) {
+    if (error instanceof ServerBusyError) return rateLimited(2_000);
     return apiError(
       error instanceof BodyTooLargeError ? "too_large" : "bad_request",
     );

@@ -60,8 +60,9 @@ always run on their own at startup; take a backup first all the same
   small crafted file could declare a huge image and exhaust the server's memory.
   HEIC is decoded straight into sharp, without a JPEG round trip.
 - Guest uploads and guestbook messages are also limited per event and per
-  address, at most 3 images are decoded at once with 12 waiting (guests'
-  phones retry on their own) and uploads stop when the disk has less than
+  address, uploads being received share a memory budget counted in bytes,
+  at most 3 images are decoded at once with 12 waiting (guests' phones retry
+  on their own) and uploads stop when the disk has less than
   512 MB free: a script dropping its cookie was a new guest with a fresh
   budget every time.
 - Wrong access codes, gallery passwords and admin passwords are counted before

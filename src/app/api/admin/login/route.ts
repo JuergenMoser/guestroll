@@ -26,8 +26,13 @@ export async function POST(request: Request) {
 
   // Taken before the password check, so parallel guesses all count; cleared on success.
   const client = `${ip}:${username.trim().toLowerCase()}`;
-  const check = limiters.login.consume(client);
-  if (!check.allowed) return rateLimited(check.retryAfterMs);
+  for (const [limiter, key] of [
+    [limiters.login, client],
+    [limiters.loginFailures, ip],
+  ] as const) {
+    const check = limiter.consume(key);
+    if (!check.allowed) return rateLimited(check.retryAfterMs);
+  }
 
   const account = password ? await verifyLogin(username, password) : null;
   if (!account) {
@@ -36,6 +41,7 @@ export async function POST(request: Request) {
   }
 
   limiters.login.reset(client);
+  limiters.loginFailures.refund(ip);
   const session = await getAdminSession();
   if (hasTwoFactor(account)) {
     // The password was right; signing in waits for the code (POST /api/admin/login/code).
