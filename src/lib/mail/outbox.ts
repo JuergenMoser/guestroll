@@ -23,7 +23,8 @@ export interface EnqueueInput {
 export function enqueueMail({ to, mail, kind, eventId = null, dedupeKey }: EnqueueInput): boolean {
   const result = getDb()
     .insert(outbox)
-    .values({ id: newId(), to, subject: mail.subject, html: mail.html, text: mail.text, kind, eventId, dedupeKey: dedupeKey ?? null })
+    // Millisecond `createdAt`: the column default has second precision, which loses the order of mails queued together.
+    .values({ id: newId(), to, subject: mail.subject, html: mail.html, text: mail.text, kind, eventId, dedupeKey: dedupeKey ?? null, createdAt: Date.now() })
     .onConflictDoNothing({ target: outbox.dedupeKey })
     .run();
   return result.changes > 0;

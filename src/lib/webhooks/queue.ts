@@ -1,5 +1,5 @@
 import "server-only";
-import { and, asc, desc, eq, lte } from "drizzle-orm";
+import { and, asc, desc, eq, lte, sql } from "drizzle-orm";
 import { config } from "@/lib/config";
 import { getDb } from "@/lib/db/client";
 import { webhookDeliveries, type WebhookDeliveryRow } from "@/lib/db/schema";
@@ -28,7 +28,15 @@ export function notify(notice: Notice, dedupeKey?: string): number {
   for (const webhook of webhooksFor(notice.kind)) {
     const result = getDb()
       .insert(webhookDeliveries)
-      .values({ id: newId(), webhookId: webhook.id, kind: notice.kind, payload: JSON.stringify(notice), dedupeKey: dedupeKey ? `${dedupeKey}:${webhook.id}` : null })
+      .values({
+        id: newId(),
+        webhookId: webhook.id,
+        kind: notice.kind,
+        payload: JSON.stringify(notice),
+        dedupeKey: dedupeKey ? `${dedupeKey}:${webhook.id}` : null,
+        // The column default has second precision: notices queued together must still keep their order.
+        createdAt: Date.now(),
+      })
       .onConflictDoNothing({ target: webhookDeliveries.dedupeKey })
       .run();
     queued += result.changes;
@@ -100,7 +108,7 @@ export function recentDeliveries(limit = 10): Pick<WebhookDeliveryRow, "id" | "w
       sentAt: webhookDeliveries.sentAt,
     })
     .from(webhookDeliveries)
-    .orderBy(desc(webhookDeliveries.createdAt))
+    .orderBy(desc(webhookDeliveries.createdAt), desc(sql`rowid`))
     .limit(limit)
     .all();
 }
