@@ -1,6 +1,6 @@
 import "server-only";
 import bcrypt from "bcryptjs";
-import { desc, eq, inArray, sql } from "drizzle-orm";
+import { and, asc, count, desc, eq, inArray, sql, type SQL } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { accountEvents, events, photos, type EventRow } from "@/lib/db/schema";
 import { config } from "@/lib/config";
@@ -99,29 +99,86 @@ export interface EventSummary extends AdminEvent {
   acceptingUploads: boolean;
 }
 
+export interface EventPage {
+  events: EventSummary[];
+  total: number;
+  page: number;
+  pageCount: number;
+}
+
+export const EVENTS_PER_PAGE = 20;
+
+function scopeFilter(scope: AdminScope, q?: string): SQL | undefined {
+  const search = q?.trim();
+  return and(
+    scope.all ? undefined : inArray(events.id, [...scope.eventIds]),
+    // LIKE with its own wildcards escaped: a search for "50%" means those characters.
+    search ? sql`${events.name} like ${`%${search.replace(/[\\%_]/g, "\\$&")}%`} escape '\\'` : undefined,
+  );
+}
+
+/**
+ * Photo counts for the given events only: aggregating the whole photos table
+ * to show twenty rows is what made the list slow once albums grew.
+ */
+function summarize(rows: EventRow[]): EventSummary[] {
+  if (rows.length === 0) return [];
+  const stats = new Map(
+    getDb()
+      .select({
+        eventId: photos.eventId,
+        photoCount: count(),
+        pendingCount: sql<number>`coalesce(sum(case when ${photos.status} = 'pending' then 1 else 0 end), 0)`,
+        bytes: sql<number>`coalesce(sum(${photos.bytes}), 0)`,
+      })
+      .from(photos)
+      .where(inArray(photos.eventId, rows.map((r) => r.id)))
+      .groupBy(photos.eventId)
+      .all()
+      .map((s) => [s.eventId, s]),
+  );
+  const now = Date.now();
+  return rows.map((event) => {
+    const s = stats.get(event.id);
+    return {
+      ...toAdminEvent(event),
+      photoCount: s?.photoCount ?? 0,
+      pendingCount: s?.pendingCount ?? 0,
+      bytes: s?.bytes ?? 0,
+      acceptingUploads: event.uploadsOpen && (event.uploadsCloseAt === null || event.uploadsCloseAt > now),
+    };
+  });
+}
+
+/** One page of the events `scope` may see, newest first, optionally filtered by name. */
+export function pageEvents(scope: AdminScope, { page = 1, perPage = EVENTS_PER_PAGE, q }: { page?: number; perPage?: number; q?: string } = {}): EventPage {
+  if (!scope.all && scope.eventIds.length === 0) return { events: [], total: 0, page: 1, pageCount: 1 };
+  const where = scopeFilter(scope, q);
+  const total = getDb().select({ n: count() }).from(events).where(where).get()?.n ?? 0;
+  const pageCount = Math.max(1, Math.ceil(total / perPage));
+  // A page past the end (events deleted since the link was made) shows the last one.
+  const current = Math.min(Math.max(1, Math.floor(page) || 1), pageCount);
+  const rows = getDb()
+    .select()
+    .from(events)
+    .where(where)
+    .orderBy(desc(events.createdAt), asc(events.id))
+    .limit(perPage)
+    .offset((current - 1) * perPage)
+    .all();
+  return { events: summarize(rows), total, page: current, pageCount };
+}
+
+/** Every event `scope` may see, with its counts: for scripts and the API without paging. */
 export function listEvents(scope: AdminScope): EventSummary[] {
   if (!scope.all && scope.eventIds.length === 0) return [];
-  const rows = getDb()
-    .select({
-      event: events,
-      photoCount: sql<number>`count(${photos.id})`,
-      pendingCount: sql<number>`coalesce(sum(case when ${photos.status} = 'pending' then 1 else 0 end), 0)`,
-      bytes: sql<number>`coalesce(sum(${photos.bytes}), 0)`,
-    })
-    .from(events)
-    .leftJoin(photos, eq(photos.eventId, events.id))
-    .where(scope.all ? undefined : inArray(events.id, [...scope.eventIds]))
-    .groupBy(events.id)
-    .orderBy(desc(events.createdAt))
-    .all();
-  const now = Date.now();
-  return rows.map((r) => ({
-    ...toAdminEvent(r.event),
-    photoCount: r.photoCount,
-    pendingCount: r.pendingCount,
-    bytes: r.bytes,
-    acceptingUploads: r.event.uploadsOpen && (r.event.uploadsCloseAt === null || r.event.uploadsCloseAt > now),
-  }));
+  return summarize(getDb().select().from(events).where(scopeFilter(scope)).orderBy(desc(events.createdAt), asc(events.id)).all());
+}
+
+/** Names only, for pickers: no photo counts to compute. */
+export function listEventNames(scope: AdminScope): { id: string; name: string }[] {
+  if (!scope.all && scope.eventIds.length === 0) return [];
+  return getDb().select({ id: events.id, name: events.name }).from(events).where(scopeFilter(scope)).orderBy(desc(events.createdAt)).all();
 }
 
 function hashCode(code: string | null | undefined): string | null | undefined {

@@ -27,6 +27,27 @@ test.describe("admin in a browser", () => {
     await expect(page.getByRole("img", { name: /\/e\/browser-made-party-/ })).toBeVisible();
   });
 
+  test("the event list pages and searches", async ({ page, baseURL }) => {
+    const api = await admin(baseURL!);
+    const tag = `Paged${Math.random().toString(36).slice(2, 7)}`;
+    for (let i = 0; i < 22; i++) await createEvent(api, { name: `${tag} ${String(i).padStart(2, "0")}` });
+    await signIn(page);
+    await page.goto("/admin/events");
+    const pages = page.getByRole("navigation", { name: "Pages" });
+    await expect(pages).toContainText("Page 1 of");
+    await pages.getByRole("link", { name: "Next" }).click();
+    await expect(page).toHaveURL(/page=2/);
+    await expect(pages).toContainText("Page 2 of");
+
+    // Typing narrows the list without a submit, and starts again from page 1.
+    await page.getByRole("searchbox", { name: "Search events" }).fill(`${tag} 0`);
+    await expect(page).toHaveURL(new RegExp(`q=${tag}`));
+    await expect(page).not.toHaveURL(/page=2/);
+    await expect(page.getByRole("link", { name: new RegExp(tag) })).toHaveCount(10);
+    await page.getByRole("searchbox", { name: "Search events" }).fill(`${tag} nothing`);
+    await expect(page.getByText(`No event named like “${tag} nothing”.`)).toBeVisible();
+  });
+
   test("the QR designer saves a preset", async ({ page, baseURL }) => {
     const event = await createEvent(await admin(baseURL!));
     await signIn(page);

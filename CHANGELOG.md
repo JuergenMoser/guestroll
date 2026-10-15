@@ -42,6 +42,10 @@ always run on their own at startup; take a backup first all the same
   the current language beside it ("Italiano, italien"), works from the
   keyboard, and opens upwards near the bottom of the screen. The event form's
   default language reads the same way.
+- The events list is paged (20 per page) with a search that filters as you
+  type; photo counts are only computed for the events on screen, so the
+  dashboard and the list stay fast with hundreds of events.
+  `GET /api/admin/events` takes `page`, `perPage` and `q`.
 
 ### Security
 

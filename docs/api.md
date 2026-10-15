@@ -88,7 +88,7 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | `POST /api/admin/accounts` | `{ username, role, name?, email?, eventIds?, password? }` | `201 { account, password }`; `password` is the generated one, else `null` |
 | `PATCH /api/admin/accounts/:id` | same fields, or `{ resetPassword: true }`, `{ resetTwoFactor: true }` | `{ account, password }` |
 | `DELETE /api/admin/accounts/:id` | | `{ ok }` |
-| `GET /api/admin/events` | | `{ events: EventSummary[] }` |
+| `GET /api/admin/events` | optional `?page`, `perPage` (1–100, default 20), `q` (name contains) | without `page` or `q`: `{ events: EventSummary[] }`, every event; with them: `{ events, total, page, pageCount }` |
 | `POST /api/admin/events` | event fields, `name` required | `201 { event }` |
 | `GET /api/admin/events/:id` | | `{ event }` |
 | `PATCH /api/admin/events/:id` | any event fields | `{ event }` |

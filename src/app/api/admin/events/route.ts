@@ -1,12 +1,18 @@
 import { NextResponse } from "next/server";
-import { createEvent, listEvents, toAdminEvent } from "@/lib/events";
+import { createEvent, listEvents, pageEvents, toAdminEvent } from "@/lib/events";
 import { apiError, readJson, requireAdmin } from "@/lib/http";
 import { parseEventInput } from "@/lib/validation";
 
 export async function GET(request: Request) {
   const { admin, denied } = await requireAdmin(request);
   if (denied) return denied;
-  return NextResponse.json({ events: listEvents(admin.scope) });
+  const url = new URL(request.url);
+  const page = url.searchParams.get("page");
+  const q = url.searchParams.get("q")?.slice(0, 100) ?? undefined;
+  // Without ?page or ?q, every event as before, for the scripts written against it.
+  if (page === null && q === undefined) return NextResponse.json({ events: listEvents(admin.scope) });
+  const perPage = Math.min(100, Math.max(1, Number(url.searchParams.get("perPage")) || 20));
+  return NextResponse.json(pageEvents(admin.scope, { page: Number(page) || 1, perPage, q }));
 }
 
 /** Owners create events; organizers work on the ones they're given. */
