@@ -23,6 +23,9 @@ function transporterFor(smtp: SmtpSettings): Transporter {
         host: smtp.host,
         port: smtp.port,
         secure: smtp.secure,
+        // Without it, anyone on the path can strip STARTTLS and read the login in clear.
+        // A relay on the same machine or network without TLS sets SMTP_ALLOW_PLAIN=true.
+        requireTLS: !smtp.secure && Boolean(smtp.user) && !config.smtpAllowPlain,
         auth: smtp.user ? { user: smtp.user, pass: smtp.password } : undefined,
         // A dead server must not hold a scheduler tick for minutes.
         connectionTimeout: 10_000,

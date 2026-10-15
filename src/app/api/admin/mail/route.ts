@@ -10,6 +10,7 @@ import {
   saveAdminEmail,
   saveAlertSettings,
   saveSmtpSettings,
+  smtpNeedsPassword,
   smtpSettingsForForm,
   smtpSource,
   type AlertSettings,
@@ -43,16 +44,9 @@ export async function PUT(request: Request) {
     if (!/^[a-z0-9.-]{1,253}$/i.test(host)) errors.host = "invalid";
     if (!Number.isInteger(port) || port < 1 || port > 65535) errors.port = "invalid";
     if (from && !parseEmail(from.replace(/^.*<([^>]+)>\s*$/, "$1"))) errors.from = "invalid";
-    if (!Object.keys(errors).length) {
-      saveSmtpSettings({
-        host,
-        port,
-        secure: s.secure === true,
-        user: typeof s.user === "string" ? s.user.trim() : "",
-        password: typeof s.password === "string" ? s.password : "",
-        from,
-      });
-    }
+    const smtp = { host, port, secure: s.secure === true, user: typeof s.user === "string" ? s.user.trim() : "", password: typeof s.password === "string" ? s.password : "", from };
+    if (smtpNeedsPassword(smtp)) errors.password = "required";
+    if (!Object.keys(errors).length) saveSmtpSettings(smtp);
   }
 
   if (body.adminEmail !== undefined && !adminEmailFromEnv()) {

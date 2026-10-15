@@ -43,6 +43,9 @@ export async function PATCH(request: Request, { params }: Context) {
   let generated: string | null = null;
   const wantsReset = body?.resetPassword === true || password !== undefined;
   if (wantsReset) {
+    // Your own password changes from your account page, which asks for the current one:
+    // a stolen session alone must not be able to lock its owner out.
+    if (account.id === admin.id) return apiError("bad_request", { password: "self" });
     if (passwordManagedByEnv(account)) return apiError("bad_request", { password: "managed_by_env" });
     generated = password ? null : randomToken(16);
     setAccountPassword(account.id, hashPassword(password ?? generated!));

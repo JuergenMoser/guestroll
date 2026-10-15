@@ -69,6 +69,20 @@ test.describe("accounts", () => {
     expect((await owner.patch(`/api/admin/accounts/${self.id}`, { data: { resetPassword: true } })).status()).toBe(400);
   });
 
+  test("an owner's own password only changes with the current one", async ({ baseURL }) => {
+    const owner = await admin(baseURL!);
+    const username = `own${Math.random().toString(36).slice(2, 8)}`;
+    const { account, password } = await (await owner.post("/api/admin/accounts", { data: { username, name: "Second", role: "owner" } })).json();
+    const second = await signIn(baseURL!, username, password);
+    for (const data of [{ resetPassword: true }, { password: "a-brand-new-password" }]) {
+      const res = await second.patch(`/api/admin/accounts/${account.id}`, { data });
+      expect(res.status()).toBe(400);
+      expect((await res.json()).details).toEqual({ password: "self" });
+    }
+    // The session still works: nothing was changed.
+    expect((await second.get("/api/admin/events")).status()).toBe(200);
+  });
+
   test("usernames are checked and unique", async ({ baseURL }) => {
     const owner = await admin(baseURL!);
     const bad = await owner.post("/api/admin/accounts", { data: { username: "No Spaces!", role: "boss" } });

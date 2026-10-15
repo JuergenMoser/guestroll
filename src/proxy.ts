@@ -31,6 +31,10 @@ export function proxy(request: NextRequest) {
   headers.set("Content-Security-Policy", policy);
   const response = NextResponse.next({ request: { headers } });
   response.headers.set("Content-Security-Policy", policy);
+  // Read here, per request, not in next.config.ts: its headers are frozen at build
+  // time, and only the deployment knows it serves HTTPS. No includeSubDomains: the
+  // instance often lives on a subdomain of a domain that serves other things.
+  if (process.env.PUBLIC_URL?.startsWith("https://")) response.headers.set("Strict-Transport-Security", "max-age=31536000");
   return response;
 }
 

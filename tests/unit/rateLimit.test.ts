@@ -32,6 +32,16 @@ describe("RateLimiter", () => {
     expect(limiter.consume("a").allowed).toBe(true);
   });
 
+  it("gives back the latest hit on refund", () => {
+    const limiter = new RateLimiter(2, 1_000, () => 0);
+    limiter.consume("a");
+    limiter.consume("a");
+    expect(limiter.isLimited("a")).toBe(true);
+    limiter.refund("a");
+    expect(limiter.consume("a").allowed).toBe(true);
+    limiter.refund("never-seen");
+  });
+
   it("doesn't record a hit when refusing", () => {
     let now = 0;
     const limiter = new RateLimiter(1, 1_000, () => now);

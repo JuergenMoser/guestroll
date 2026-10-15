@@ -13,21 +13,34 @@ export async function POST(request: Request) {
   if (!isSameOrigin(request)) return apiError("forbidden");
 
   const ip = clientIp(request);
-  const attempt = limiters.login.consume(ip);
-  if (!attempt.allowed) return rateLimited(attempt.retryAfterMs);
+  const perIp = limiters.loginPerIp.consume(ip);
+  if (!perIp.allowed) return rateLimited(perIp.retryAfterMs);
 
   const body = (await readJson(request)) as { username?: unknown; password?: unknown } | undefined;
   // Without a username, the owner created on first start: installs from before
   // accounts existed keep signing in with the password alone.
   const username = typeof body?.username === "string" && body.username.trim() ? body.username : config.adminUsername;
   const password = typeof body?.password === "string" ? body.password : "";
+
+  // Both taken before the password check (parallel guesses all count) and given back on success.
+  const who = username.trim().toLowerCase();
+  const client = `${ip}:${who}`;
+  for (const [limiter, key] of [
+    [limiters.login, client],
+    [limiters.loginPerAccount, who],
+  ] as const) {
+    const check = limiter.consume(key);
+    if (!check.allowed) return rateLimited(check.retryAfterMs);
+  }
+
   const account = password ? await verifyLogin(username, password) : null;
   if (!account) {
     track("login_failed", null);
     return apiError("unauthorized");
   }
 
-  limiters.login.reset(ip);
+  limiters.login.reset(client);
+  limiters.loginPerAccount.reset(who);
   const session = await getAdminSession();
   if (hasTwoFactor(account)) {
     // The password was right; signing in waits for the code (POST /api/admin/login/code).

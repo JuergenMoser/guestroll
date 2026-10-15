@@ -61,7 +61,7 @@ describe("admin guards", () => {
 
   it("routes a public demo must not serve declare it themselves", () => {
     // Declared per route rather than matched on the URL: no path spelling slips past.
-    for (const dir of ["api/admin/mail", "api/admin/webhooks", "api/admin/accounts", "api/admin/backup/run", "api/admin/backup/schedule", "api/admin/backup/restore", "api/admin/backup/stored", "api/admin/updates/check", "api/admin/updates/apply", "api/admin/password", "api/admin/me/two-factor"]) {
+    for (const dir of ["api/admin/mail", "api/admin/webhooks", "api/admin/accounts", "api/admin/backup/run", "api/admin/backup/retention", "api/admin/backup/schedule", "api/admin/backup/restore", "api/admin/backup/stored", "api/admin/updates/check", "api/admin/updates/apply", "api/admin/password", "api/admin/me/two-factor"]) {
       for (const route of files(path.join(root, dir), "route.ts")) {
         const source = fs.readFileSync(route, "utf8");
         const handlers = source.match(/export async function (GET|POST|PATCH|DELETE|PUT)/g) ?? [];
@@ -71,11 +71,17 @@ describe("admin guards", () => {
     }
   });
 
-  it("every guest mutation checks the request origin", () => {
-    const routes = files(path.join(root, "api/e"), "route.ts");
+  it("every guest and gallery-link mutation checks the request origin", () => {
+    const routes = [...files(path.join(root, "api/e"), "route.ts"), ...files(path.join(root, "api/g"), "route.ts")];
     for (const route of routes) {
       const source = fs.readFileSync(route, "utf8");
-      if (source.includes("export async function POST")) expect(source, rel(route)).toContain("isSameOrigin(request)");
+      // Each handler checks it itself, or calls a helper of the same file that does.
+      const blocks = source.split(/(?=^(?:export )?(?:async )?function )/m);
+      const checking = blocks.filter((b) => b.includes("isSameOrigin(request)")).map((b) => b.match(/function (\w+)/)?.[1]);
+      for (const block of blocks.filter((b) => /^export async function (POST|PATCH|PUT|DELETE)\b/.test(b))) {
+        const ok = checking.some((name) => name && (block.match(/function (\w+)/)?.[1] === name || block.includes(`${name}(`)));
+        expect(ok, `${rel(route)} ${block.match(/function (\w+)/)?.[1]}`).toBe(true);
+      }
     }
   });
 });

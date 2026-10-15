@@ -74,6 +74,15 @@ export const config = {
     password: process.env.SMTP_PASSWORD || "",
     from: process.env.SMTP_FROM?.trim() || "",
   },
+  /**
+   * Webhooks may target the local network (a self-hosted ntfy, Home Assistant).
+   * Off by default: an owner's webhook could otherwise probe the server's own network.
+   */
+  webhookAllowPrivate: bool("WEBHOOK_ALLOW_PRIVATE", false),
+
+  /** Lets a relay without TLS receive the SMTP login (same machine or trusted network only). */
+  smtpAllowPlain: bool("SMTP_ALLOW_PLAIN", false),
+
   /** Recipient of admin alerts and summaries; Admin → Settings when unset. */
   adminEmail: process.env.ADMIN_EMAIL?.trim() || "",
 

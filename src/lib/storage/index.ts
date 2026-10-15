@@ -23,3 +23,13 @@ export function storage(): StorageDriver {
   globalForStorage.guestrollStorage ??= create();
   return globalForStorage.guestrollStorage;
 }
+
+// Room for what is being received and its variants, plus the database's own
+// growth: a full disk would corrupt more than this album.
+const MIN_FREE_BYTES = 512 * 1024 * 1024;
+
+/** Whether guest uploads should stop for lack of disk. Buckets report no capacity: never full. */
+export async function storageFull(): Promise<boolean> {
+  const disk = await storage().capacity();
+  return disk !== null && disk.free < MIN_FREE_BYTES;
+}

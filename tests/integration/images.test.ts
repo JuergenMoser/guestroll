@@ -1,5 +1,7 @@
+import { readFile } from "node:fs/promises";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
+import { config } from "@/lib/config";
 import { InvalidImageError, processLogo, processPhoto } from "@/lib/images/process";
 import { jpeg, png } from "../helpers/images";
 
@@ -30,6 +32,29 @@ describe("processPhoto", () => {
     const out = await processPhoto(await png(400, 300));
     const display = await sharp(out.files.display).metadata();
     expect([display.width, display.height]).toEqual([400, 300]);
+  });
+
+  it("decodes HEIC from an iPhone that skipped the conversion", async () => {
+    const out = await processPhoto(await readFile("tests/fixtures/sample.heic"));
+    expect([out.width, out.height]).toEqual([320, 240]);
+    expect((await sharp(out.files.original).metadata()).format).toBe("jpeg");
+  });
+
+  it("refuses a HEIC over the pixel limit before decoding it", async () => {
+    const limits = config as { maxImagePixels: number };
+    const saved = limits.maxImagePixels;
+    limits.maxImagePixels = 320 * 240 - 1;
+    try {
+      await expect(processPhoto(await readFile("tests/fixtures/sample.heic"))).rejects.toThrow("Image too large");
+    } finally {
+      limits.maxImagePixels = saved;
+    }
+  });
+
+  it("processes a burst of uploads a few at a time, and every one completes", async () => {
+    const inputs = await Promise.all(Array.from({ length: 8 }, () => png(200, 150)));
+    const outs = await Promise.all(inputs.map((i) => processPhoto(i)));
+    expect(outs.every((o) => o.width === 200)).toBe(true);
   });
 
   it("rejects files that aren't images, whatever they claim to be", async () => {

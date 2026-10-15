@@ -17,7 +17,8 @@ export type ErrorCode =
   | "uploads_closed"
   | "quota_reached"
   | "invalid_image"
-  | "invalid_code";
+  | "invalid_code"
+  | "storage_full";
 
 const STATUS: Record<ErrorCode, number> = {
   bad_request: 400,
@@ -30,6 +31,7 @@ const STATUS: Record<ErrorCode, number> = {
   quota_reached: 403,
   invalid_image: 415,
   invalid_code: 401,
+  storage_full: 507,
 };
 
 /** Error bodies carry a stable `code` the UI translates; `details` is for field errors. */

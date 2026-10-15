@@ -34,6 +34,16 @@ export class RateLimiter {
     return (this.hits.get(key) ?? []).filter((t) => t > since).length >= this.limit;
   }
 
+  /**
+   * Gives back the latest hit. For "failures" budgets taken before an async check:
+   * consumed up front so that parallel guesses all count, refunded when it succeeds.
+   */
+  refund(key: string): void {
+    const times = this.hits.get(key);
+    times?.pop();
+    if (times && times.length === 0) this.hits.delete(key);
+  }
+
   reset(key: string): void {
     this.hits.delete(key);
   }

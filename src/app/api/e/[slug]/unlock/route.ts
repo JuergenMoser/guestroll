@@ -17,18 +17,21 @@ export async function POST(request: Request, { params }: RouteContext<"/api/e/[s
 
   const attempt = limiters.unlock.consume(clientKey);
   if (!attempt.allowed) return rateLimited(attempt.retryAfterMs);
-  if (limiters.unlockFailures.isLimited(event.id)) return rateLimited(60_000);
+  // Taken before any await and given back on success: checked first and counted
+  // after the bcrypt comparison, a burst of parallel guesses all got through.
+  const failures = limiters.unlockFailures.consume(event.id);
+  if (!failures.allowed) return rateLimited(failures.retryAfterMs);
 
   const body = (await readJson(request)) as { code?: unknown } | undefined;
   const code = typeof body?.code === "string" ? body.code.trim() : "";
 
   if (!code || !(await checkAccessCode(event, code))) {
-    limiters.unlockFailures.consume(event.id);
     track("unlock_failed", event.id, guestId);
     await session.save();
     return apiError("invalid_code");
   }
 
+  limiters.unlockFailures.refund(event.id);
   session.unlocked = [...new Set([...(session.unlocked ?? []), event.id])].slice(-50);
   await session.save();
   track("unlock", event.id, guestId);

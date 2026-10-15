@@ -89,6 +89,22 @@ test.describe("guest API", () => {
     expect(late.status()).toBe(201);
   });
 
+  test("a burst of parallel guesses without cookies can't beat the access code limit", async ({ baseURL }) => {
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { accessCode: "letmein-2026" });
+    // Plain fetch: no cookie jar, so every guess comes from a "new guest" with a fresh per-client budget.
+    const guess = (i: number) =>
+      fetch(`${baseURL}/api/e/${event.slug}/unlock`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Origin: baseURL! },
+        body: JSON.stringify({ code: `guess-${i}` }),
+      }).then((r) => r.status);
+    const statuses = await Promise.all(Array.from({ length: 200 }, (_, i) => guess(i)));
+    // RATE_LIMIT_UNLOCK_PER_MINUTE=50 in the e2e server: 150 wrong codes per event per minute.
+    expect(statuses.filter((s) => s === 401).length).toBeLessThanOrEqual(150);
+    expect(statuses.filter((s) => s === 429).length).toBeGreaterThanOrEqual(50);
+  });
+
   test("the per-guest quota is enforced", async ({ baseURL }) => {
     const host = await admin(baseURL!);
     const event = await createEvent(host, { maxPhotosPerGuest: 2 });

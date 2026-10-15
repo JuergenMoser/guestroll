@@ -11,6 +11,13 @@ always run on their own at startup; take a backup first all the same
 
 ## [Unreleased]
 
+### Upgrading
+
+- Webhooks to an address on your own network (ntfy, Home Assistant) now need
+  `WEBHOOK_ALLOW_PRIVATE=true`.
+- An SMTP server with a user and no TLS at all now needs
+  `SMTP_ALLOW_PLAIN=true`.
+
 ### Added
 
 - Guests can delete their own photos, from the photo itself, at any time.
@@ -49,6 +56,26 @@ always run on their own at startup; take a backup first all the same
 
 ### Security
 
+- A HEIC photo is refused above `MAX_IMAGE_MEGAPIXELS` before it is decoded: a
+  small crafted file could declare a huge image and exhaust the server's memory.
+  HEIC is decoded straight into sharp, without a JPEG round trip.
+- Guest uploads and guestbook messages are also limited per event and per
+  address, at most 6 uploads are received at once (guests' phones retry on
+  their own) and uploads stop when the disk has less than 512 MB free: a script
+  dropping its cookie was a new guest with a fresh budget every time.
+- Wrong access codes, gallery passwords and admin passwords are counted before
+  they are checked, so parallel guesses can't slip past the limits; a
+  successful sign-in no longer clears the limit for other accounts.
+- Webhooks can't reach private, loopback or link-local addresses unless
+  `WEBHOOK_ALLOW_PRIVATE=true`.
+- The saved SMTP password is dropped when the server or account changes, and
+  the login is only sent over TLS (`SMTP_ALLOW_PLAIN=true` for a local relay).
+- An owner's own password changes only from their account page, with the
+  current one.
+- A demo instance sends no email or webhook, whatever triggers it.
+- `Strict-Transport-Security` when `PUBLIC_URL` is `https://`.
+- Account email addresses are checked with a bounded pattern: the previous one
+  could be made to backtrack for minutes.
 - Every page carries a nonce-based Content-Security-Policy.
 - Photo compression no longer loads a worker script from a CDN: guests'
   browsers never contact a third party.

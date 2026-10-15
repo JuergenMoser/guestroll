@@ -45,15 +45,22 @@ describe("outbox", () => {
 });
 
 describe("mail settings", () => {
-  it("seals the SMTP password and keeps it when the form sends an empty one", async () => {
-    const { getSmtpSettings, saveSmtpSettings, smtpSettingsForForm } = await import("@/lib/mail/settings");
+  it("seals the SMTP password and keeps it, for the same server only, when the form sends an empty one", async () => {
+    const { getSmtpSettings, saveSmtpSettings, smtpNeedsPassword, smtpSettingsForForm } = await import("@/lib/mail/settings");
     const { readSetting } = await import("@/lib/settings");
     saveSmtpSettings({ host: "smtp.x.test", port: 587, secure: false, user: "u", password: "s3cret-pass", from: "" });
     expect(readSetting("smtp")).not.toContain("s3cret-pass");
     expect(getSmtpSettings()?.password).toBe("s3cret-pass");
-    saveSmtpSettings({ host: "smtp2.x.test", port: 465, secure: true, user: "u", password: "", from: "" });
-    expect(getSmtpSettings()).toMatchObject({ host: "smtp2.x.test", password: "s3cret-pass" });
+    saveSmtpSettings({ host: "smtp.x.test", port: 587, secure: true, user: "u", password: "", from: "Photos <p@x.test>" });
+    expect(getSmtpSettings()).toMatchObject({ secure: true, password: "s3cret-pass" });
     expect(smtpSettingsForForm()).not.toHaveProperty("password");
+
+    // Another server or account: the saved password must not follow it there.
+    for (const moved of [{ host: "evil.x.test", port: 587, user: "u" }, { host: "smtp.x.test", port: 25, user: "u" }, { host: "smtp.x.test", port: 587, user: "other" }]) {
+      expect(smtpNeedsPassword({ ...moved, password: "" }), JSON.stringify(moved)).toBe(true);
+    }
+    saveSmtpSettings({ host: "evil.x.test", port: 587, secure: false, user: "u", password: "", from: "" });
+    expect(getSmtpSettings()).toMatchObject({ host: "evil.x.test", password: "" });
   });
 
   it("lets the environment win over the admin's settings", async () => {

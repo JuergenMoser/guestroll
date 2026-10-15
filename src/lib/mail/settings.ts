@@ -41,14 +41,29 @@ export function getSmtpSettings(): SmtpSettings | null {
   return { ...parsed, password: parsed.password ? (open(parsed.password) ?? "") : "" };
 }
 
+function storedSmtp(): (Omit<SmtpSettings, "password"> & { password?: string }) | undefined {
+  const previous = readSetting(SMTP_KEY);
+  return previous ? JSON.parse(previous) : undefined;
+}
+
+/**
+ * Whether saving `input` without a password would keep a stored one for another
+ * server: that would send the saved password to whatever host the form now names,
+ * so another owner could collect it with their own server.
+ */
+export function smtpNeedsPassword(input: Pick<SmtpSettings, "host" | "port" | "user" | "password">): boolean {
+  const previous = storedSmtp();
+  if (input.password || !previous?.password) return false;
+  return previous.host !== input.host || previous.port !== input.port || previous.user !== input.user;
+}
+
 /**
  * Saves the admin's SMTP settings. The password is sealed; sending an empty
- * password keeps the stored one, so the form never has to show it back.
+ * password keeps the stored one for the same server and account only.
  */
 export function saveSmtpSettings(input: SmtpSettings): void {
-  const previous = readSetting(SMTP_KEY);
-  const previousPassword = previous ? (JSON.parse(previous) as { password?: string }).password : undefined;
-  const password = input.password ? seal(input.password) : previousPassword;
+  const previous = storedSmtp();
+  const password = input.password ? seal(input.password) : smtpNeedsPassword(input) ? undefined : previous?.password;
   writeSetting(SMTP_KEY, JSON.stringify({ ...input, password }));
 }
 

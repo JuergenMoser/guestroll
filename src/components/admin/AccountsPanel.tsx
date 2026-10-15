@@ -160,9 +160,11 @@ export function AccountsPanel({ selfId, events, locale }: { selfId: string; even
         <span className="flex gap-2">
           {current && (
             <>
-              <Button size="sm" variant={confirm === `reset:${current.id}` ? "danger" : "ghost"} onClick={() => resetPassword(current)} onBlur={() => setConfirm(null)}>
-                {confirm === `reset:${current.id}` ? t("admin.accounts.confirmReset") : t("admin.accounts.resetPassword")}
-              </Button>
+              {current.id !== selfId && (
+                <Button size="sm" variant={confirm === `reset:${current.id}` ? "danger" : "ghost"} onClick={() => resetPassword(current)} onBlur={() => setConfirm(null)}>
+                  {confirm === `reset:${current.id}` ? t("admin.accounts.confirmReset") : t("admin.accounts.resetPassword")}
+                </Button>
+              )}
               {current.twoFactor && current.id !== selfId && (
                 <Button size="sm" variant={confirm === `2fa:${current.id}` ? "danger" : "ghost"} onClick={() => resetTwoFactor(current)} onBlur={() => setConfirm(null)}>
                   {confirm === `2fa:${current.id}` ? t("admin.twoFactor.confirmReset") : t("admin.twoFactor.reset")}

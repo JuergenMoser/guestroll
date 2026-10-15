@@ -116,11 +116,18 @@ export function useUploadQueue(endpoint: string, onUploaded: (photo: PhotoDto) =
           break;
         } catch (error) {
           const code = (error as Error).message;
+          if (code === "rate_limited") {
+            // The server is busy, not failing: wait our turn without using up an attempt.
+            // The jitter keeps a room of phones from all coming back at the same second.
+            attempt--;
+            await wait(4_000 + Math.random() * 4_000);
+            continue;
+          }
           if (PERMANENT.has(code) || attempt >= MAX_ATTEMPTS) {
             patch(item.id, { status: "error", error: code });
             break;
           }
-          await wait(code === "rate_limited" ? 5_000 : 1_500 * attempt);
+          await wait(1_500 * attempt);
         }
       }
     }

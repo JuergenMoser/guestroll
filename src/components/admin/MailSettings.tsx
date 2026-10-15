@@ -41,6 +41,7 @@ export function MailSettings({ locale }: { locale: string }) {
   }, [load]);
 
   if (!state) return null;
+  const fieldError = (key: string) => (errors[key] ? t(key === "password" ? "admin.mail.passwordAgain" : "errors.invalidField") : undefined);
   const fromEnv = state.smtp.source === "env";
   const setSmtp = <K extends keyof MailState["smtp"]>(key: K, value: MailState["smtp"][K]) =>
     setState((s) => (s ? { ...s, smtp: { ...s.smtp, [key]: value } } : s));
@@ -101,16 +102,16 @@ export function MailSettings({ locale }: { locale: string }) {
           <p className="rounded-lg bg-sunken p-3 text-sm text-ink-soft">{t("admin.mail.fromEnv")}</p>
         ) : (
           <div className="grid gap-4 sm:grid-cols-[1fr_8rem]">
-            <Field label={t("admin.mail.host")} error={errors.host}>
+            <Field label={t("admin.mail.host")} error={fieldError("host")}>
               {(id) => <Input id={id} value={state.smtp.host} onChange={(e) => setSmtp("host", e.target.value)} placeholder="smtp.example.com" autoComplete="off" />}
             </Field>
-            <Field label={t("admin.mail.port")} error={errors.port}>
+            <Field label={t("admin.mail.port")} error={fieldError("port")}>
               {(id) => <Input id={id} type="number" min={1} max={65535} value={state.smtp.port} onChange={(e) => setSmtp("port", Number(e.target.value))} />}
             </Field>
             <Field label={t("admin.mail.user")}>
               {(id) => <Input id={id} value={state.smtp.user} onChange={(e) => setSmtp("user", e.target.value)} autoComplete="off" />}
             </Field>
-            <Field label={t("admin.mail.password")} hint={state.smtp.hasPassword ? t("admin.mail.passwordKept") : undefined}>
+            <Field label={t("admin.mail.password")} hint={state.smtp.hasPassword ? t("admin.mail.passwordKept") : undefined} error={fieldError("password")}>
               {(id, describedBy) => (
                 <Input
                   id={id}
@@ -124,7 +125,7 @@ export function MailSettings({ locale }: { locale: string }) {
               )}
             </Field>
             <div className="sm:col-span-2">
-              <Field label={t("admin.mail.from")} error={errors.from}>
+              <Field label={t("admin.mail.from")} error={fieldError("from")}>
                 {(id) => <Input id={id} value={state.smtp.from} onChange={(e) => setSmtp("from", e.target.value)} placeholder="Guestroll <photos@example.com>" />}
               </Field>
             </div>
@@ -134,7 +135,7 @@ export function MailSettings({ locale }: { locale: string }) {
           </div>
         )}
 
-        <Field label={t("admin.mail.adminEmail")} hint={state.adminEmailFromEnv ? t("admin.mail.adminEmailFromEnv") : undefined} error={errors.adminEmail}>
+        <Field label={t("admin.mail.adminEmail")} hint={state.adminEmailFromEnv ? t("admin.mail.adminEmailFromEnv") : undefined} error={fieldError("adminEmail")}>
           {(id, describedBy) => (
             <Input
               id={id}

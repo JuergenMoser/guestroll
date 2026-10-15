@@ -13,14 +13,14 @@ export async function POST(request: Request, { params }: RouteContext<"/api/g/[t
 
   const attempt = limiters.shareUnlock.consume(`${clientIp(request)}:${share.id}`);
   if (!attempt.allowed) return rateLimited(attempt.retryAfterMs);
-  if (limiters.shareFailures.isLimited(share.id)) return rateLimited(60_000);
+  // Taken before the await, given back on success: see the event unlock route.
+  const failures = limiters.shareFailures.consume(share.id);
+  if (!failures.allowed) return rateLimited(failures.retryAfterMs);
 
   const body = (await readJson(request)) as { password?: unknown } | undefined;
   const password = typeof body?.password === "string" ? body.password : "";
-  if (!password || !(await checkSharePassword(share, password))) {
-    limiters.shareFailures.consume(share.id);
-    return apiError("invalid_code");
-  }
+  if (!password || !(await checkSharePassword(share, password))) return apiError("invalid_code");
+  limiters.shareFailures.refund(share.id);
 
   const session = await getShareSession();
   session.shares = [...new Set([...(session.shares ?? []), share.id])].slice(-20);

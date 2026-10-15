@@ -55,6 +55,7 @@ Each visitor gets, in this order:
 | `SESSION_SECRET` | *(generated)* | Key that signs and encrypts cookies, 32+ characters. When empty, one is generated and stored in `DATA_DIR/.session-secret`. Changing it signs everyone out. |
 | `TRUST_PROXY` | `false` | Read the client IP from `X-Forwarded-For` and the host from `X-Forwarded-Host`. Turn it on **only** behind a reverse proxy you control, or rate limits can be dodged with a forged header. |
 | `SECURE_COOKIES` | `true` in production | Cookies only travel over HTTPS. Set to `false` only to test over plain HTTP on a local network. |
+| `WEBHOOK_ALLOW_PRIVATE` | `false` | Let webhooks reach private, loopback and link-local addresses (a self-hosted ntfy or Home Assistant on your network). Off, a webhook to such an address fails with a message saying so: an owner's webhook can't probe the server's own network or cloud metadata. |
 
 ## Uploads
 
@@ -147,6 +148,7 @@ stored encrypted (AES-256-GCM, key derived from `SESSION_SECRET`). When
 | `SMTP_SECURE` | `false` | `true` for implicit TLS on port 465. |
 | `SMTP_USER` / `SMTP_PASSWORD` | *(none)* | Credentials, when the server asks for them. |
 | `SMTP_FROM` | `SMTP_USER` | Sender, e.g. `Guestroll <photos@example.com>`. |
+| `SMTP_ALLOW_PLAIN` | `false` | With a user set, the login is only sent once the connection is encrypted (implicit TLS or STARTTLS), so nobody on the path can strip STARTTLS and read it. `true` for a relay without TLS on the same machine or a trusted network. |
 | `ADMIN_EMAIL` | *(none)* | Where alerts and event summaries go. Settable in the admin when empty. |
 | `SCHEDULER_INTERVAL_SECONDS` | `60` | How often the background worker sends queued mail, closes scheduled events and checks alerts. `0` turns it off. |
 

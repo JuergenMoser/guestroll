@@ -18,7 +18,7 @@ export async function POST(request: Request) {
   if (!pending || Date.now() - pending.at > PENDING_MS) return apiError("unauthorized", { code: "expired" });
 
   const ip = clientIp(request);
-  for (const limit of [limiters.login.consume(ip), limiters.twoFactor.consume(pending.accountId)]) {
+  for (const limit of [limiters.loginPerIp.consume(ip), limiters.twoFactor.consume(pending.accountId)]) {
     if (!limit.allowed) return rateLimited(limit.retryAfterMs);
   }
 

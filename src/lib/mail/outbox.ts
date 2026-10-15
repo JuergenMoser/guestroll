@@ -1,4 +1,5 @@
 import "server-only";
+import { config } from "@/lib/config";
 import { and, asc, count, desc, eq, lte } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { outbox, type OutboxRow } from "@/lib/db/schema";
@@ -37,6 +38,9 @@ const globalForOutbox = globalThis as unknown as { guestrollOutboxRunning?: bool
  * gives up after MAX_ATTEMPTS. One run at a time per process.
  */
 export async function processOutbox(send: SendMail = smtpSend, now = Date.now()): Promise<{ sent: number; failed: number }> {
+  // Here rather than at each caller: ending an event flushes the queue too, and a
+  // demo visitor can put any address in it.
+  if (config.demo.enabled && send === smtpSend) return { sent: 0, failed: 0 };
   if (globalForOutbox.guestrollOutboxRunning) return { sent: 0, failed: 0 };
   globalForOutbox.guestrollOutboxRunning = true;
   let sent = 0;

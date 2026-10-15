@@ -30,6 +30,8 @@ const en = {
     invalid_image: "This file isn't a supported image.",
     invalid_code: "That code isn't right.",
     offline: "You're offline. Photos will retry when you reconnect.",
+    invalidField: "This value isn't valid.",
+    storage_full: "The album is full for now. Tell the hosts, then try again later.",
   },
   guest: {
     unlockTitle: "This album is private",
@@ -223,6 +225,7 @@ const en = {
       notConfigured: "No SMTP server yet: emails are kept in the queue and sent once one is configured.",
       alertsHint: "Sent to the address above and to the owners. Events' own emails go to their organizers too.",
       queueHint: "The last emails, retried on their own when the server didn't answer.",
+      passwordAgain: "Enter the password again: the server or account changed.",
     },
     share: {
       title: "Guest link",
@@ -690,6 +693,8 @@ const fr: DeepPartialStrings<Messages> = {
     invalid_image: "Ce fichier n'est pas une image prise en charge.",
     invalid_code: "Ce code n'est pas le bon.",
     offline: "Tu es hors ligne. Les photos repartiront à la reconnexion.",
+    invalidField: "Cette valeur n'est pas valide.",
+    storage_full: "L'album est plein pour l'instant. Préviens les organisateurs, puis réessaie plus tard.",
   },
   guest: {
     unlockTitle: "Cet album est privé",
@@ -883,6 +888,7 @@ const fr: DeepPartialStrings<Messages> = {
       notConfigured: "Pas encore de serveur SMTP : les e-mails restent en file et partiront dès qu'il sera configuré.",
       alertsHint: "Envoyées à l'adresse ci-dessus et aux propriétaires. Les e-mails d'un évènement vont aussi à ses organisateurs.",
       queueHint: "Les derniers e-mails, renvoyés automatiquement quand le serveur n'a pas répondu.",
+      passwordAgain: "Saisissez à nouveau le mot de passe : le serveur ou l'identifiant a changé.",
     },
     share: {
       title: "Lien invité",
@@ -1346,6 +1352,8 @@ const it: DeepPartialStrings<Messages> = {
     invalid_image: "Questo file non è un'immagine supportata.",
     invalid_code: "Il codice non è corretto.",
     offline: "Sei offline. Le foto ripartiranno appena torni in linea.",
+    invalidField: "Questo valore non è valido.",
+    storage_full: "L'album è pieno per ora. Avvisa gli organizzatori, poi riprova più tardi.",
   },
   guest: {
     unlockTitle: "Questo album è privato",
@@ -1539,6 +1547,7 @@ const it: DeepPartialStrings<Messages> = {
       notConfigured: "Nessun server SMTP: le e-mail restano in coda e partiranno appena sarà configurato.",
       alertsHint: "Inviati all'indirizzo qui sopra e ai proprietari. Le e-mail di un evento vanno anche ai suoi organizzatori.",
       queueHint: "Le ultime e-mail, reinviate da sole quando il server non ha risposto.",
+      passwordAgain: "Inserisci di nuovo la password: il server o l'utente è cambiato.",
     },
     share: {
       title: "Link per gli ospiti",
@@ -2002,6 +2011,8 @@ const es: DeepPartialStrings<Messages> = {
     invalid_image: "Este archivo no es una imagen compatible.",
     invalid_code: "Ese código no es correcto.",
     offline: "Estás sin conexión. Las fotos se reenviarán al reconectar.",
+    invalidField: "Este valor no es válido.",
+    storage_full: "El álbum está lleno por ahora. Avisa a los anfitriones y vuelve a intentarlo más tarde.",
   },
   guest: {
     unlockTitle: "Este álbum es privado",
@@ -2195,6 +2206,7 @@ const es: DeepPartialStrings<Messages> = {
       notConfigured: "Aún no hay servidor SMTP: los correos se quedan en cola y saldrán en cuanto se configure.",
       alertsHint: "Se envían a la dirección de arriba y a los propietarios. Los correos de un evento llegan también a sus organizadores.",
       queueHint: "Los últimos correos, reenviados solos cuando el servidor no respondió.",
+      passwordAgain: "Vuelve a escribir la contraseña: el servidor o el usuario ha cambiado.",
     },
     share: {
       title: "Enlace para invitados",

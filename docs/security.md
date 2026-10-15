@@ -82,8 +82,13 @@ whatever the settings: this is a design decision, not an option.
   (a Discord or Slack webhook URL is a credential) and never sent back to the
   browser, which only sees a masked hint.
 - Requests are plain `POST`s with a 10-second timeout and no redirects
-  followed. Owners may point them at the local network on purpose (Home
-  Assistant), so treat the owner role as trusted with outbound requests.
+  followed. They go to public addresses only: a URL whose host is or resolves
+  to a private, loopback or link-local address (the server itself, the local
+  network, cloud metadata, the updater) fails with a message saying so. To
+  reach a Home Assistant or ntfy on your own network, set
+  `WEBHOOK_ALLOW_PRIVATE=true`. The check runs before connecting, so a name
+  that changes its answer in between isn't covered: owners remain trusted with
+  outbound requests.
 - Notices carry event names, counts and admin links, never photos, guest
   emails or message audio.
 
@@ -98,7 +103,7 @@ whatever the settings: this is a design decision, not an option.
   only served with an audio type, `no-store`, under a sandboxing CSP. Browser
   recordings carry no location.
 - 3 MB per note, 500 characters per text, 20 messages per guest and event,
-  10 per minute. The microphone is only requested when a guest taps *Record*.
+  10 per minute (see *Abuse* for the limits that hold without a cookie). The microphone is only requested when a guest taps *Record*.
 
 ## Email
 
@@ -106,7 +111,13 @@ whatever the settings: this is a design decision, not an option.
   them, used for that event's album only, and deleted with the event. A guest
   can remove theirs from the page.
 - The SMTP password set in the admin is encrypted at rest and never sent back
-  to the browser.
+  to the browser. It is only kept for the server and account it was typed for:
+  changing either asks for it again, so another owner can't redirect it to a
+  server of their own.
+- With a user set, the login only goes over an encrypted connection (implicit
+  TLS, or STARTTLS made mandatory), so it can't be read by stripping STARTTLS
+  on the way. `SMTP_ALLOW_PLAIN=true` for a relay without TLS on a trusted
+  network.
 - Every value in an email is HTML-escaped; each email has a plain-text twin.
 - Choosing to keep the password out of guests' emails means a forwarded email
   doesn't open the album.
@@ -119,9 +130,14 @@ whatever the settings: this is a design decision, not an option.
   numbers) is removed, and anything appended after the image data is dropped.
 - Size is capped while the body streams in, so chunked requests without
   `Content-Length` can't exhaust memory. Images above `MAX_IMAGE_MEGAPIXELS`
-  are refused before decoding.
-- One upload at a time per guest, so parallel requests can't bypass the
-  per-guest quota.
+  are refused before decoding, HEIC included: its size is read from the file's
+  header before the decoder allocates anything.
+- One upload at a time per guest, so parallel requests from one guest can't
+  bypass the per-guest quota. A guest is a cookie, though: a script that drops
+  it is a new guest every time. What holds then is the per-event and per-address
+  limits below, at most 6 uploads received at once across the instance (the
+  others are asked to retry; guests' phones do so on their own), and a refusal
+  once the disk has less than 512 MB free.
 
 ## Authentication
 
@@ -150,17 +166,24 @@ whatever the settings: this is a design decision, not an option.
 - Every admin page and API route checks the session itself, and every route
   under an event id checks the event is in the admin's scope.
   `tests/unit/routeGuards.test.ts` fails if one is added without the check.
-  `tests/routeGuards.test.ts` fails if one is added without the check.
 
 ## Abuse
 
 | Limit | Default |
 |---|---|
-| Admin login | 5 attempts per minute per IP |
-| Access code | 10 attempts per minute per guest, 30 wrong codes per minute per event |
-| Uploads | 30 per minute per guest, plus the per-guest quota |
+| Admin login | 5 wrong passwords per minute per address and username, 30 per minute per username, 30 attempts per minute per address |
+| Access code | 10 attempts per minute per guest, 30 wrong codes per minute per event, in-flight guesses included |
+| Uploads | 30 per minute per guest, 300 per event, 120 per address (behind `TRUST_PROXY`), plus the per-guest quota |
+| Guestbook | 10 messages per minute per guest, 60 per event, 30 per address (behind `TRUST_PROXY`) |
 | Gallery link password | 10 attempts per minute per IP and link |
 | Test email | 5 per minute |
+
+Wrong codes and passwords are counted before they are checked, then given back
+when they turn out right: a burst of parallel guesses all counts. A successful
+sign-in only clears the limits of the account that signed in.
+
+Without `TRUST_PROXY`, every client looks like the same address to the app, so
+per-address limits are shared by everyone; behind a reverse proxy, turn it on.
 
 The per-event ceiling on wrong codes is a deliberate trade-off: someone flooding
 wrong codes can make real guests wait up to a minute, but can't brute-force a
@@ -172,7 +195,8 @@ Every state-changing request (admin and guest) must carry a matching `Origin`
 header, on top of `SameSite` cookies. The app sets `X-Frame-Options: DENY`,
 `X-Content-Type-Options: nosniff`, a strict `Referrer-Policy`, and a
 `Permissions-Policy` that allows the camera and microphone only for the app
-itself.
+itself. When `PUBLIC_URL` is `https://`, pages also send
+`Strict-Transport-Security` (one year, without subdomains).
 
 Every page carries a **Content-Security-Policy** with a fresh nonce
 (`src/proxy.ts`): only scripts Next.js marked with it run, so injected markup

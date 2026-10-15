@@ -1,18 +1,10 @@
 import "server-only";
+export { parseEmail } from "@/lib/email";
 import { and, eq } from "drizzle-orm";
 import type { Locale } from "@/lib/constants";
 import { getDb } from "@/lib/db/client";
 import { guestContacts, type GuestContactRow } from "@/lib/db/schema";
 import { newId } from "@/lib/security/ids";
-
-// Deliberately simple: the address only has to look deliverable; a typo just means no mail.
-const EMAIL = /^[^\s@<>"']{1,64}@[^\s@<>"']{1,253}\.[a-z]{2,}$/i;
-
-export function parseEmail(value: unknown): string | null {
-  if (typeof value !== "string") return null;
-  const email = value.trim().toLowerCase();
-  return email.length <= 254 && EMAIL.test(email) ? email : null;
-}
 
 export function saveGuestContact(eventId: string, guestId: string, email: string, locale: Locale): void {
   getDb()

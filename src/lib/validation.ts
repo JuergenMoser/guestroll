@@ -1,3 +1,4 @@
+import { parseEmail } from "@/lib/email";
 import { CAPTURE_MODES, LOCALES, type CaptureMode, type Locale } from "@/lib/constants";
 import { parseChallenges } from "@/lib/challenges";
 import { FRAMES, type Frame } from "@/lib/effects";
@@ -222,8 +223,13 @@ export function parseAccountInput(input: unknown, partial: boolean): ValidationR
   }
   if (body.email !== undefined) {
     if (body.email === null || body.email === "") value.email = null;
-    else if (typeof body.email !== "string" || !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(body.email.trim()) || body.email.length > 254) errors.email = "invalid";
-    else value.email = body.email.trim().toLowerCase();
+    else {
+      // parseEmail checks the length before its bounded regex: the open-ended one
+      // this replaced backtracked quadratically, a megabyte body froze the server.
+      const email = parseEmail(body.email);
+      if (email) value.email = email;
+      else errors.email = "invalid";
+    }
   }
   if (body.role !== undefined || !partial) {
     if (body.role !== "owner" && body.role !== "organizer") errors.role = "invalid";

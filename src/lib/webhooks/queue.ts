@@ -3,6 +3,7 @@ import { and, asc, desc, eq, lte, sql } from "drizzle-orm";
 import { config } from "@/lib/config";
 import { getDb } from "@/lib/db/client";
 import { webhookDeliveries, type WebhookDeliveryRow } from "@/lib/db/schema";
+import { assertPublicUrl } from "@/lib/security/addresses";
 import { newId } from "@/lib/security/ids";
 import { formatWebhook, type HttpRequest } from "./format";
 import { getWebhook, webhooksFor, type Webhook } from "./settings";
@@ -14,6 +15,7 @@ const MAX_ATTEMPTS = BACKOFF_MS.length + 1;
 export type HttpSend = (request: HttpRequest) => Promise<void>;
 
 export const httpSend: HttpSend = async ({ url, headers, body }) => {
+  if (!config.webhookAllowPrivate) await assertPublicUrl(url);
   const res = await fetch(url, { method: "POST", headers, body, redirect: "error", signal: AbortSignal.timeout(10_000) });
   if (!res.ok) throw new Error(`HTTP ${res.status}${res.statusText ? ` ${res.statusText}` : ""}`);
 };
@@ -52,6 +54,7 @@ export function sendNow(webhook: Webhook, notice: Notice, send: HttpSend = httpS
 const globalForQueue = globalThis as unknown as { guestrollWebhooksRunning?: boolean };
 
 export async function processWebhooks(send: HttpSend = httpSend, now = Date.now()): Promise<{ sent: number; failed: number }> {
+  if (config.demo.enabled && send === httpSend) return { sent: 0, failed: 0 };
   if (globalForQueue.guestrollWebhooksRunning) return { sent: 0, failed: 0 };
   globalForQueue.guestrollWebhooksRunning = true;
   let sent = 0;
