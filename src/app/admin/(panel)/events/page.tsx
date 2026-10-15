@@ -9,7 +9,7 @@ import { requireAdminPage } from "@/lib/auth/guard";
 
 export default async function EventsPage() {
   await requireAdminPage();
-  const t = getT();
+  const t = await getT();
   return (
     <>
       <PageHeader
@@ -21,7 +21,7 @@ export default async function EventsPage() {
           </Link>
         }
       />
-      <EventList events={listEvents()} locale={getLocale()} />
+      <EventList events={listEvents()} locale={await getLocale()} />
     </>
   );
 }

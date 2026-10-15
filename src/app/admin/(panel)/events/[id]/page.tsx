@@ -26,7 +26,7 @@ export default async function EventPage({ params, searchParams }: Props) {
   const row = getEventById(id);
   if (!row) notFound();
 
-  const t = getT();
+  const t = await getT();
   const event = toAdminEvent(row);
   const tab: Tab = TABS.includes(rawTab as Tab) ? (rawTab as Tab) : "photos";
   const url = await eventUrl(event.slug);
@@ -65,7 +65,7 @@ export default async function EventPage({ params, searchParams }: Props) {
       </nav>
 
       {tab === "photos" && <ModerationPanel eventId={event.id} pendingCount={stats.totals.pending} />}
-      {tab === "stats" && <StatsPanel stats={stats} locale={getLocale()} />}
+      {tab === "stats" && <StatsPanel stats={stats} locale={await getLocale()} />}
       {tab === "share" && <SharePanel eventId={event.id} url={url} slug={event.slug} />}
       {tab === "settings" && (
         <div className="mx-auto max-w-2xl space-y-8">

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
   if (await isAdmin()) redirect("/admin");
-  const t = getT();
+  const t = await getT();
   return (
     <main className="grain grid min-h-dvh place-items-center px-4">
       <div className="w-full max-w-sm space-y-8">

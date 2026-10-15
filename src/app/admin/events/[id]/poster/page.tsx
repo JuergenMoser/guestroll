@@ -14,7 +14,7 @@ export default async function PosterPage({ params }: { params: Promise<{ id: str
   await requireAdminPage();
   const event = getEventById((await params).id);
   if (!event) notFound();
-  const t = getT();
+  const t = await getT();
   const url = await eventUrl(event.slug);
 
   return (

@@ -11,8 +11,8 @@ import { requireAdminPage } from "@/lib/auth/guard";
 
 export default async function DashboardPage() {
   await requireAdminPage();
-  const t = getT();
-  const locale = getLocale();
+  const t = await getT();
+  const locale = await getLocale();
   return (
     <>
       <PageHeader

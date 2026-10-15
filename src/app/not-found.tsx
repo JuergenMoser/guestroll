@@ -1,7 +1,7 @@
 import { getT } from "@/lib/i18n/server";
 
-export default function NotFound() {
-  const t = getT();
+export default async function NotFound() {
+  const t = await getT();
   return (
     <main className="grain grid min-h-dvh place-items-center px-4 text-center">
       <div className="space-y-3">

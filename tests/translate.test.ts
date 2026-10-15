@@ -8,7 +8,9 @@ function keys(node: object, prefix = ""): string[] {
 
 describe("i18n", () => {
   it("has the same keys in every locale", () => {
-    expect(keys(messages.fr).sort()).toEqual(keys(messages.en).sort());
+    for (const locale of Object.keys(messages) as (keyof typeof messages)[]) {
+      expect(keys(messages[locale]).sort(), locale).toEqual(keys(messages.en).sort());
+    }
   });
 
   it("interpolates variables and falls back to the key", () => {

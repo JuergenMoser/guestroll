@@ -9,7 +9,7 @@ import { requireAdminPage } from "@/lib/auth/guard";
 
 export default async function SettingsPage() {
   await requireAdminPage();
-  const t = getT();
+  const t = await getT();
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <PageHeader title={t("admin.settings")} />

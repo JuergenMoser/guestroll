@@ -57,7 +57,7 @@ export default async function GuestPage({ params }: Props) {
   return (
     <EventTheme color={event.accentColor} className="grain min-h-dvh">
       <main className="mx-auto flex min-h-dvh max-w-3xl flex-col gap-10 px-4 pt-[max(2.5rem,env(safe-area-inset-top))] pb-16">
-        <EventHeader event={publicEvent} locale={getLocale()} />
+        <EventHeader event={publicEvent} locale={await getLocale()} />
         {body}
         <footer className="mt-auto pt-6 text-center text-[11px] text-ink-600">
           <a href="https://github.com/achedon12/guestroll" className="hover:text-ink-400">

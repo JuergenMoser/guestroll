@@ -2,7 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { I18nProvider } from "@/components/I18nProvider";
 import { config } from "@/lib/config";
-import { getLocale, getMessages } from "@/lib/i18n/server";
+import { messages } from "@/lib/i18n/messages";
+import { getLocale } from "@/lib/i18n/server";
 import "./globals.css";
 
 // Locale and app name come from runtime env vars: nothing may be frozen at build time.
@@ -26,11 +27,12 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
   return (
-    <html lang={getLocale()} className={`${sans.variable} ${mono.variable} ${display.variable}`}>
+    <html lang={locale} className={`${sans.variable} ${mono.variable} ${display.variable}`}>
       <body className="min-h-dvh">
-        <I18nProvider messages={getMessages()}>{children}</I18nProvider>
+        <I18nProvider messages={messages[locale]}>{children}</I18nProvider>
       </body>
     </html>
   );

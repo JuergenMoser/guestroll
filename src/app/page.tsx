@@ -5,8 +5,8 @@ import { config } from "@/lib/config";
 import { getT } from "@/lib/i18n/server";
 
 /** Visitors normally land on /e/<slug> from a QR code; this page is for whoever runs the instance. */
-export default function HomePage() {
-  const t = getT();
+export default async function HomePage() {
+  const t = await getT();
   return (
     <main className="grain grid min-h-dvh place-items-center px-4">
       <div className="max-w-xl space-y-8 text-center">

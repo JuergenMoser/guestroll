@@ -5,7 +5,7 @@ import { requireAdminPage } from "@/lib/auth/guard";
 
 export default async function NewEventPage() {
   await requireAdminPage();
-  const t = getT();
+  const t = await getT();
   return (
     <div className="mx-auto max-w-2xl">
       <PageHeader kicker={t("admin.events")} title={t("admin.newEvent")} />
