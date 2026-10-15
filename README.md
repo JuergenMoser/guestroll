@@ -33,6 +33,12 @@ code on each table:
 You run it yourself, on your own server, with one Docker command. The photos
 never leave your machine.
 
+## Watch the tour
+
+<a href="https://youtu.be/MEuvBB-wVI8"><img src="docs/assets/video-thumbnail.png" alt="Guestroll presentation video on YouTube, about three minutes" width="640" /></a>
+
+Three minutes: a guest taking photos, the hosts' admin, the QR code designer, the live wall, and installing it.
+
 ## Features
 
 **For guests**

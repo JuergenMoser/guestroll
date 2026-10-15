@@ -27,6 +27,10 @@ règle ça avec un QR code sur chaque table :
 Vous l'hébergez vous-même, avec une commande Docker. Les photos ne quittent
 jamais votre machine.
 
+## La vidéo de présentation
+
+<a href="https://youtu.be/MEuvBB-wVI8"><img src="docs/assets/video-thumbnail.png" alt="Vidéo de présentation de Guestroll sur YouTube, environ trois minutes" width="640" /></a>
+
 ## Fonctionnalités
 
 **Pour les invités**
