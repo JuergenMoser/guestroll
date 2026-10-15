@@ -6,6 +6,7 @@ import { mailEnabled } from "@/lib/mail/settings";
 import { processWebhooks } from "@/lib/webhooks/queue";
 import { cleanTempFiles } from "@/lib/backup";
 import { analysePending } from "@/lib/images/backfill";
+import { runExports } from "@/lib/cloud/export";
 import { runRetention } from "@/lib/retention";
 import { maybeCheckForUpdate } from "@/lib/updates";
 
@@ -23,6 +24,7 @@ export async function tick(now = Date.now()): Promise<void> {
   // Mails are queued even without SMTP, so configuring it later still delivers them.
   if (mailEnabled()) await processOutbox(undefined, now);
   await maybeCheckForUpdate(now);
+  void runExports();
   await processWebhooks(undefined, now);
 }
 

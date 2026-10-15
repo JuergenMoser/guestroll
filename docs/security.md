@@ -42,6 +42,15 @@ links unchanged.
   deleting one removes its files, from the album, the gallery links and the
   wall. Only the browser that sent it can (same guest cookie).
 
+## Cloud export
+
+- The WebDAV password is encrypted at rest, never sent back to the browser,
+  and kept for the same server and account only: changing either asks for it
+  again. An app password from the cloud is recommended over the account's own.
+- Requests go to public addresses only, checked on the address actually
+  connected to, unless `CLOUD_ALLOW_PRIVATE=true` (for a Nextcloud at home).
+- Only owners set it up; an event's admins send its album.
+
 ## Invitations
 
 - An invitation link carries a 32-character random token; only its SHA-256 is

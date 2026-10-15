@@ -56,6 +56,7 @@ Each visitor gets, in this order:
 | `TRUST_PROXY` | `false` | Read the client IP from `X-Forwarded-For` and the host from `X-Forwarded-Host`. Turn it on **only** behind a reverse proxy you control, or rate limits can be dodged with a forged header. |
 | `SECURE_COOKIES` | `true` in production | Cookies only travel over HTTPS. Set to `false` only to test over plain HTTP on a local network. |
 | `WEBHOOK_ALLOW_PRIVATE` | `false` | Let webhooks reach private, loopback and link-local addresses (a self-hosted ntfy or Home Assistant on your network). Off, a webhook to such an address fails with a message saying so: an owner's webhook can't probe the server's own network or cloud metadata. |
+| `CLOUD_ALLOW_PRIVATE` | `false` | Let the cloud export reach a WebDAV server on your own network (a Nextcloud at home). Off, such an address is refused, like for webhooks. |
 
 ## Uploads
 

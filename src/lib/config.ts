@@ -79,6 +79,8 @@ export const config = {
    * Off by default: an owner's webhook could otherwise probe the server's own network.
    */
   webhookAllowPrivate: bool("WEBHOOK_ALLOW_PRIVATE", false),
+  /** Same, for the cloud export: a Nextcloud at home is a common case. */
+  cloudAllowPrivate: bool("CLOUD_ALLOW_PRIVATE", false),
 
   /** Lets a relay without TLS receive the SMTP login (same machine or trusted network only). */
   smtpAllowPlain: bool("SMTP_ALLOW_PLAIN", false),

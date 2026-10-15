@@ -30,6 +30,9 @@ always run on their own at startup; take a backup first all the same
   email isn't set up.
 - Printable album: a PDF with a cover and the photos (or the favorites), 1, 2
   or 4 per A4 page with credits, from the originals for one per page.
+- Cloud export over WebDAV (Nextcloud, ownCloud, Synology, kDrive…): one
+  folder per event, sent in the background with its progress, by hand or
+  automatically when the event ends.
 
 ## [0.4.0] - 2026-10-15
 

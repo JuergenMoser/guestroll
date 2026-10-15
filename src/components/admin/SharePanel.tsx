@@ -15,10 +15,11 @@ import { SlideshowExport } from "./SlideshowExport";
 import { WallSettings } from "./WallSettings";
 import { SpotsCard } from "./SpotsCard";
 import { AlbumPdfCard } from "./AlbumPdfCard";
+import { CloudExportCard } from "./CloudExportCard";
 import { BoothCard } from "./BoothCard";
 import type { SpotDto } from "@/lib/spots";
 
-export function SharePanel({ event, url, locale, purgeAt, favoriteCount, spots }: { event: AdminEvent; url: string; locale: string; purgeAt: number | null; favoriteCount: number; spots: SpotDto[] }) {
+export function SharePanel({ event, url, locale, purgeAt, favoriteCount, spots, owner }: { event: AdminEvent; url: string; locale: string; purgeAt: number | null; favoriteCount: number; spots: SpotDto[]; owner: boolean }) {
   const t = useT();
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -53,6 +54,8 @@ export function SharePanel({ event, url, locale, purgeAt, favoriteCount, spots }
       <BoothCard eventId={event.id} url={url} initialKey={event.boothKey} />
 
       <AlbumPdfCard eventId={event.id} hasFavorites={favoriteCount > 0} />
+
+      <CloudExportCard eventId={event.id} hasFavorites={favoriteCount > 0} owner={owner} />
 
       <SlideshowExport eventId={event.id} eventName={event.name} eventDate={event.eventDate} accent={event.accentColor} hasFavorites={favoriteCount > 0} />
 

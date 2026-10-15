@@ -7,6 +7,12 @@ import { storage } from "@/lib/storage";
 import { slugify } from "@/lib/security/ids";
 import { openPhotoStream } from "@/lib/storage/files";
 
+/** `0001-camille-1a2b3c4d.jpg`: sorts in the order photos were taken, says who took them. Shared by the ZIP and the cloud export. */
+export function photoFileName(index: number, photo: Pick<PhotoRow, "id" | "guestName">): string {
+  const author = slugify(photo.guestName ?? "") || "guest";
+  return `${String(index + 1).padStart(4, "0")}-${author}-${photo.id.slice(0, 8)}.jpg`;
+}
+
 /**
  * Streams the ZIP as it is built: a 2 GB album never sits in memory, and the
  * download starts immediately. JPEGs are already compressed, so `store` skips
@@ -21,8 +27,7 @@ export function archiveResponse(event: EventRow, rows: PhotoRow[], suffix?: stri
     for (const [i, photo] of rows.entries()) {
       const opened = await openPhotoStream(event.id, photo.id, "original").catch(() => null);
       if (!opened) continue;
-      const author = slugify(photo.guestName ?? "") || "guest";
-      zip.append(opened.stream, { name: `${String(i + 1).padStart(4, "0")}-${author}-${photo.id.slice(0, 8)}.jpg` });
+      zip.append(opened.stream, { name: photoFileName(i, photo) });
       await new Promise<void>((resolve, reject) => {
         zip.once("entry", () => resolve());
         opened.stream.once("error", reject);

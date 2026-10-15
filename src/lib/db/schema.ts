@@ -298,6 +298,25 @@ export const invitations = sqliteTable("invitations", {
   createdAt: integer("created_at").notNull().default(now),
 });
 
+/** An album sent to the cloud (WebDAV): one row per run, with its progress. */
+export const cloudExports = sqliteTable(
+  "cloud_exports",
+  {
+    id: text("id").primaryKey(),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    scope: text("scope", { enum: ["visible", "favorites"] }).notNull(),
+    status: text("status", { enum: ["pending", "running", "done", "failed"] }).notNull().default("pending"),
+    done: integer("done").notNull().default(0),
+    total: integer("total").notNull().default(0),
+    error: text("error"),
+    createdAt: integer("created_at").notNull().default(now),
+    finishedAt: integer("finished_at"),
+  },
+  (t) => [index("cloud_exports_event_idx").on(t.eventId, t.createdAt)],
+);
+
 export type EventRow = typeof events.$inferSelect;
 export type PhotoRow = typeof photos.$inferSelect;
 export type SpotRow = typeof spots.$inferSelect;
@@ -309,4 +328,5 @@ export type OutboxRow = typeof outbox.$inferSelect;
 export type WebhookDeliveryRow = typeof webhookDeliveries.$inferSelect;
 export type AccountRow = typeof accounts.$inferSelect;
 export type InvitationRow = typeof invitations.$inferSelect;
+export type CloudExportRow = typeof cloudExports.$inferSelect;
 export type AccountRole = AccountRow["role"];

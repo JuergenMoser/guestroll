@@ -1,4 +1,6 @@
 import "server-only";
+import { startExport } from "@/lib/cloud/export";
+import { getCloudSettings } from "@/lib/cloud/settings";
 import { and, count, eq, gte, isNotNull, isNull, lte } from "drizzle-orm";
 import { config } from "@/lib/config";
 import { listGuestContacts, uniqueRecipients } from "@/lib/contacts";
@@ -44,6 +46,8 @@ export function endEvent(event: EventRow, now = Date.now()): EndResult | null {
     .where(and(eq(events.id, event.id), isNull(events.endedAt)))
     .run();
   if (claimed.changes === 0) return null;
+  // The album goes to the cloud on its own when the owners asked for it.
+  if (getCloudSettings()?.autoExport) startExport(event.id, "visible");
 
   const base = backgroundBaseUrl();
   const result: EndResult = { summaryQueued: false, galleryRecipients: 0, shareId: null, galleryPassword: null };

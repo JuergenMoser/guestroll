@@ -239,6 +239,14 @@ ends their access at once. The last owner can't be demoted or deleted.
   get an email a week before, and the date shows on the event's *QR & sharing*
   tab. Events that never ended (no closing time, never ended by hand) are kept.
 
+- **Cloud export**: a Nextcloud, ownCloud, Synology, kDrive or any WebDAV
+  folder (address, username, an app password, a folder). **Test the
+  connection** tries it. Each event's album then goes into its own subfolder,
+  named after its date and name, with the originals named like in the ZIP:
+  from the event's *QR & sharing* tab (*Send the album*, with its progress),
+  or on its own when the event ends if you turn that on. The transfer runs in
+  the background; sending again updates the folder.
+
 ### System (owners)
 
 - **Updates**: the version you run, the newest one with its release
