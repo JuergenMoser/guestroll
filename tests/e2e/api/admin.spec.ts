@@ -121,4 +121,50 @@ test.describe("admin API", () => {
     expect(stats.totals).toMatchObject({ photos: 3, guests: 2 });
     expect((await host.get(`/api/admin/stats?eventId=00000000-0000-0000-0000-000000000000`)).status()).toBe(404);
   });
+
+  test("duplicating keeps the settings, the look and the logo, and none of the photos", async ({ baseURL }) => {
+    const host = await admin(baseURL!);
+    const source = await createEvent(host, {
+      name: "Summer 2026",
+      accentColor: "#336699",
+      moderation: "pre",
+      challenges: ["The pool"],
+      wallStyle: { layout: "grid" },
+      uploadsCloseAt: Date.now() - 1000,
+    });
+    const png = await sharp({ create: { width: 64, height: 64, channels: 4, background: "#ffc72c" } }).png().toBuffer();
+    await host.post(`/api/admin/events/${source.id}/logo`, { multipart: { logo: { name: "l.png", mimeType: "image/png", buffer: png } } });
+    await host.post(`/api/admin/events/${source.id}/photos/import`, { multipart: { photo: { name: "p.jpg", mimeType: "image/jpeg", buffer: png } } });
+
+    const res = await host.post(`/api/admin/events/${source.id}/duplicate`, { data: { name: "Summer 2027" } });
+    expect(res.status()).toBe(201);
+    const { event: copy } = await res.json();
+    expect(copy).toMatchObject({ name: "Summer 2027", accentColor: "#336699", moderation: "pre", uploadsOpen: true, uploadsCloseAt: null, endedAt: null });
+    expect(copy.challenges.map((c: { label: string }) => c.label)).toEqual(["The pool"]);
+    expect(copy.wallStyle.layout).toBe("grid");
+    expect(copy.slug).not.toBe(source.slug);
+    expect(copy.logoVersion).toBeGreaterThan(0);
+    expect((await client(baseURL!).then((a) => a.get(`/api/e/${copy.slug}/logo?v=${copy.logoVersion}`))).status()).toBe(200);
+    expect((await (await host.get(`/api/admin/events/${copy.id}/photos`)).json()).photos).toHaveLength(0);
+  });
+
+  test("hosts import photos at once visible, credited, even with uploads closed", async ({ baseURL }) => {
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { moderation: "pre", uploadsOpen: false, maxPhotosPerGuest: 1 });
+    const big = await sharp({ create: { width: 3000, height: 2000, channels: 3, background: "#808080" } }).jpeg({ quality: 95 }).toBuffer();
+    for (let i = 0; i < 2; i++) {
+      const res = await host.post(`/api/admin/events/${event.id}/photos/import`, {
+        multipart: { photo: { name: `pro-${i}.jpg`, mimeType: "image/jpeg", buffer: big }, credit: "Studio Lumière" },
+      });
+      expect(res.status()).toBe(201);
+      expect((await res.json()).photo).toMatchObject({ status: "visible", guestName: "Studio Lumière", width: 3000 });
+    }
+    const bad = await host.post(`/api/admin/events/${event.id}/photos/import`, { multipart: { photo: { name: "x.txt", mimeType: "text/plain", buffer: Buffer.from("hello") } } });
+    expect(bad.status()).toBe(415);
+    expect((await (await host.get(`/api/admin/events/${event.id}/photos?status=visible`)).json()).photos).toHaveLength(2);
+    // Guests can't reach it.
+    const guest = await client(baseURL!);
+    expect((await guest.post(`/api/admin/events/${event.id}/photos/import`, { multipart: { photo: { name: "p.jpg", mimeType: "image/jpeg", buffer: big } } })).status()).toBe(401);
+  });
 });
+

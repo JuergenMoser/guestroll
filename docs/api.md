@@ -94,6 +94,8 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | `GET /api/admin/events/:id/qr?format=svg\|png&size=512..4096&download=1` | | The styled QR code |
 | `GET /api/admin/events/:id/photos?status=&favorites=1&challenge=&before=` | | `{ photos, nextCursor }` |
 | `POST /api/admin/events/:id/photos` | `{ action: "approve"\|"hide"\|"favorite"\|"unfavorite"\|"delete", ids }` | `{ changed }` |
+| `POST /api/admin/events/:id/photos/import` | multipart: `photo`, optional `credit` | `201 { photo }`, visible at once |
+| `POST /api/admin/events/:id/duplicate` | `{ name? }` | Owners: `201 { event }`, settings without photos |
 | `GET /api/admin/events/:id/archive[?all=1\|?favorites=1]` | | Streamed ZIP; `all=1` includes pending and hidden, `favorites=1` is the visible favorites |
 | `GET /api/admin/stats[?eventId=]` | | Totals, time series, top guests |
 | `GET /api/admin/events/:id/messages?status=&before=` | | `{ messages, nextCursor }` |

@@ -7,6 +7,7 @@ import { useT } from "@/components/I18nProvider";
 import { Button, buttonClass, EmptyState, SegmentedControl, Select } from "@/components/ui";
 import type { Challenge } from "@/lib/challenges";
 import { api } from "@/lib/client/api";
+import { ImportPhotos } from "./ImportPhotos";
 import { SelectionBar, type BulkAction } from "./SelectionBar";
 import { useAdminPhotos, type PhotoFilter } from "./useAdminPhotos";
 
@@ -74,6 +75,7 @@ export function ModerationPanel({ eventId, pendingCount, challenges = [] }: { ev
               ))}
             </Select>
           )}
+          <ImportPhotos eventId={eventId} onImported={reload} />
           {photos.length > 0 && (
             <Button size="sm" variant="ghost" onClick={() => setSelected(selected.size === photos.length ? new Set() : new Set(photos.map((p) => p.id)))}>
               {t("admin.moderation.selectAll")}

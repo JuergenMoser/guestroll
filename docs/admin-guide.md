@@ -28,6 +28,10 @@ The contact sheet of everything guests sent, newest first.
   `0001-camille-1a2b3c4d.jpg` so they sort in the order they were taken.
   The archive streams, so even a multi-gigabyte album starts downloading
   immediately.
+- **Import photos** adds files from your computer, typically the
+  photographer's: sent one by one at full quality (no compression in the
+  browser), published at once, outside guest quotas and closing times, and
+  credited to the name you give.
 - **Favorites** are your picks, marked with a star. Under the Favorites filter,
   **Download the favorites** gets a "best of" ZIP, and a gallery link can show
   the favorites only. Guests never see which photos you picked.
@@ -115,6 +119,11 @@ anyone upload, and never shows pending or hidden photos.
 Uploads end on their own at the scheduled closing time; the end-of-event emails
 then go out within a minute. **End the event now** does it immediately. It runs
 once per event: ending again does nothing.
+
+**Duplicate this event** (owners): a new event with the same settings,
+colors, QR code design, logo, challenges and organizers, ready for next year.
+No photos, messages or links come along, and it gets its own QR code: the old
+one keeps pointing at the old event.
 
 **Danger zone**: deleting an event removes every photo from disk. Type the
 event name to confirm.

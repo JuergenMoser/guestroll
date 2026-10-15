@@ -56,7 +56,8 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 - 🌗 Light and dark themes.
 
 **For hosts**
-- 🗂️ As many events as you want, each with its own link, QR code and accent color.
+- 🗂️ As many events as you want, each with its own link, QR code and accent color; duplicate one to start next year's.
+- 📥 Import the photographer's shots into the same album.
 - 👥 **Several admin accounts**: owners run everything, organizers only the events you give them.
 - 🔐 Optional access code per event, so a QR code shared on social media isn't enough.
 - ✅ Moderation: publish right away and hide later, or approve each photo first.
