@@ -77,7 +77,7 @@ export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pe
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div role="tablist" className="flex gap-1 rounded-full bg-surface p-1 ring-1 ring-line">
+        <div role="tablist" className="flex gap-0.5 rounded-lg bg-surface p-0.5 ring-1 ring-line">
           {FILTERS.map((f) => (
             <button
               key={f}
@@ -89,7 +89,7 @@ export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pe
                 setLoading(true);
                 setFilter(f);
               }}
-              className={cn("rounded-full px-3 py-1 text-sm transition", filter === f ? "bg-sunken-2 text-ink" : "text-ink-muted hover:text-ink")}
+              className={cn("rounded-md px-3 py-1 text-sm transition-colors", filter === f ? "bg-sunken font-medium text-ink" : "text-ink-muted hover:text-ink")}
             >
               {t(`admin.moderation.${f}`)}
             </button>
@@ -104,8 +104,8 @@ export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pe
       </div>
 
       {selected.size > 0 && (
-        <div className="sticky top-16 z-20 flex flex-wrap items-center gap-2 rounded-2xl bg-sunken p-2 pl-4 ring-1 ring-line-2">
-          <span className="mr-auto text-sm">{t("admin.moderation.selected", { n: selected.size })}</span>
+        <div className="sticky top-16 z-20 flex flex-wrap items-center gap-2 rounded-lg bg-ink p-2 pl-4 text-canvas shadow-lg">
+          <span className="mr-auto text-sm font-medium">{t("admin.moderation.selected", { n: selected.size })}</span>
           <Button size="sm" variant="secondary" onClick={() => act("approve")} disabled={busy}>
             <Check className="size-4" aria-hidden />
             {t("admin.moderation.approve")}
@@ -132,9 +132,9 @@ export function ModerationPanel({ eventId, pendingCount }: { eventId: string; pe
       )}
 
       {!loading && photos.length === 0 ? (
-        <p className="rounded-2xl border border-dashed border-line-2 py-16 text-center text-sm text-ink-muted">{t("admin.moderation.empty")}</p>
+        <p className="border-2 border-dashed border-line-2 py-16 text-center text-ink-muted">{t("admin.moderation.empty")}</p>
       ) : (
-        <PhotoGrid photos={photos} selected={selected} onToggle={toggle} />
+        <PhotoGrid photos={photos} selected={selected} onToggle={toggle} variant="sheet" />
       )}
 
       {cursor !== null && (

@@ -21,7 +21,7 @@ interface QrDesignerProps {
 
 function Segmented<T extends string>({ value, options, onChange, label }: { value: T; options: readonly T[]; onChange: (v: T) => void; label: (v: T) => string }) {
   return (
-    <div role="radiogroup" className="flex gap-1 rounded-full bg-canvas p-1 ring-1 ring-line">
+    <div role="radiogroup" className="flex gap-0.5 rounded-lg bg-canvas p-0.5 ring-1 ring-line">
       {options.map((option) => (
         <button
           key={option}
@@ -29,7 +29,7 @@ function Segmented<T extends string>({ value, options, onChange, label }: { valu
           role="radio"
           aria-checked={value === option}
           onClick={() => onChange(option)}
-          className={cn("flex-1 rounded-full px-3 py-1 text-sm transition", value === option ? "bg-sunken-2 text-ink" : "text-ink-muted hover:text-ink")}
+          className={cn("flex-1 rounded-md px-3 py-1 text-sm transition-colors", value === option ? "bg-surface font-medium text-ink shadow-sm" : "text-ink-muted hover:text-ink")}
         >
           {label(option)}
         </button>
@@ -151,7 +151,7 @@ export function QrDesigner({ event, url }: QrDesignerProps) {
               value={pngSize}
               onChange={(e) => setPngSize(Number(e.target.value))}
               aria-label={t("admin.qr.size")}
-              className="h-8 rounded-full bg-sunken px-3 text-sm ring-1 ring-line-2"
+              className="h-8 rounded-md bg-surface px-2 text-sm ring-1 ring-line-2"
             >
               {PNG_SIZES.map((size) => (
                 <option key={size} value={size}>
