@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useData } from 'vitepress'
-import { langDir, strings } from './strings'
 
-const { theme, lang } = useData()
-const t = computed(() => strings(lang.value))
+const { theme } = useData()
 const docs = computed(() => theme.value.docsVersions as { version: string, latest: string, versions: { version: string, base: string }[] })
-// the latest docs in the same language: every release since the translations has them
-const latestBase = computed(() => (docs.value.versions.find((v) => v.version === docs.value.latest)?.base ?? '/guestroll/') + langDir(lang.value))
+const latestBase = computed(() => docs.value.versions.find((v) => v.version === docs.value.latest)?.base ?? '/guestroll/')
 const changes = computed(() => docs.value.version === 'next'
   ? `https://github.com/achedon12/guestroll/compare/${docs.value.latest}...develop`
   : `https://github.com/achedon12/guestroll/compare/${docs.value.version}...${docs.value.latest}`)
@@ -27,13 +24,17 @@ onUnmounted(() => observer?.disconnect())
 
 <template>
   <div v-if="docs.version !== docs.latest" ref="banner" class="docs-banner">
-    <template v-if="docs.version === 'next'">{{ t.next }}</template>
-    <template v-else>{{ t.old(docs.version, docs.latest) }}</template>
-    <a :href="latestBase" target="_self">{{ t.latestDocs }}</a>
+    <template v-if="docs.version === 'next'">
+      You are reading the documentation of the next version of Guestroll, not released yet.
+    </template>
+    <template v-else>
+      You are reading the documentation of Guestroll {{ docs.version }}. The latest version is {{ docs.latest }}.
+    </template>
+    <a :href="latestBase" target="_self">Latest docs</a>
     ·
-    <a :href="changes" target="_blank" rel="noreferrer">{{ t.changes }}</a>
+    <a :href="changes" target="_blank" rel="noreferrer">What changed</a>
     ·
-    <a href="https://github.com/achedon12/guestroll/blob/develop/CHANGELOG.md" target="_blank" rel="noreferrer">{{ t.changelog }}</a>
+    <a href="https://github.com/achedon12/guestroll/blob/develop/CHANGELOG.md" target="_blank" rel="noreferrer">Changelog</a>
   </div>
 </template>
 
