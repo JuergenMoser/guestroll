@@ -1,17 +1,43 @@
 version: 2
+
+# Automatic dependency updates, grouped to limit the noise: one pull request per
+# batch rather than one per package. They target develop, like every pull
+# request: they reach production with the next release.
 updates:
   - package-ecosystem: npm
-    directory: /
+    directory: "/"
+    target-branch: develop
+    # A freshly published version waits a week: time for a compromised package
+    # to be spotted and pulled before it gets here.
+    cooldown:
+      default-days: 7
     schedule:
       interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    # Minor and patch updates are grouped, safe to take as a batch; major
+    # versions come one by one, to be reviewed and tested.
     groups:
-      minor-and-patch:
-        update-types: [minor, patch]
+      dependencies:
+        update-types:
+          - minor
+          - patch
+
   - package-ecosystem: github-actions
-    directory: /
+    directory: "/"
+    target-branch: develop
+    cooldown:
+      default-days: 7
     schedule:
       interval: monthly
+    groups:
+      actions:
+        patterns: ["*"]
+
   - package-ecosystem: docker
-    directory: /
+    directory: "/"
+    target-branch: develop
+    cooldown:
+      default-days: 7
     schedule:
       interval: monthly

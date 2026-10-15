@@ -1,0 +1,57 @@
+name: Publish to production
+
+# A release goes to production by fast-forwarding main up to develop: no merge
+# commit, main takes exactly the commits tested on develop. Then tag main
+# (vX.Y.Z) to publish the image (release.yml).
+#
+# Safeguards: develop must contain main (otherwise wait until Align develop has
+# replayed it on top), and Quality and Tests must have passed on the published
+# commit. The push goes through the SYNC_DEPLOY_KEY deploy key, the only one
+# allowed to bypass main's protection.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: publish
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    name: Fast-forward main to develop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        # Credentials kept: the next step pushes to main.
+        with: # zizmor: ignore[artipacked]
+          fetch-depth: 0
+          ssh-key: ${{ secrets.SYNC_DEPLOY_KEY }}
+
+      - name: Check, then publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch -q origin main develop
+          main=$(git rev-parse origin/main)
+          develop=$(git rev-parse origin/develop)
+          if [ "$main" = "$develop" ]; then
+            echo "main is already up to date."
+            exit 0
+          fi
+          if ! git merge-base --is-ancestor origin/main origin/develop; then
+            echo "::error::develop does not contain main: wait until Align develop has replayed it on main, then run this again."
+            exit 1
+          fi
+          for workflow in quality.yml tests.yml; do
+            state=$(gh run list --workflow "$workflow" --commit "$develop" --json status,conclusion \
+              --jq '.[0] | "\(.status) \(.conclusion)"')
+            if [ "$state" != "completed success" ]; then
+              echo "::error::$workflow did not pass on ${develop:0:7} (${state:-no run})."
+              exit 1
+            fi
+          done
+          git push origin "$develop:refs/heads/main"
+          echo "main fast-forwarded to ${develop:0:7}."

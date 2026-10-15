@@ -1,0 +1,54 @@
+name: Review
+
+# Changes requested: the pull request goes back to draft, labelled "changes
+# requested". Marked "Ready for review" again, it loses that label and gets
+# "ready for review".
+#
+# The review event only has a read token on a pull request from a fork: for
+# those, adding the "changes requested" label by hand does the same. Using
+# pull_request_target is safe here: no code from the pull request is checked
+# out or run, gh only edits its labels.
+on:
+  pull_request_review:
+    types: [submitted]
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
+    types: [labeled, ready_for_review]
+
+permissions: {}
+
+jobs:
+  changes-requested:
+    name: Back to draft
+    if: >-
+      (github.event_name == 'pull_request_review' && github.event.review.state == 'changes_requested') ||
+      (github.event_name == 'pull_request_target' && github.event.action == 'labeled' && github.event.label.name == 'changes requested')
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Label and move back to draft
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "changes requested" || true
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --remove-label "ready for review" || true
+          # Already a draft: nothing to do.
+          gh pr ready "$PR_NUMBER" --repo "$REPO" --undo || true
+
+  ready-for-review:
+    name: Back to review
+    if: github.event_name == 'pull_request_target' && github.event.action == 'ready_for_review'
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - name: Swap the labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --remove-label "changes requested" || true
+          gh pr edit "$PR_NUMBER" --repo "$REPO" --add-label "ready for review" || true

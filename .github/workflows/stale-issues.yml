@@ -1,0 +1,37 @@
+name: Stale issues
+
+# An issue left without activity for two months gets the "stale" label, then is
+# closed two weeks later if nothing happens. Bugs, ideas, security reports and
+# help requests are never affected, nor are pull requests.
+on:
+  schedule:
+    - cron: "30 5 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  stale:
+    name: Label, then close stale issues
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      issues: write
+    steps:
+      - uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
+        with:
+          days-before-stale: 60
+          days-before-close: 14
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          stale-issue-label: stale
+          exempt-issue-labels: "bug,enhancement,security,translation,good first issue,help wanted"
+          exempt-issue-assignees: achedon12
+          stale-issue-message: >
+            This issue has had no activity for two months. Without a new
+            comment, it will be closed in two weeks; a simple message is enough
+            to keep it open.
+          close-issue-message: >
+            Closed for lack of activity. If the topic is still relevant, reopen
+            it or open a new one with up-to-date details.
+          operations-per-run: 100

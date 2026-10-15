@@ -1,0 +1,70 @@
+name: Align develop
+
+# main is production; develop, the work in progress. Everything that lands on
+# main — a published release, an urgent fix — is carried
+# over to develop right away, never with a merge commit:
+#
+# - develop behind main: fast-forward;
+# - develop carries unpublished commits: they are replayed on top of main
+#   (rebase), then develop is pushed again. History stays linear and the next
+#   release is a plain fast-forward of main.
+#
+# The push goes through the SYNC_DEPLOY_KEY deploy key, allowed to bypass
+# develop's protection (force push after a rebase).
+on:
+  push:
+    branches: [main]
+  workflow_call:
+    secrets:
+      SYNC_DEPLOY_KEY:
+        required: false
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: align-develop
+  cancel-in-progress: false
+
+jobs:
+  align:
+    name: Carry main over to develop
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        # Credentials kept: develop is pushed at the end.
+        with: # zizmor: ignore[artipacked]
+          fetch-depth: 0
+          # When empty, checkout falls back to GITHUB_TOKEN.
+          ssh-key: ${{ secrets.SYNC_DEPLOY_KEY }}
+
+      - name: Fast-forward or replay develop on main
+        run: |
+          if ! git ls-remote --exit-code --heads origin develop > /dev/null; then
+            echo "No develop branch yet: nothing to align."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch -q origin main develop
+          before=$(git rev-parse origin/develop)
+          if git merge-base --is-ancestor origin/main origin/develop; then
+            echo "develop already contains main."
+            exit 0
+          fi
+          git checkout -q -B develop origin/develop
+          if git merge-base --is-ancestor origin/develop origin/main; then
+            git merge -q --ff-only origin/main
+            git push -q origin HEAD:develop
+            echo "develop fast-forwarded to $(git rev-parse --short HEAD)."
+            exit 0
+          fi
+          if ! git rebase -q origin/main; then
+            git rebase --abort
+            echo "::error::develop's commits conflict with main: rebase develop onto main by hand."
+            exit 1
+          fi
+          # The lease refuses to overwrite a push that reached develop during the rebase.
+          git push -q --force-with-lease="develop:$before" origin HEAD:develop
+          echo "develop replayed on main: $(git rev-list --count origin/main..HEAD) commit(s) to publish."

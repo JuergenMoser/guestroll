@@ -1,0 +1,45 @@
+name: Welcome
+
+# A contributor's first pull request: a welcome note when it opens, a thank
+# you when it is merged.
+#
+# Using pull_request_target is safe here: no code from the pull request is
+# checked out or run, a pinned action posts the comment.
+on:
+  pull_request_target: # zizmor: ignore[dangerous-triggers]
+    types: [opened, closed]
+    branches: [develop]
+
+permissions: {}
+
+jobs:
+  welcome:
+    name: Welcome new contributors
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+    steps:
+      - uses: plbstl/first-contribution@2c36bdb58684587f60549a69aaa3ec00b9d5f4fe # v4.3.3
+        with:
+          pr-reactions: rocket
+          pr-opened-msg: >
+            Welcome, and thank you for this first contribution to Guestroll!
+
+
+            A few pointers, detailed in the
+            [contributing guide](https://github.com/achedon12/guestroll/blob/develop/CONTRIBUTING.md):
+
+            - keep the pull request as a draft while you work on it, then mark
+            it "Ready for review";
+
+            - lint, types, unit and browser tests must pass, and the repository
+            owner reviews it before merging;
+
+            - anything near access control goes through `src/lib/policy.ts` and
+            its tests: guests must never see each other's photos.
+
+
+            Any question? Ask it right here.
+          pr-merged-msg: >
+            @{fc-author} congratulations, your first contribution is merged! It
+            will ship with the next Guestroll release.
