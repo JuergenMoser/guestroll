@@ -97,7 +97,18 @@ Open `http://localhost:3000/admin`, sign in, create an event and print its QR co
 > [deployment guide](docs/deployment.md) has copy-paste setups for Caddy, Traefik
 > and nginx.
 
-Prefer Compose? A ready-to-use [`docker-compose.yml`](docker-compose.yml) is in the repository.
+### With Docker Compose
+
+Every [release](https://github.com/achedon12/guestroll/releases/latest) has an
+install kit, `guestroll-vX.Y.Z-compose.zip`: a `docker-compose.yml` pinned to
+that version and a commented `.env.example`. The same files are in this
+repository.
+
+1. Copy `.env.example` to `.env` and fill in at least `PUBLIC_URL` and `ADMIN_PASSWORD`.
+2. Start it: `docker compose up -d`
+3. Open `PUBLIC_URL/admin`, sign in as `admin`, create an event and print its QR code.
+
+Every setting is described in [Configuration](docs/configuration.md).
 Sign in at `/admin` as `admin`. Forgot to set `ADMIN_PASSWORD`? A password is
 generated on first start and printed once in `docker logs guestroll`.
 
