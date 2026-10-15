@@ -124,3 +124,22 @@ test.describe("challenges on a phone", () => {
     expect(photos[0].challengeId).toBe(cake.id);
   });
 });
+
+test.describe("guestbook on a phone", () => {
+  test("a guest leaves a message, sees it, and can take it back", async ({ page, baseURL }) => {
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { askGuestName: false, guestbookEnabled: true });
+    await page.goto(`/e/${event.slug}`);
+    await page.getByPlaceholder("Write something for the hosts…").fill("What a night!");
+    await page.getByRole("button", { name: "Send", exact: true }).click();
+    await expect(page.getByText("Sent. Thank you!")).toBeVisible();
+    await expect(page.getByText("What a night!")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Record a voice note" })).toBeVisible();
+
+    const { messages } = await (await host.get(`/api/admin/events/${event.id}/messages`)).json();
+    expect(messages.map((m: { text: string }) => m.text)).toEqual(["What a night!"]);
+
+    await page.getByRole("button", { name: "Delete" }).click();
+    await expect(page.getByText("What a night!")).toHaveCount(0);
+  });
+});

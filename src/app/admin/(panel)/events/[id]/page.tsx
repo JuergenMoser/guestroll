@@ -6,6 +6,8 @@ import { ModerationPanel } from "@/components/admin/moderation/ModerationPanel";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { SharePanel } from "@/components/admin/SharePanel";
 import { StatsPanel } from "@/components/admin/StatsPanel";
+import { GuestbookPanel } from "@/components/admin/GuestbookPanel";
+import { countMessages } from "@/lib/messages";
 import { EventTheme } from "@/components/EventTheme";
 import { buttonClass, cn } from "@/components/ui";
 import { toAdminEvent } from "@/lib/events";
@@ -14,7 +16,7 @@ import { getStats } from "@/lib/stats";
 import { eventUrl } from "@/lib/urls";
 import { requireEventAdminPage } from "@/lib/auth/guard";
 
-const TABS = ["photos", "stats", "share", "settings"] as const;
+const TABS = ["photos", "guestbook", "stats", "share", "settings"] as const;
 type Tab = (typeof TABS)[number];
 
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string }> };
@@ -25,7 +27,10 @@ export default async function EventPage({ params, searchParams }: Props) {
 
   const t = await getT();
   const event = toAdminEvent(row);
-  const tab: Tab = TABS.includes(rawTab as Tab) ? (rawTab as Tab) : "photos";
+  const messageCount = countMessages(event.id);
+  // The guestbook tab shows once the hosts turn it on, and stays while messages remain.
+  const tabs = TABS.filter((key) => key !== "guestbook" || event.guestbookEnabled || messageCount > 0);
+  const tab: Tab = tabs.includes(rawTab as Tab) ? (rawTab as Tab) : "photos";
   const url = await eventUrl(event.slug);
   const stats = getStats(event.id);
 
@@ -43,7 +48,7 @@ export default async function EventPage({ params, searchParams }: Props) {
       />
 
       <nav className="mb-6 flex gap-6 overflow-x-auto overflow-y-hidden border-b border-line">
-        {TABS.map((key) => (
+        {tabs.map((key) => (
           <Link
             key={key}
             href={`?tab=${key}`}
@@ -62,6 +67,7 @@ export default async function EventPage({ params, searchParams }: Props) {
       </nav>
 
       {tab === "photos" && <ModerationPanel eventId={event.id} pendingCount={stats.totals.pending} challenges={event.challenges} />}
+      {tab === "guestbook" && <GuestbookPanel eventId={event.id} locale={await getLocale()} />}
       {tab === "stats" && <StatsPanel stats={stats} locale={await getLocale()} challenges={event.challenges} />}
       {tab === "share" && <SharePanel event={event} url={url} locale={await getLocale()} />}
       {tab === "settings" && (

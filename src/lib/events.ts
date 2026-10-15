@@ -28,6 +28,8 @@ export interface PublicEvent {
   defaultLocale: EventRow["defaultLocale"];
   collectGuestEmails: boolean;
   challenges: Challenge[];
+  guestbookEnabled: boolean;
+  guestbookVoice: boolean;
 }
 
 export function toPublicEvent(event: EventRow): PublicEvent {
@@ -47,6 +49,8 @@ export function toPublicEvent(event: EventRow): PublicEvent {
     defaultLocale: event.defaultLocale,
     collectGuestEmails: event.collectGuestEmails,
     challenges: readChallenges(event.challenges),
+    guestbookEnabled: event.guestbookEnabled,
+    guestbookVoice: event.guestbookVoice,
   };
 }
 

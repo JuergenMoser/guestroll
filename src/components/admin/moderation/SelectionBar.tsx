@@ -14,13 +14,25 @@ const ACTIONS = [
 ] as const;
 
 /** Appears once photos are selected; sticks to the bottom of the screen so it stays in reach on a phone. */
-export function SelectionBar({ count, busy, onAction, onClear }: { count: number; busy: boolean; onAction: (action: BulkAction) => void; onClear: () => void }) {
+export function SelectionBar({
+  count,
+  busy,
+  onAction,
+  onClear,
+  actions = ACTIONS.map((a) => a.action),
+}: {
+  count: number;
+  busy: boolean;
+  onAction: (action: BulkAction) => void;
+  onClear: () => void;
+  actions?: readonly BulkAction[];
+}) {
   const t = useT();
   if (count === 0) return null;
   return (
     <div className="sticky bottom-4 z-20 mx-auto flex w-fit max-w-full flex-wrap items-center gap-1 rounded-xl bg-ink p-1.5 pl-3 text-canvas shadow-xl">
       <span className="mr-2 text-sm font-medium tabular-nums">{t("admin.moderation.selected", { n: count })}</span>
-      {ACTIONS.map(({ action, icon: Icon }) => (
+      {ACTIONS.filter((a) => actions.includes(a.action)).map(({ action, icon: Icon }) => (
         <button
           key={action}
           type="button"

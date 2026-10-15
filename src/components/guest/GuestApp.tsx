@@ -7,6 +7,8 @@ import { CaptureHost } from "@/components/upload/CaptureHost";
 import { Button, EmptyState } from "@/components/ui";
 import type { PublicEvent } from "@/lib/events";
 import type { PhotoDto } from "@/lib/photos";
+import { GuestbookCard } from "@/components/guestbook/GuestbookCard";
+import type { MessageDto } from "@/lib/messages";
 import { GuestContactCard } from "./GuestContactCard";
 import { Lightbox } from "./Lightbox";
 import { NamePrompt } from "./NamePrompt";
@@ -21,11 +23,13 @@ interface GuestAppProps {
   remaining: number | null;
   sentCount: number;
   contactEmail: string | null;
+  locale: string;
+  initialMessages: MessageDto[];
 }
 
 const skipKey = (slug: string) => `guestroll:skip-name:${slug}`;
 
-export function GuestApp({ event, guestName, initialPhotos, initialCursor, closedReason, remaining: initialRemaining, sentCount, contactEmail }: GuestAppProps) {
+export function GuestApp({ event, guestName, initialPhotos, initialCursor, closedReason, remaining: initialRemaining, sentCount, contactEmail, locale, initialMessages }: GuestAppProps) {
   const t = useT();
   const [name, setName] = useState(guestName);
   const [askName, setAskName] = useState(false);
@@ -110,6 +114,10 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
           </div>
         )}
       </section>
+
+      {event.guestbookEnabled && (
+        <GuestbookCard slug={event.slug} voice={event.guestbookVoice} locale={locale} initialMessages={initialMessages} disabled={closedReason === "closed"} />
+      )}
 
       {event.collectGuestEmails && <GuestContactCard slug={event.slug} initialEmail={contactEmail} />}
 

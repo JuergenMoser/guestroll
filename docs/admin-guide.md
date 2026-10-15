@@ -32,6 +32,20 @@ The contact sheet of everything guests sent, newest first.
   **Download the favorites** gets a "best of" ZIP, and a gallery link can show
   the favorites only. Guests never see which photos you picked.
 
+### Guestbook
+
+Turn it on in **Settings → Guestbook**: guests then find a card under their
+photos to leave a few words, a voice note of up to 2 minutes recorded in the
+browser, or both. Messages follow the event's moderation, like photos; a
+guest sees and can delete only their own.
+
+The **Guestbook** tab lists them with a player for each voice note. Select to
+approve, hide or delete; **Download the guestbook** gets a ZIP with
+`guestbook.txt` (every message, oldest first) and the voice notes, numbered to
+match. *Show the messages behind gallery links* adds the approved ones under
+the photos of every gallery link of the event (off by default: they were
+written for you). The end-of-event summary counts them.
+
 ### Stats
 
 Uploads per hour over the event (a party lasts a night, so hours are the

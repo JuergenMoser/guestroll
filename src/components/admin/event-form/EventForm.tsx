@@ -11,6 +11,7 @@ import { AccessSection } from "./AccessSection";
 import { AfterSection } from "./AfterSection";
 import { ChallengesSection } from "./ChallengesSection";
 import { DetailsSection } from "./DetailsSection";
+import { GuestbookSection } from "./GuestbookSection";
 import { GuestsSection } from "./GuestsSection";
 import { initialState, toRequestBody, type SetField } from "./state";
 import { UploadsSection } from "./UploadsSection";
@@ -57,6 +58,7 @@ export function EventForm({ event }: { event?: AdminEvent }) {
       <UploadsSection {...sectionProps} />
       <GuestsSection {...sectionProps} />
       <ChallengesSection {...sectionProps} />
+      <GuestbookSection {...sectionProps} />
       <AfterSection {...sectionProps} />
       <div className="sticky bottom-0 -mx-4 flex flex-wrap items-center justify-end gap-3 border-t border-line bg-canvas/95 px-4 py-3 backdrop-blur-sm">
         <StatusMessage message={message} />

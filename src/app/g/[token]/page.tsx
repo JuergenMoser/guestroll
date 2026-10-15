@@ -12,6 +12,8 @@ import { toPublicEvent } from "@/lib/events";
 import { messages } from "@/lib/i18n/messages";
 import { getLocale } from "@/lib/i18n/server";
 import { countVisiblePhotos, listPhotos, toPhotoDto } from "@/lib/photos";
+import { listMessages, toMessageDto } from "@/lib/messages";
+import { SharedGuestbook } from "@/components/shared/SharedGuestbook";
 import { resolveShare } from "@/lib/shareAccess";
 import { getTheme } from "@/lib/theme/server";
 
@@ -47,6 +49,15 @@ export default async function SharedAlbumPage({ params }: Props) {
         challenges={publicEvent.challenges}
       />
     );
+    if (event.guestbookInGallery) {
+      const book = listMessages(event, "book", { status: "visible", limit: 50 });
+      body = (
+        <>
+          {body}
+          <SharedGuestbook token={token} locale={locale} initialMessages={book.map((m) => toMessageDto(m, {}))} initialCursor={book.length === 50 ? book[book.length - 1].createdAt : null} />
+        </>
+      );
+    }
   }
 
   return (

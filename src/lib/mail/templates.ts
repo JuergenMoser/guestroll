@@ -133,6 +133,7 @@ export function summaryMail(
     topGuests: { name: string; photos: number }[];
     galleryRecipients: number;
     gallery?: { url: string; password: string };
+    messages?: number;
   },
 ): RenderedMail {
   const m = mailMessages[c.locale];
@@ -149,6 +150,7 @@ export function summaryMail(
         [m.summary.guests, String(c.guests)],
         [m.summary.views, String(c.views)],
         ...(c.pending ? ([[m.summary.pending, String(c.pending)]] as [string, string][]) : []),
+        ...(c.messages ? ([[m.summary.messages, String(c.messages)]] as [string, string][]) : []),
       ],
       list: top.length ? top.map((g) => `${g.name}: ${g.photos}`) : undefined,
       cta: { label: m.summary.cta, url: c.url },

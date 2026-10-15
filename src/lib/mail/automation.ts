@@ -8,6 +8,7 @@ import { formatBytes } from "@/lib/format";
 import { createShareLink, generateSharePassword } from "@/lib/shares";
 import { readSetting, writeSetting } from "@/lib/settings";
 import { getStats } from "@/lib/stats";
+import { countMessages } from "@/lib/messages";
 import { storage } from "@/lib/storage";
 import { backgroundBaseUrl } from "@/lib/urls";
 import { mailMessages } from "./messages";
@@ -98,6 +99,7 @@ export function endEvent(event: EventRow, now = Date.now()): EndResult | null {
       topGuests: stats.topGuests,
       galleryRecipients: result.galleryRecipients,
       gallery,
+      messages: countMessages(event.id),
     });
     for (const to of hosts) {
       if (enqueueMail({ to, mail, kind: "summary", eventId: event.id, dedupeKey: `summary:${event.id}:${to}` })) result.summaryQueued = true;

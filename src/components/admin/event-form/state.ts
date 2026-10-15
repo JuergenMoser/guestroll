@@ -24,6 +24,9 @@ export interface EventFormState {
   galleryLinkDownload: boolean;
   galleryMailIncludesPassword: boolean;
   galleryLinkFavorites: boolean;
+  guestbookEnabled: boolean;
+  guestbookVoice: boolean;
+  guestbookInGallery: boolean;
   /** New rows have an empty id: the server assigns one. */
   challenges: Challenge[];
 }
@@ -66,6 +69,9 @@ export function initialState(event?: AdminEvent): EventFormState {
     galleryMailIncludesPassword: event?.galleryMailIncludesPassword ?? true,
     galleryLinkFavorites: event?.galleryLinkFavorites ?? false,
     challenges: event?.challenges ?? [],
+    guestbookEnabled: event?.guestbookEnabled ?? false,
+    guestbookVoice: event?.guestbookVoice ?? true,
+    guestbookInGallery: event?.guestbookInGallery ?? false,
   };
 }
 

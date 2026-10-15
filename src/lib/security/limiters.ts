@@ -21,6 +21,8 @@ function create() {
     // Same pair for gallery-link passwords, per link.
     shareUnlock: new RateLimiter(config.rateLimit.unlockPerMinute, MINUTE),
     shareFailures: new RateLimiter(config.rateLimit.unlockPerMinute * 3, MINUTE),
+    // Guestbook: a handful of messages per minute is plenty for one guest.
+    message: new RateLimiter(10, MINUTE),
     // A test email per click is plenty; this stops a stuck button from spamming.
     mailTest: new RateLimiter(5, MINUTE),
   };

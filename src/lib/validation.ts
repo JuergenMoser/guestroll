@@ -24,6 +24,9 @@ export interface EventInput {
   galleryLinkDownload: boolean;
   galleryMailIncludesPassword: boolean;
   galleryLinkFavorites: boolean;
+  guestbookEnabled: boolean;
+  guestbookVoice: boolean;
+  guestbookInGallery: boolean;
   /** JSON, already normalised by `parseChallenges`. */
   challenges: string;
   /** Already normalised by `parseQrStyle` and serialised. */
@@ -90,6 +93,9 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     "galleryLinkDownload",
     "galleryMailIncludesPassword",
     "galleryLinkFavorites",
+    "guestbookEnabled",
+    "guestbookVoice",
+    "guestbookInGallery",
   ] as const) {
     if (!has(key)) continue;
     if (typeof src[key] === "boolean") out[key] = src[key] as boolean;

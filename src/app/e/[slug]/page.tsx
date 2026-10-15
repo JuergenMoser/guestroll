@@ -18,6 +18,7 @@ import { I18nProvider } from "@/components/I18nProvider";
 import { LanguagePicker } from "@/components/LanguagePicker";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { countGuestPhotos, listPhotos, toPhotoDto } from "@/lib/photos";
+import { listMessages, toMessageDto } from "@/lib/messages";
 import { canEnterEvent, canJoinFreely, uploadState } from "@/lib/policy";
 import { SLUG_PATTERN } from "@/lib/security/ids";
 
@@ -65,6 +66,8 @@ export default async function GuestPage({ params }: Props) {
         remaining={event.maxPhotosPerGuest > 0 ? Math.max(event.maxPhotosPerGuest - uploaded, 0) : null}
         sentCount={uploaded}
         contactEmail={viewer.guestId && event.collectGuestEmails ? (getGuestContact(event.id, viewer.guestId)?.email ?? null) : null}
+        locale={locale}
+        initialMessages={event.guestbookEnabled ? listMessages(event, asGuest).map((m) => toMessageDto(m, asGuest)) : []}
       />
     );
   }

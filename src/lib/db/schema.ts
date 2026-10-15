@@ -36,6 +36,11 @@ export const events = sqliteTable("events", {
   galleryLinkFavorites: integer("gallery_link_favorites", { mode: "boolean" }).notNull().default(false),
   /** JSON `[{ id, label }]`, read through `readChallenges`: photo prompts guests can pick before shooting. */
   challenges: text("challenges").notNull().default("[]"),
+  /** Guests can leave a written or voice message for the hosts. */
+  guestbookEnabled: integer("guestbook_enabled", { mode: "boolean" }).notNull().default(false),
+  guestbookVoice: integer("guestbook_voice", { mode: "boolean" }).notNull().default(true),
+  /** Visible messages also appear behind gallery links (they're the guests' words: off by default). */
+  guestbookInGallery: integer("guestbook_in_gallery", { mode: "boolean" }).notNull().default(false),
   /** Set once the end-of-event automation ran: it never runs twice for the same event. */
   endedAt: integer("ended_at"),
   createdAt: integer("created_at").notNull().default(now),
@@ -62,6 +67,31 @@ export const photos = sqliteTable(
     createdAt: integer("created_at").notNull().default(now),
   },
   (t) => [index("photos_event_idx").on(t.eventId, t.createdAt), index("photos_guest_idx").on(t.eventId, t.guestId)],
+);
+
+/**
+ * Guestbook: a few words and/or a voice note for the hosts. Moderated like
+ * photos; the audio file sits next to the event's photos in storage.
+ */
+export const messages = sqliteTable(
+  "messages",
+  {
+    id: text("id").primaryKey(),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+    guestId: text("guest_id").notNull(),
+    guestName: text("guest_name"),
+    text: text("text").notNull().default(""),
+    /** Container of the voice note (`webm`, `ogg`, `m4a`, `mp3`), null without one. */
+    audioExt: text("audio_ext"),
+    audioBytes: integer("audio_bytes"),
+    /** Measured by the recorder; informative only, the size cap is what bounds a note. */
+    audioSeconds: integer("audio_seconds"),
+    status: text("status", { enum: ["visible", "pending", "hidden"] }).notNull(),
+    createdAt: integer("created_at").notNull().default(now),
+  },
+  (t) => [index("messages_event_idx").on(t.eventId, t.createdAt), index("messages_guest_idx").on(t.eventId, t.guestId)],
 );
 
 /** Append-only log behind every stat in the dashboard. */
@@ -186,6 +216,7 @@ export type EventRow = typeof events.$inferSelect;
 export type PhotoRow = typeof photos.$inferSelect;
 export type ActivityType = (typeof activity.$inferInsert)["type"];
 export type ShareLinkRow = typeof shareLinks.$inferSelect;
+export type MessageRow = typeof messages.$inferSelect;
 export type GuestContactRow = typeof guestContacts.$inferSelect;
 export type OutboxRow = typeof outbox.$inferSelect;
 export type AccountRow = typeof accounts.$inferSelect;

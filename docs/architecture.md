@@ -84,6 +84,7 @@ Two rules keep this maintainable:
 | `settings` | Key/value: SMTP (password sealed), alert choices, instance email |
 | `share_links` | Gallery links: token, password hash, expiry, downloads switch, views, revocation |
 | `guest_contacts` | Opt-in guest emails, one per guest and event, deleted with the event |
+| `messages` | Guestbook: text, voice note container and size, status. The audio file is `<event-id>/messages/<id>.<ext>` in storage |
 | `outbox` | Email queue: rendered message, state, attempts, next retry, dedupe key |
 
 Guests have no table: a guest is a random id in their cookie. Their name is

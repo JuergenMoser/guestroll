@@ -36,6 +36,11 @@ Authenticated by the `gr_guest` cookie.
 | `POST /api/e/:slug/contact` | `{ email }` | `{ email }`. Only on events that collect emails. |
 | `DELETE /api/e/:slug/contact` | | `{ ok }`, the address is deleted |
 
+| `GET /api/e/:slug/messages` | | `{ messages: MessageDto[] }`, the guest's own |
+| `POST /api/e/:slug/messages` | multipart: `text` and/or `audio`, `seconds` | `201 { message }` |
+| `DELETE /api/e/:slug/messages/:id` | | `{ ok }`, the guest's own only |
+| `GET /api/messages/:id/audio[?download=1]` | | The voice note, if the viewer may hear it |
+
 ### Gallery link routes
 
 Authenticated by the `gr_share` cookie, set by `unlock`.
@@ -44,6 +49,7 @@ Authenticated by the `gr_share` cookie, set by `unlock`.
 |---|---|---|
 | `POST /api/g/:token/unlock` | `{ password }` | `{ ok }`, or `invalid_code` |
 | `GET /api/g/:token/photos?challenge=&before=<ms>` | | `{ photos, nextCursor }`, visible photos only; `403` until unlocked |
+| `GET /api/g/:token/messages?before=` | | `{ messages, nextCursor }`, when the hosts share the guestbook |
 | `GET /api/g/:token/archive` | | Streamed ZIP, if the link allows downloads |
 
 ```ts
@@ -90,6 +96,9 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | `POST /api/admin/events/:id/photos` | `{ action: "approve"\|"hide"\|"favorite"\|"unfavorite"\|"delete", ids }` | `{ changed }` |
 | `GET /api/admin/events/:id/archive[?all=1\|?favorites=1]` | | Streamed ZIP; `all=1` includes pending and hidden, `favorites=1` is the visible favorites |
 | `GET /api/admin/stats[?eventId=]` | | Totals, time series, top guests |
+| `GET /api/admin/events/:id/messages?status=&before=` | | `{ messages, nextCursor }` |
+| `POST /api/admin/events/:id/messages` | `{ action: "approve"\|"hide"\|"delete", ids }` | `{ changed }` |
+| `GET /api/admin/events/:id/messages/archive` | | ZIP: `guestbook.txt` and the voice notes |
 | `GET /api/admin/events/:id/shares` | | `{ shares }` |
 | `POST /api/admin/events/:id/shares` | `{ password?, label?, allowDownload?, favoritesOnly?, expiresInDays? }` | `201 { share, password }`; `password` is the generated one, else `null` |
 | `DELETE /api/admin/events/:id/shares/:shareId` | | `{ ok }`, revoked |
@@ -105,7 +114,7 @@ Event fields: `name`, `description`, `eventDate` (`YYYY-MM-DD`), `accentColor`
 `captureMode` (`camera`|`picker`|`both`), `askGuestName`, `maxPhotosPerGuest`,
 `defaultLocale` (`en`|`fr`|`it`|`es`|`null`), `collectGuestEmails`,
 `notifyAdminSummary`, `emailGuestsGallery`, `galleryLinkDays` (0–3650),
-`galleryLinkDownload`, `galleryMailIncludesPassword`, `galleryLinkFavorites`, `challenges` (list of `{ id?, label }` or strings; ids are kept, new ones assigned), `qrStyle` (object, see
+`galleryLinkDownload`, `galleryMailIncludesPassword`, `galleryLinkFavorites`, `guestbookEnabled`, `guestbookVoice`, `guestbookInGallery`, `challenges` (list of `{ id?, label }` or strings; ids are kept, new ones assigned), `qrStyle` (object, see
 `src/lib/qr/style.ts`).
 
 ## Health

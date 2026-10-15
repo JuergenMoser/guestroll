@@ -48,3 +48,16 @@ export async function joinAndUpload(api: APIRequestContext, slug: string, count 
   }
   return ids;
 }
+
+/** The smallest Ogg/Opus header file-type recognises: enough to stand for a recorded voice note. */
+export function voiceNote(): Buffer {
+  const page = Buffer.alloc(47);
+  page.write("OggS", 0);
+  page[5] = 2;
+  page[26] = 1;
+  page[27] = 19;
+  page.write("OpusHead", 28);
+  page[36] = 1;
+  page[37] = 1;
+  return page;
+}

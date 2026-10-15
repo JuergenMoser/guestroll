@@ -51,6 +51,19 @@ whatever the settings: this is a design decision, not an option.
 - Generated passwords (`xxxx-xxxx-xxxx-xxxx`, ~82 bits) are shown once and
   never stored in clear.
 
+## Guestbook
+
+- Messages are private like photos: a guest reads and hears only their own,
+  the event's admins all of them, gallery links the approved ones and only if
+  the hosts share the guestbook. Voice notes leave the server through
+  `/api/messages/<id>/audio`, checked on every request.
+- Voice notes are identified by their bytes (Ogg/Opus, WebM, MP4/AAC, MP3)
+  and stored as recorded: re-encoding would need ffmpeg in the image. They are
+  only served with an audio type, `no-store`, under a sandboxing CSP. Browser
+  recordings carry no location.
+- 3 MB per note, 500 characters per text, 20 messages per guest and event,
+  10 per minute. The microphone is only requested when a guest taps *Record*.
+
 ## Email
 
 - Guest addresses are **opt-in**, offered only on events whose hosts asked for
