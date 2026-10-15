@@ -11,9 +11,10 @@ import { CopyField } from "./CopyField";
 import { EndEventCard } from "./EndEventCard";
 import { GalleryLinks } from "./GalleryLinks";
 import { QrDesigner } from "./qr/QrDesigner";
+import { SlideshowExport } from "./SlideshowExport";
 import { WallSettings } from "./WallSettings";
 
-export function SharePanel({ event, url, locale, purgeAt }: { event: AdminEvent; url: string; locale: string; purgeAt: number | null }) {
+export function SharePanel({ event, url, locale, purgeAt, favoriteCount }: { event: AdminEvent; url: string; locale: string; purgeAt: number | null; favoriteCount: number }) {
   const t = useT();
   const router = useRouter();
   const [confirming, setConfirming] = useState(false);
@@ -42,6 +43,8 @@ export function SharePanel({ event, url, locale, purgeAt }: { event: AdminEvent;
 
       {/* Keyed on the slug: a new link means a new code, so the designer restarts from it. */}
       <QrDesigner key={event.slug} event={event} url={url} />
+
+      <SlideshowExport eventId={event.id} eventName={event.name} eventDate={event.eventDate} accent={event.accentColor} hasFavorites={favoriteCount > 0} />
 
       <WallSettings eventId={event.id} initial={event.wallStyle} hasChallenges={event.challenges.length > 0} guestbook={event.guestbookEnabled} />
 

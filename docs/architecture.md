@@ -99,6 +99,11 @@ contract test (`tests/integration/storage.test.ts`); the S3 one signs plain
 
 ## Choices worth knowing
 
+- **Heavy media work happens in the browser.** Frames and filters are drawn on
+  the guest's phone before upload, and the slideshow video is encoded by the
+  admin's browser (WebCodecs, muxed by mediabunny). The image never ships
+  ffmpeg, its size or its CVEs.
+
 - **Email goes through a queue in SQLite**, drained by an in-process scheduler
   (`src/lib/scheduler.ts`, started from `instrumentation.ts`). An SMTP outage
   never fails a request, and each email has a dedupe key so a retried job

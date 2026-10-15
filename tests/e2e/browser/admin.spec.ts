@@ -99,3 +99,24 @@ test.describe("live wall", () => {
     expect((await saved.json()).event.wallStyle).toMatchObject({ layout: "grid", slideSeconds: 30, showQr: false });
   });
 });
+
+test.describe("slideshow video", () => {
+  test("renders an MP4 of the album in the browser and downloads it", async ({ page, baseURL }) => {
+    test.setTimeout(120_000);
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { name: "Video night", eventDate: "2026-10-17" });
+    await joinAndUpload(await client(baseURL!), event.slug, 2);
+    await signIn(page);
+    await page.goto(`/admin/events/${event.id}?tab=share`);
+    await page.getByLabel("Seconds per step").first().fill("2");
+    const download = page.waitForEvent("download", { timeout: 110_000 });
+    await page.getByRole("button", { name: "Create the video" }).click();
+    const file = await download;
+    expect(file.suggestedFilename()).toBe("video-night.mp4");
+    const bytes = await (await import("node:fs/promises")).readFile((await file.path())!);
+    expect(bytes.subarray(4, 8).toString()).toBe("ftyp");
+    expect(bytes.includes(Buffer.from("moov"))).toBe(true);
+    expect(bytes.length).toBeGreaterThan(20_000);
+    await expect(page.getByText("Done: the video was downloaded.")).toBeVisible();
+  });
+});

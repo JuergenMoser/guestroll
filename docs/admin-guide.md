@@ -63,6 +63,14 @@ and photos per challenge.
   the middle and a caption. The preview is the exact file you download, as PNG
   (512 to 4096 px) or SVG. Remember to **Save** before downloading.
 - **Printable poster**: an A4 card with the event name, date and QR code.
+- **Slideshow video**: an MP4 of the visible photos (or the favorites) in the
+  order they were taken, with a title card, slow zooms and crossfades, 16:9 or
+  9:16 for stories, 2 to 8 seconds per photo, up to 300 photos, and your own
+  music if you add a file (cut and faded out at the end). It is made in your
+  browser (WebCodecs, any recent Chrome, Edge, Safari or Firefox), so the server
+  needs no video encoder: keep the tab open while the progress bar runs.
+  Photos far from the video's shape are shown whole on a blurred backdrop
+  instead of being cropped.
 - **Live wall**: a full-screen slideshow for a projector or a TV. New photos
   jump the queue and appear within five seconds; in between, it cycles through
   the latest ones. Only visible photos are shown, so with *Approve each photo

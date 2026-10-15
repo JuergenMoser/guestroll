@@ -145,3 +145,7 @@ export function countVisiblePhotos(eventId: string, favoritesOnly = false): numb
   if (favoritesOnly) filters.push(eq(photos.favorite, true));
   return getDb().select({ n: count() }).from(photos).where(and(...filters)).get()?.n ?? 0;
 }
+
+export function countFavorites(eventId: string): number {
+  return getDb().select({ n: count() }).from(photos).where(and(eq(photos.eventId, eventId), eq(photos.favorite, true))).get()?.n ?? 0;
+}

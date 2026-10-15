@@ -69,6 +69,7 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 - 🗣️ A default language per album, for a wedding in Italy with Italian guests.
 - ⏰ Uploads close on a schedule, with an optional per-guest photo limit.
 - 📦 One-click ZIP of the whole album, streamed (works for albums of several GB).
+- 🎬 **Slideshow video**: an MP4 of the album with transitions and your music, made in the browser, 16:9 or 9:16.
 - 📊 Stats: uploads over time, views, downloads, storage, top photographers.
 - 🔑 **Gallery links**: a private link + password to the album, for family or for guests afterwards. Expiry, view-only or downloads, revocable.
 - ✉️ **Automatic emails** through your SMTP server: when uploads close, a summary for you and the album link for guests who asked for it. You choose what goes out.
