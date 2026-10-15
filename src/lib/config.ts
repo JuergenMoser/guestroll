@@ -30,7 +30,7 @@ function oneOf<T extends string>(name: string, allowed: readonly T[], fallback: 
   return raw;
 }
 
-export const LOCALES = ["en", "fr", "it"] as const;
+export const LOCALES = ["en", "fr", "it", "es"] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const CAPTURE_MODES = ["camera", "picker", "both"] as const;
