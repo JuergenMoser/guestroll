@@ -2,10 +2,10 @@ import "server-only";
 import bcrypt from "bcryptjs";
 import { desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
-import { events, photos, type EventRow } from "@/lib/db/schema";
+import { accountEvents, events, photos, type EventRow } from "@/lib/db/schema";
 import { config } from "@/lib/config";
 import { eventSlug, newId } from "@/lib/security/ids";
-import { deleteEventFiles } from "@/lib/storage/files";
+import { deleteEventFiles, readLogo, writeLogo } from "@/lib/storage/files";
 import type { EventInput } from "@/lib/validation";
 import type { AdminScope } from "@/lib/policy";
 import { parseQrStyle, type QrStyle } from "@/lib/qr/style";
@@ -163,4 +163,31 @@ export async function deleteEvent(id: string): Promise<boolean> {
 
 export function checkAccessCode(event: EventRow, code: string): Promise<boolean> {
   return event.accessCodeHash ? bcrypt.compare(code, event.accessCodeHash) : Promise.resolve(true);
+}
+
+/**
+ * A new event with the same settings, look, QR style, logo, challenges and
+ * organizers, and none of the photos, guests or links. Its own slug, so the
+ * old QR code keeps pointing at the old event; uploads open, no closing time.
+ */
+export async function duplicateEvent(source: EventRow, name: string): Promise<EventRow> {
+  const { id: _id, slug: _slug, createdAt: _createdAt, endedAt: _endedAt, uploadsCloseAt: _close, logoVersion, ...settings } = source;
+  const copy = getDb().transaction(() => {
+    const row = getDb()
+      .insert(events)
+      .values({ ...settings, id: newId(), slug: eventSlug(name), name, uploadsOpen: true, uploadsCloseAt: null, endedAt: null, logoVersion: null })
+      .returning()
+      .get();
+    const organizers = getDb().select({ accountId: accountEvents.accountId }).from(accountEvents).where(eq(accountEvents.eventId, source.id)).all();
+    if (organizers.length) getDb().insert(accountEvents).values(organizers.map((o) => ({ accountId: o.accountId, eventId: row.id }))).run();
+    return row;
+  });
+  if (logoVersion) {
+    const logo = await readLogo(source.id);
+    if (logo) {
+      await writeLogo(copy.id, logo);
+      return setLogoVersion(copy.id, Date.now())!;
+    }
+  }
+  return copy;
 }

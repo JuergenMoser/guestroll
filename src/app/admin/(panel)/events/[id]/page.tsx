@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { DeleteEvent } from "@/components/admin/DeleteEvent";
+import { DuplicateEvent } from "@/components/admin/DuplicateEvent";
 import { EventForm } from "@/components/admin/event-form/EventForm";
 import { ModerationPanel } from "@/components/admin/moderation/ModerationPanel";
 import { PageHeader } from "@/components/admin/PageHeader";
@@ -73,6 +74,7 @@ export default async function EventPage({ params, searchParams }: Props) {
       {tab === "settings" && (
         <div className="mx-auto max-w-2xl space-y-8">
           <EventForm event={event} />
+          {admin.role === "owner" && <DuplicateEvent eventId={event.id} name={event.name} />}
           {admin.role === "owner" && <DeleteEvent eventId={event.id} name={event.name} />}
         </div>
       )}
