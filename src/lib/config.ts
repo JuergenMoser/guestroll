@@ -60,6 +60,24 @@ export const config = {
   maxImagePixels: int("MAX_IMAGE_MEGAPIXELS", 80, 1) * 1_000_000,
   defaultCaptureMode: oneOf("DEFAULT_CAPTURE_MODE", CAPTURE_MODES, "camera"),
 
+  /**
+   * SMTP from the environment. When SMTP_HOST is set, these win over anything
+   * saved in Admin → Settings (see lib/mail/settings.ts).
+   */
+  smtp: {
+    host: process.env.SMTP_HOST?.trim() || "",
+    port: int("SMTP_PORT", 587, 1),
+    secure: bool("SMTP_SECURE", false),
+    user: process.env.SMTP_USER || "",
+    password: process.env.SMTP_PASSWORD || "",
+    from: process.env.SMTP_FROM?.trim() || "",
+  },
+  /** Recipient of admin alerts and summaries; Admin → Settings when unset. */
+  adminEmail: process.env.ADMIN_EMAIL?.trim() || "",
+
+  /** How often time-based work runs (event endings, alerts, the mail queue). 0 disables it. */
+  schedulerIntervalMs: int("SCHEDULER_INTERVAL_SECONDS", 60, 0) * 1000,
+
   rateLimit: {
     uploadsPerMinute: int("RATE_LIMIT_UPLOADS_PER_MINUTE", 30, 1),
     loginPerMinute: int("RATE_LIMIT_LOGIN_PER_MINUTE", 5, 1),

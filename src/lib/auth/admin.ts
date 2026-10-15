@@ -1,26 +1,12 @@
 import "server-only";
 import bcrypt from "bcryptjs";
-import { eq } from "drizzle-orm";
 import { config } from "@/lib/config";
-import { getDb } from "@/lib/db/client";
-import { settings } from "@/lib/db/schema";
 import { randomToken } from "@/lib/security/ids";
+import { readSetting, writeSetting } from "@/lib/settings";
 import { getAdminSession } from "./session";
 
 const HASH_KEY = "admin_password_hash";
 const VERSION_KEY = "admin_password_version";
-
-function readSetting(key: string): string | undefined {
-  return getDb().select().from(settings).where(eq(settings.key, key)).get()?.value;
-}
-
-function writeSetting(key: string, value: string): void {
-  getDb()
-    .insert(settings)
-    .values({ key, value })
-    .onConflictDoUpdate({ target: settings.key, set: { value } })
-    .run();
-}
 
 export function passwordVersion(): number {
   return Number(readSetting(VERSION_KEY) ?? "1");
