@@ -25,6 +25,12 @@ const TIMEOUT_MS = 120_000;
 function call(cloud: CloudSettings, method: string, path: string, body?: { stream: Readable; size: number } | string, headers: Record<string, string> = {}): Promise<number> {
   return new Promise((resolve, reject) => {
     const target = new URL(path, cloud.url);
+    // The credentials go under the configured root and nowhere else: a path that
+    // resolved elsewhere (a `..` segment, a scheme-looking one) is refused outright.
+    const root = new URL(cloud.url);
+    if (target.origin !== root.origin || !target.pathname.startsWith(root.pathname)) {
+      return reject(new WebdavError(0, "Refused a path outside the configured folder"));
+    }
     const guarded = !config.cloudAllowPrivate;
     try {
       if (guarded) assertPublicHost(target);
@@ -61,7 +67,10 @@ function call(cloud: CloudSettings, method: string, path: string, body?: { strea
   });
 }
 
-const encodePath = (segments: string[]) => segments.map(encodeURIComponent).join("/");
+// `.` and `..` survive encodeURIComponent and are dot segments to a URL parser:
+// they'd climb out of the folder. Made harmless here, refused again in `call`.
+const safeSegment = (segment: string) => encodeURIComponent(/^\.+$/.test(segment) ? segment.replace(/\./g, "_") : segment);
+const encodePath = (segments: string[]) => segments.map(safeSegment).join("/");
 
 /** Creates every folder of `segments` that doesn't exist yet (MKCOL is one level at a time). */
 export async function ensureFolders(cloud: CloudSettings, segments: string[]): Promise<void> {

@@ -118,4 +118,16 @@ describe("cloud export", () => {
     expect(cloud.parseFolder("a/../b")).toBeNull();
     expect(cloud.parseWebdavUrl("https://user:pw@cloud.example/")).toBeNull();
   });
+
+  it("keeps every file under the configured folder, whatever the event is called", async () => {
+    env = await freshEnv({ CLOUD_ALLOW_PRIVATE: "true" });
+    const cloud = await import("@/lib/cloud/settings");
+    const { startExport } = await import("@/lib/cloud/export");
+    cloud.saveCloudSettings({ url: base, user: "lea", password: "app-password", folder: "Guestroll", autoExport: false });
+    for (const name of ["..", "...", ". .", "../../etc"]) {
+      const event = await eventWithPhotos(name, 1);
+      expect((await finished(startExport(event.id, "visible").id)).status).toBe("done");
+    }
+    for (const path of [...folders, ...files.keys()]) expect(path.startsWith("/dav/files/lea/Guestroll/"), path).toBe(true);
+  });
 });

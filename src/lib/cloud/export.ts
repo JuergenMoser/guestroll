@@ -34,7 +34,8 @@ export function listExports(eventId: string, limit = 5): CloudExportRow[] {
 
 /** `2026-10-17 Julie & Thomas`: sorts by date in the cloud folder, readable by a person. */
 function eventFolder(event: { name: string; eventDate: string | null }): string {
-  const name = event.name.replace(/[\u0000-\u001f/\\:*?"<>|]/g, " ").replace(/\s+/g, " ").trim().slice(0, 80) || "event";
+  // No leading dots either: a name of dots would be a `..` segment, a parent folder.
+  const name = event.name.replace(/[\u0000-\u001f/\\:*?"<>|]/g, " ").replace(/\s+/g, " ").trim().replace(/^\.+/, "").trim().slice(0, 80) || "event";
   return event.eventDate ? `${event.eventDate} ${name}` : name;
 }
 
