@@ -83,3 +83,19 @@ test.describe("admin in a browser", () => {
     await expect(page.getByText("Delete me")).toHaveCount(0);
   });
 });
+
+test.describe("live wall", () => {
+  test("shows the new photo in a mosaic, with the QR code, and follows setting changes", async ({ page, baseURL }) => {
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { name: "Wall party", wallStyle: { layout: "mosaic", showQr: true } });
+    await joinAndUpload(await client(baseURL!), event.slug, 2);
+    await signIn(page);
+    await page.goto(`/admin/events/${event.id}/wall`);
+    await expect(page.getByText("Wall party")).toBeVisible();
+    await expect(page.getByText("Scan to add your photos")).toBeVisible();
+    await expect(page.getByRole("listitem")).toHaveCount(2);
+
+    const saved = await host.patch(`/api/admin/events/${event.id}`, { data: { wallStyle: { layout: "grid", slideSeconds: 1000, showQr: false } } });
+    expect((await saved.json()).event.wallStyle).toMatchObject({ layout: "grid", slideSeconds: 30, showQr: false });
+  });
+});

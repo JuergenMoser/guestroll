@@ -1,6 +1,7 @@
 import { CAPTURE_MODES, LOCALES, type CaptureMode, type Locale } from "@/lib/constants";
 import { parseChallenges } from "@/lib/challenges";
 import { parseQrStyle } from "@/lib/qr/style";
+import { parseWallStyle } from "@/lib/wall";
 
 /** Admin-editable event fields, already validated and normalised. */
 export interface EventInput {
@@ -31,6 +32,8 @@ export interface EventInput {
   challenges: string;
   /** Already normalised by `parseQrStyle` and serialised. */
   qrStyle: string;
+  /** Already normalised by `parseWallStyle` and serialised. */
+  wallStyle: string;
 }
 
 export type ValidationResult<T> = { ok: true; value: T } | { ok: false; errors: Record<string, string> };
@@ -136,6 +139,11 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     const parsed = parseChallenges(src.challenges);
     if (parsed.ok) out.challenges = JSON.stringify(parsed.value);
     else errors.challenges = parsed.error;
+  }
+
+  if (has("wallStyle")) {
+    if (typeof src.wallStyle === "object" && src.wallStyle !== null) out.wallStyle = JSON.stringify(parseWallStyle(src.wallStyle));
+    else errors.wallStyle = "Expected an object";
   }
 
   if (has("qrStyle")) {

@@ -10,6 +10,7 @@ import type { EventInput } from "@/lib/validation";
 import type { AdminScope } from "@/lib/policy";
 import { parseQrStyle, type QrStyle } from "@/lib/qr/style";
 import { readChallenges, type Challenge } from "@/lib/challenges";
+import { readWallStyle, type WallStyle } from "@/lib/wall";
 
 /** What the guest page may know about an event: no hash, no internal settings. */
 export interface PublicEvent {
@@ -54,11 +55,17 @@ export function toPublicEvent(event: EventRow): PublicEvent {
   };
 }
 
-export type AdminEvent = Omit<EventRow, "accessCodeHash" | "qrStyle" | "challenges"> & { hasAccessCode: boolean; qrStyle: QrStyle; challenges: Challenge[] };
+export type AdminEvent = Omit<EventRow, "accessCodeHash" | "qrStyle" | "challenges" | "wallStyle"> & {
+  hasAccessCode: boolean;
+  qrStyle: QrStyle;
+  challenges: Challenge[];
+  wallStyle: WallStyle;
+};
 
-export function toAdminEvent({ accessCodeHash, qrStyle, challenges, ...event }: EventRow): AdminEvent {
+export function toAdminEvent({ accessCodeHash, qrStyle, challenges, wallStyle, ...event }: EventRow): AdminEvent {
   return {
     ...event,
+    wallStyle: readWallStyle(wallStyle),
     hasAccessCode: accessCodeHash !== null,
     qrStyle: parseQrStyle(qrStyle ? JSON.parse(qrStyle) : null),
     challenges: readChallenges(challenges),

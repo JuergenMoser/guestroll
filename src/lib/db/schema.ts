@@ -24,6 +24,8 @@ export const events = sqliteTable("events", {
   defaultLocale: text("default_locale", { enum: ["en", "fr", "it", "es"] }),
   /** JSON, read through `parseQrStyle`: null means the default style. */
   qrStyle: text("qr_style"),
+  /** JSON, read through `readWallStyle`: null means the default wall. */
+  wallStyle: text("wall_style"),
   /** Epoch ms of the last logo upload, null without a logo. Doubles as a cache-buster in URLs. */
   logoVersion: integer("logo_version"),
   // ---- After the event: what runs once uploads close (see lib/mail/automation.ts) ----

@@ -1,6 +1,6 @@
 "use client";
 
-import { MonitorPlay, Printer, RefreshCw } from "lucide-react";
+import { Printer, RefreshCw } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useT } from "@/components/I18nProvider";
@@ -11,6 +11,7 @@ import { CopyField } from "./CopyField";
 import { EndEventCard } from "./EndEventCard";
 import { GalleryLinks } from "./GalleryLinks";
 import { QrDesigner } from "./qr/QrDesigner";
+import { WallSettings } from "./WallSettings";
 
 export function SharePanel({ event, url, locale }: { event: AdminEvent; url: string; locale: string }) {
   const t = useT();
@@ -42,7 +43,9 @@ export function SharePanel({ event, url, locale }: { event: AdminEvent; url: str
       {/* Keyed on the slug: a new link means a new code, so the designer restarts from it. */}
       <QrDesigner key={event.slug} event={event} url={url} />
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <WallSettings eventId={event.id} initial={event.wallStyle} hasChallenges={event.challenges.length > 0} guestbook={event.guestbookEnabled} />
+
+      <div className="grid gap-4 lg:grid-cols-2">
         <Card className="flex flex-col justify-between gap-4">
           <div className="space-y-1">
             <CardTitle>{t("admin.share.poster")}</CardTitle>
@@ -50,16 +53,6 @@ export function SharePanel({ event, url, locale }: { event: AdminEvent; url: str
           <a href={`/admin/events/${event.id}/poster`} target="_blank" className={buttonClass("secondary")}>
             <Printer className="size-4" aria-hidden />
             {t("admin.share.poster")}
-          </a>
-        </Card>
-        <Card className="flex flex-col justify-between gap-4">
-          <div className="space-y-1">
-            <CardTitle>{t("admin.share.wall")}</CardTitle>
-            <p className="text-sm text-ink-muted">{t("admin.share.wallHint")}</p>
-          </div>
-          <a href={`/admin/events/${event.id}/wall`} target="_blank" className={buttonClass("primary")}>
-            <MonitorPlay className="size-4" aria-hidden />
-            {t("admin.share.wall")}
           </a>
         </Card>
         <Card className="flex flex-col justify-between gap-4">

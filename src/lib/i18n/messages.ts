@@ -280,7 +280,12 @@ const en = {
       size: "Size",
     },
     poster: { print: "Print", scan: "Scan to share your photos", noApp: "No app, no account: just your camera." },
-    wall: { waiting: "Waiting for the first photo…", by: "by {name}" },
+    wall: {
+      waiting: "Waiting for the first photo…",
+      by: "by {name}",
+      challengeBy: "{challenge}, by {name}",
+      scan: "Scan to add your photos",
+    },
     username: "Username",
     profile: {
       title: "Your account",
@@ -344,6 +349,25 @@ const en = {
       filter: "Filter by challenge",
       allChallenges: "Every challenge",
       statsTitle: "Photos per challenge",
+    },
+    wallSettings: {
+      layout: "Layout",
+      layouts: {
+        single: "One print",
+        mosaic: "Mosaic",
+        grid: "Grid",
+      },
+      layoutHints: {
+        single: "One photo at a time, as a print. Best on a big screen.",
+        mosaic: "The newest photo big, four more around it.",
+        grid: "Fifteen photos at once, moving one step at a time.",
+      },
+      seconds: "Seconds per step",
+      showNames: "Show who took each photo",
+      showQr: "Show the QR code in a corner",
+      favoritesOnly: "Favorites only",
+      showChallenges: "Show the challenge of each photo",
+      showMessages: "Show guestbook messages",
     },
   },
   shared: {
@@ -668,7 +692,12 @@ const fr: DeepPartialStrings<Messages> = {
       size: "Taille",
     },
     poster: { print: "Imprimer", scan: "Scanne pour partager tes photos", noApp: "Sans appli, sans compte : juste ton appareil photo." },
-    wall: { waiting: "En attente de la première photo…", by: "par {name}" },
+    wall: {
+      waiting: "En attente de la première photo…",
+      by: "par {name}",
+      challengeBy: "{challenge}, par {name}",
+      scan: "Scanne pour ajouter tes photos",
+    },
     username: "Identifiant",
     profile: {
       title: "Votre compte",
@@ -732,6 +761,25 @@ const fr: DeepPartialStrings<Messages> = {
       filter: "Filtrer par défi",
       allChallenges: "Tous les défis",
       statsTitle: "Photos par défi",
+    },
+    wallSettings: {
+      layout: "Disposition",
+      layouts: {
+        single: "Un tirage",
+        mosaic: "Mosaïque",
+        grid: "Grille",
+      },
+      layoutHints: {
+        single: "Une photo à la fois, en tirage. Idéal sur un grand écran.",
+        mosaic: "La photo la plus récente en grand, quatre autres autour.",
+        grid: "Quinze photos à la fois, qui avancent d'un cran à chaque fois.",
+      },
+      seconds: "Secondes par étape",
+      showNames: "Afficher qui a pris chaque photo",
+      showQr: "Afficher le QR code dans un coin",
+      favoritesOnly: "Les favorites seulement",
+      showChallenges: "Afficher le défi de chaque photo",
+      showMessages: "Afficher les messages du livre d'or",
     },
   },
   shared: {
@@ -1052,7 +1100,12 @@ const it: DeepPartialStrings<Messages> = {
       size: "Dimensione",
     },
     poster: { print: "Stampa", scan: "Scansiona per condividere le tue foto", noApp: "Niente app, niente account: solo la tua fotocamera." },
-    wall: { waiting: "In attesa della prima foto…", by: "di {name}" },
+    wall: {
+      waiting: "In attesa della prima foto…",
+      by: "di {name}",
+      challengeBy: "{challenge}, di {name}",
+      scan: "Inquadra per aggiungere le tue foto",
+    },
     username: "Nome utente",
     profile: {
       title: "Il tuo account",
@@ -1116,6 +1169,25 @@ const it: DeepPartialStrings<Messages> = {
       filter: "Filtra per sfida",
       allChallenges: "Tutte le sfide",
       statsTitle: "Foto per sfida",
+    },
+    wallSettings: {
+      layout: "Disposizione",
+      layouts: {
+        single: "Una stampa",
+        mosaic: "Mosaico",
+        grid: "Griglia",
+      },
+      layoutHints: {
+        single: "Una foto alla volta, come una stampa. Ideale su un grande schermo.",
+        mosaic: "La foto più recente in grande, altre quattro intorno.",
+        grid: "Quindici foto insieme, che scorrono di una alla volta.",
+      },
+      seconds: "Secondi per passo",
+      showNames: "Mostra chi ha scattato ogni foto",
+      showQr: "Mostra il codice QR in un angolo",
+      favoritesOnly: "Solo le preferite",
+      showChallenges: "Mostra la sfida di ogni foto",
+      showMessages: "Mostra i messaggi del libro degli ospiti",
     },
   },
   shared: {
@@ -1436,7 +1508,12 @@ const es: DeepPartialStrings<Messages> = {
       size: "Tamaño",
     },
     poster: { print: "Imprimir", scan: "Escanea para compartir tus fotos", noApp: "Sin app, sin cuenta: solo tu cámara." },
-    wall: { waiting: "Esperando la primera foto…", by: "de {name}" },
+    wall: {
+      waiting: "Esperando la primera foto…",
+      by: "de {name}",
+      challengeBy: "{challenge}, por {name}",
+      scan: "Escanea para añadir tus fotos",
+    },
     username: "Usuario",
     profile: {
       title: "Tu cuenta",
@@ -1500,6 +1577,25 @@ const es: DeepPartialStrings<Messages> = {
       filter: "Filtrar por reto",
       allChallenges: "Todos los retos",
       statsTitle: "Fotos por reto",
+    },
+    wallSettings: {
+      layout: "Disposición",
+      layouts: {
+        single: "Una copia",
+        mosaic: "Mosaico",
+        grid: "Cuadrícula",
+      },
+      layoutHints: {
+        single: "Una foto a la vez, como una copia. Ideal en una pantalla grande.",
+        mosaic: "La foto más reciente en grande, cuatro más alrededor.",
+        grid: "Quince fotos a la vez, que avanzan de una en una.",
+      },
+      seconds: "Segundos por paso",
+      showNames: "Mostrar quién hizo cada foto",
+      showQr: "Mostrar el código QR en una esquina",
+      favoritesOnly: "Solo las favoritas",
+      showChallenges: "Mostrar el reto de cada foto",
+      showMessages: "Mostrar los mensajes del libro de visitas",
     },
   },
   shared: {

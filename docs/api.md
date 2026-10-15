@@ -114,7 +114,7 @@ Event fields: `name`, `description`, `eventDate` (`YYYY-MM-DD`), `accentColor`
 `captureMode` (`camera`|`picker`|`both`), `askGuestName`, `maxPhotosPerGuest`,
 `defaultLocale` (`en`|`fr`|`it`|`es`|`null`), `collectGuestEmails`,
 `notifyAdminSummary`, `emailGuestsGallery`, `galleryLinkDays` (0–3650),
-`galleryLinkDownload`, `galleryMailIncludesPassword`, `galleryLinkFavorites`, `guestbookEnabled`, `guestbookVoice`, `guestbookInGallery`, `challenges` (list of `{ id?, label }` or strings; ids are kept, new ones assigned), `qrStyle` (object, see
+`galleryLinkDownload`, `galleryMailIncludesPassword`, `galleryLinkFavorites`, `guestbookEnabled`, `guestbookVoice`, `guestbookInGallery`, `challenges` (list of `{ id?, label }` or strings; ids are kept, new ones assigned), `wallStyle` (object, see `src/lib/wall.ts`), `qrStyle` (object, see
 `src/lib/qr/style.ts`).
 
 ## Health

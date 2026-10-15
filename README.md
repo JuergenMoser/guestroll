@@ -61,7 +61,7 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 - 🔐 Optional access code per event, so a QR code shared on social media isn't enough.
 - ✅ Moderation: publish right away and hide later, or approve each photo first.
 - ⭐ **Favorites**: star your picks for a "best of" ZIP, or a gallery link that only shows them.
-- 📺 **Live wall**: a full-screen slideshow of new photos for a projector or TV.
+- 📺 **Live wall** for a projector or TV: one print at a time, a mosaic or a grid, with names, challenges, guestbook messages and the QR code in a corner.
 - 🎨 **QR code designer**: colors, dot and corner shapes, your logo in the middle, a caption. Every preset is scan-tested.
 - 🖨️ Printable A4 table card, plus PNG (up to 4096 px) and SVG exports.
 - 🗣️ A default language per album, for a wedding in Italy with Italian guests.

@@ -1,0 +1,1 @@
+ALTER TABLE `events` ADD `wall_style` text;

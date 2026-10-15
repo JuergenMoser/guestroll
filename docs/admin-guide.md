@@ -59,10 +59,21 @@ and photos per challenge.
   the middle and a caption. The preview is the exact file you download, as PNG
   (512 to 4096 px) or SVG. Remember to **Save** before downloading.
 - **Printable poster**: an A4 card with the event name, date and QR code.
-- **Open live wall**: a full-screen slideshow for a projector or a TV. New
-  photos jump the queue and appear within five seconds; in between, it cycles
-  through the latest ones. Only visible photos are shown, so with
-  *Approve each photo first* nothing reaches the screen until you approve it.
+- **Live wall**: a full-screen slideshow for a projector or a TV. New photos
+  jump the queue and appear within five seconds; in between, it cycles through
+  the latest ones. Only visible photos are shown, so with *Approve each photo
+  first* nothing reaches the screen until you approve it. Its settings:
+
+  | Setting | What it does |
+  |---|---|
+  | Layout | **One print** at a time, a **mosaic** (the newest big, four around it) or a **grid** of fifteen |
+  | Seconds per step | 3 to 30 |
+  | Show who took each photo / the challenge | Captions under each photo |
+  | Show the QR code in a corner | So the room keeps joining |
+  | Favorites only | Only the photos you starred |
+  | Show guestbook messages | Approved text messages: between photos in *One print*, along the bottom otherwise |
+
+  An open wall picks up setting changes within 20 seconds, no reload needed.
 - **Generate a new link**: changes the address. The old QR code stops working
   at once, for everyone. Use it if the code leaked.
 
