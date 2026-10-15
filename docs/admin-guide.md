@@ -184,8 +184,10 @@ event name to confirm.
   hours); the last deliveries are listed under the webhooks.
 
 - **Backup and retention** (owners): download a backup of everything (see
-  [Deployment](deployment.md#backups)), restore one, and choose how long ended
-  events are kept. With a number of days (14 or more), an event is deleted
+  [Deployment](deployment.md#backups)), restore one, schedule **automatic
+  backups** (every night, every 6 hours, weekly, or any cron expression) to a
+  folder or an S3 bucket with the newest N kept, each listed with download and
+  restore buttons, and choose how long ended events are kept. With a number of days (14 or more), an event is deleted
   that long after it ended, photos and messages included; its hosts get an
   email a week before, and the date shows on the event's *QR & sharing* tab.
   Events that never ended (no closing time, never ended by hand) are kept.

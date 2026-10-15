@@ -38,4 +38,25 @@ test.describe("backup", () => {
     const organizer = await signIn(baseURL!, account.username, password);
     expect((await organizer.get("/api/admin/backup?download=1")).status()).toBe(403);
   });
+
+  test("scheduled backups: a schedule, a backup now, the list, download and delete", async ({ baseURL }) => {
+    const host = await admin(baseURL!);
+    expect((await host.put("/api/admin/backup/schedule", { data: { enabled: true, cron: "every night", keep: 3 } })).status()).toBe(400);
+    const saved = await (await host.put("/api/admin/backup/schedule", { data: { enabled: true, cron: "0 3 * * *", keep: 3 } })).json();
+    expect(saved.schedule).toEqual({ enabled: true, cron: "0 3 * * *", keep: 3 });
+    expect(saved.nextRun).toBeGreaterThan(Date.now());
+
+    const { run } = await (await host.post("/api/admin/backup/run")).json();
+    expect(run).toMatchObject({ ok: true });
+    const info = await (await host.get("/api/admin/backup")).json();
+    expect(info.stored.map((b: { name: string }) => b.name)).toContain(run.name);
+    expect(info.lastRun).toMatchObject({ ok: true, name: run.name });
+
+    const file = await host.get(`/api/admin/backup/stored/${run.name}`);
+    expect(file.headers()["content-type"]).toBe("application/zip");
+    expect((await host.get("/api/admin/backup/stored/..%2F..%2Fguestroll.db")).status()).toBe(404);
+    expect((await host.delete(`/api/admin/backup/stored/${run.name}`)).status()).toBe(200);
+    await host.put("/api/admin/backup/schedule", { data: { enabled: false, cron: "0 3 * * *", keep: 3 } });
+  });
 });
+

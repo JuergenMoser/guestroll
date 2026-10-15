@@ -30,6 +30,13 @@ function contract(name: string, make: () => Promise<{ driver: StorageDriver; cle
     beforeAll(async () => ({ driver, cleanup } = await make()));
     afterAll(() => cleanup());
 
+    it("writes a file from disk", async () => {
+      const source = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "guestroll-src-")), "f.zip");
+      fs.writeFileSync(source, "zip-bytes");
+      await driver.putFile("backups/f.zip", source, "application/zip");
+      expect((await driver.read("backups/f.zip"))?.toString()).toBe("zip-bytes");
+    });
+
     it("writes, reads, streams and deletes", async () => {
       await driver.put("ev/a.thumb.webp", Buffer.from("hello"), "image/webp");
       expect((await driver.read("ev/a.thumb.webp"))?.toString()).toBe("hello");
@@ -100,6 +107,19 @@ describe.runIf(endpoint)("S3", () => {
     const driver = s3Driver({ ...options, prefix });
     await checkBucket(driver);
     return { driver, cleanup: async () => driver.deletePrefix("") };
+  });
+
+  it("uploads a large file in parts, and reads it back whole", async () => {
+    const driver = s3Driver({ ...options, prefix: `multipart-${Date.now()}` });
+    const file = path.join(fs.mkdtempSync(path.join(os.tmpdir(), "guestroll-mp-")), "big.bin");
+    const big = Buffer.alloc(20 * 1024 * 1024 + 123);
+    for (let i = 0; i < big.length; i += 4096) big[i] = i % 251;
+    fs.writeFileSync(file, big);
+    await driver.putFile("big.bin", file, "application/octet-stream");
+    const back = await driver.read("big.bin");
+    expect(back?.length).toBe(big.length);
+    expect(back?.equals(big)).toBe(true);
+    await driver.deletePrefix("");
   });
 
   it("reports a wrong secret clearly", async () => {

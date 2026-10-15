@@ -34,6 +34,13 @@ export function localDriver(root: string): StorageDriver {
       await fsp.writeFile(/*turbopackIgnore: true*/ tmp, body, { mode: 0o640 });
       await fsp.rename(tmp, file);
     },
+    async putFile(key, source) {
+      const file = resolve(key);
+      await fsp.mkdir(path.dirname(file), { recursive: true });
+      const tmp = `${file}.${process.pid}.tmp`;
+      await fsp.copyFile(/*turbopackIgnore: true*/ source, tmp);
+      await fsp.rename(tmp, file);
+    },
     async read(key) {
       return fsp.readFile(/*turbopackIgnore: true*/ resolve(key)).catch(() => null);
     },

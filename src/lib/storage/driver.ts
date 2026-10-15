@@ -8,6 +8,8 @@ import type { Readable } from "node:stream";
 export interface StorageDriver {
   readonly name: "local" | "s3";
   put(key: string, body: Buffer, contentType: string): Promise<void>;
+  /** A file on disk, possibly several GB (backups): streamed, never held in memory. */
+  putFile(key: string, path: string, contentType: string): Promise<void>;
   /** Null when the file doesn't exist. */
   read(key: string): Promise<Buffer | null>;
   open(key: string): Promise<{ stream: Readable; size: number } | null>;

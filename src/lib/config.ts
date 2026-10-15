@@ -100,6 +100,29 @@ export const config = {
     },
   },
 
+  /**
+   * Scheduled backups. BACKUP_CRON (e.g. `0 3 * * *`) turns them on from the
+   * environment; otherwise owners set them in the admin. The destination is a
+   * folder, or an S3 bucket when BACKUP_S3_BUCKET is set: never the bucket
+   * holding the photos themselves.
+   */
+  backup: {
+    cron: process.env.BACKUP_CRON?.trim() || "",
+    keep: int("BACKUP_KEEP", 7, 1),
+    dir: path.resolve(/*turbopackIgnore: true*/ process.env.BACKUP_DIR || path.join(dataDir, "backups")),
+    s3: {
+      endpoint: process.env.BACKUP_S3_ENDPOINT?.replace(/\/+$/, "") || "",
+      region: process.env.BACKUP_S3_REGION?.trim() || "us-east-1",
+      bucket: process.env.BACKUP_S3_BUCKET?.trim() || "",
+      accessKeyId: process.env.BACKUP_S3_ACCESS_KEY_ID || "",
+      secretAccessKey: process.env.BACKUP_S3_SECRET_ACCESS_KEY || "",
+      prefix: (process.env.BACKUP_S3_PREFIX?.trim() || "").replace(/^\/+|\/+$/g, ""),
+      forcePathStyle: bool("BACKUP_S3_FORCE_PATH_STYLE", true),
+    },
+  },
+  /** Time zone of scheduled backups (and of stats): the container's TZ. */
+  timeZone: process.env.TZ?.trim() || "UTC",
+
   rateLimit: {
     uploadsPerMinute: int("RATE_LIMIT_UPLOADS_PER_MINUTE", 30, 1),
     loginPerMinute: int("RATE_LIMIT_LOGIN_PER_MINUTE", 5, 1),

@@ -7,6 +7,7 @@ import { useT } from "@/components/I18nProvider";
 import { Button, buttonClass, Card, CardTitle, Field, Input, StatusMessage } from "@/components/ui";
 import { api } from "@/lib/client/api";
 import { formatBytes } from "@/lib/format";
+import { ScheduledBackups } from "./ScheduledBackups";
 
 interface Info {
   files: number;
@@ -91,6 +92,8 @@ export function BackupSettings({ locale }: { locale: string }) {
           {t("admin.backup.download")}
         </a>
       </section>
+
+      <ScheduledBackups locale={locale} />
 
       <section className="space-y-3 border-t border-line pt-5">
         <h3 className="font-semibold">{t("admin.backup.restore")}</h3>

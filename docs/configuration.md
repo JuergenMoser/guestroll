@@ -97,6 +97,23 @@ never served from the bucket directly, so photos stay private even with a
 bucket on a public endpoint. To move existing photos to a bucket, make a backup
 (Admin → Settings → Backup), switch the driver, then restore it.
 
+## Scheduled backups
+
+Owners set them in **Admin → Settings → Backup and retention**; these variables
+set them from the environment instead (the admin then shows them read-only).
+Each backup is the same ZIP as a manual one: database, every photo, logo and
+voice note, and the generated session secret.
+
+| Variable | Default | Description |
+|---|---|---|
+| `BACKUP_CRON` | *(none)* | Turns scheduled backups on, e.g. `0 3 * * *` (every night at 3:00, in `TZ`). Five fields. |
+| `BACKUP_KEEP` | `7` | How many backups to keep; older ones are deleted after each new one. |
+| `BACKUP_DIR` | `DATA_DIR/backups` | Where they go. Mount another disk here: a backup on the same disk as the photos doesn't survive that disk. |
+| `BACKUP_S3_ENDPOINT`, `BACKUP_S3_BUCKET`, `BACKUP_S3_ACCESS_KEY_ID`, `BACKUP_S3_SECRET_ACCESS_KEY`, `BACKUP_S3_REGION`, `BACKUP_S3_PREFIX`, `BACKUP_S3_FORCE_PATH_STYLE` | *(none)* | Send them to an S3-compatible bucket instead of a folder (`BACKUP_S3_BUCKET` set). Use another bucket than the photos'. Large archives go up in 16 MB parts. |
+
+A failed backup emails the owners and the instance address, and notifies
+webhooks subscribed to *A scheduled backup failed*.
+
 ## Email
 
 Optional. Without SMTP, everything else works and no email is ever sent.

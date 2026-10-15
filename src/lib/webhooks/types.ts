@@ -4,7 +4,7 @@ export const WEBHOOK_TYPES = ["ntfy", "discord", "slack", "json"] as const;
 export type WebhookType = (typeof WEBHOOK_TYPES)[number];
 
 /** What a webhook can subscribe to. */
-export const WEBHOOK_KINDS = ["event_ended", "photos_pending", "guestbook_message", "failed_logins", "storage"] as const;
+export const WEBHOOK_KINDS = ["event_ended", "photos_pending", "guestbook_message", "failed_logins", "storage", "backup_failed", "update_available"] as const;
 export type WebhookKind = (typeof WEBHOOK_KINDS)[number] | "test";
 
 /** What the admin sees: the URL is masked, the secret never sent back. */

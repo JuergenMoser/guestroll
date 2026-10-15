@@ -61,6 +61,12 @@ const en = {
     body: "Your instance deletes events some time after they end. Download the photos and the guestbook of {event} before then if you want to keep them.",
     cta: "Open the event",
   },
+  backupFailed: {
+    subject: "{app}: the scheduled backup failed",
+    title: "Last night's backup didn't happen.",
+    body: "The automatic backup couldn't be written. Your photos are still there, but there is no fresh copy of them: check where backups go, then run one by hand from the settings.",
+    cta: "Open the settings",
+  },
   storage: {
     subject: "{app}: the disk is {percent}% full",
     title: "Storage is running out.",
@@ -129,6 +135,12 @@ const fr: Strings<MailMessages> = {
     body: "Votre instance supprime les évènements quelque temps après leur fin. Téléchargez les photos et le livre d'or de « {event} » d'ici là pour les garder.",
     cta: "Ouvrir l'évènement",
   },
+  backupFailed: {
+    subject: "{app} : la sauvegarde planifiée a échoué",
+    title: "La sauvegarde automatique n'a pas eu lieu.",
+    body: "La sauvegarde automatique n'a pas pu être écrite. Vos photos sont toujours là, mais il n'en existe pas de copie récente : vérifiez la destination des sauvegardes, puis lancez-en une à la main depuis les réglages.",
+    cta: "Ouvrir les réglages",
+  },
   storage: {
     subject: "{app} : disque plein à {percent} %",
     title: "L'espace disque s'épuise.",
@@ -194,6 +206,12 @@ const it: Strings<MailMessages> = {
     body: "La tua istanza elimina gli eventi un po' di tempo dopo la fine. Scarica le foto e il libro degli ospiti di «{event}» prima di allora per conservarli.",
     cta: "Apri l'evento",
   },
+  backupFailed: {
+    subject: "{app}: il backup pianificato non è riuscito",
+    title: "Il backup automatico non è stato fatto.",
+    body: "Non è stato possibile scrivere il backup automatico. Le foto ci sono ancora, ma non ne esiste una copia recente: controlla la destinazione dei backup, poi avviane uno a mano dalle impostazioni.",
+    cta: "Apri le impostazioni",
+  },
   storage: {
     subject: "{app}: disco pieno al {percent}%",
     title: "Lo spazio sta finendo.",
@@ -258,6 +276,12 @@ const es: Strings<MailMessages> = {
     title: "Este álbum se eliminará el {date}.",
     body: "Tu instancia elimina los eventos un tiempo después de que terminen. Descarga las fotos y el libro de visitas de «{event}» antes de esa fecha si quieres conservarlos.",
     cta: "Abrir el evento",
+  },
+  backupFailed: {
+    subject: "{app}: ha fallado la copia programada",
+    title: "La copia de seguridad automática no se ha hecho.",
+    body: "No se ha podido escribir la copia automática. Tus fotos siguen ahí, pero no hay una copia reciente: revisa el destino de las copias y lanza una a mano desde los ajustes.",
+    cta: "Abrir los ajustes",
   },
   storage: {
     subject: "{app}: disco al {percent} %",

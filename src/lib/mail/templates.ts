@@ -200,3 +200,13 @@ export function purgeMail(c: Common & { event: string; accent: string; url: stri
     c.accent,
   );
 }
+
+export function backupFailedMail(c: Common & { url: string; error: string }): RenderedMail {
+  const m = mailMessages[c.locale];
+  return make(m, c, fill(m.backupFailed.subject, { app: c.app }), {
+    title: m.backupFailed.title,
+    paragraphs: [m.backupFailed.body],
+    notes: [c.error],
+    cta: { label: m.backupFailed.cta, url: c.url },
+  });
+}

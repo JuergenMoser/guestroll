@@ -20,6 +20,9 @@ always run on their own at startup; take a backup first all the same
 - Two-step verification (authenticator app codes) for admin accounts, with
   recovery codes; owners can reset it for a lost phone.
 
+- Scheduled backups (node-cron) to a folder or an S3 bucket, with rotation,
+  a list to download or restore from, and an alert when one fails.
+
 ### Security
 
 - Every page carries a nonce-based Content-Security-Policy.

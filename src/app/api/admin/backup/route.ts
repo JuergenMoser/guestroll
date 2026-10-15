@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { backupResponse } from "@/lib/backup";
 import { requireAdmin } from "@/lib/http";
 import { getRetentionDays } from "@/lib/retention";
+import { getSchedule, lastRun, listStoredBackups, nextBackupAt, scheduleFromEnv, targetDescription } from "@/lib/backupSchedule";
 import { storage } from "@/lib/storage";
 
 /** `?download=1` streams the backup; otherwise what it would hold, for the settings page. */
@@ -16,5 +17,16 @@ export async function GET(request: Request) {
     files++;
     bytes += item.size;
   }
-  return NextResponse.json({ files, bytes, storage: storage().name, retentionDays: getRetentionDays() });
+  return NextResponse.json({
+    files,
+    bytes,
+    storage: storage().name,
+    retentionDays: getRetentionDays(),
+    schedule: getSchedule(),
+    scheduleFromEnv: scheduleFromEnv(),
+    target: targetDescription(),
+    lastRun: lastRun(),
+    nextRun: nextBackupAt(),
+    stored: await listStoredBackups(),
+  });
 }

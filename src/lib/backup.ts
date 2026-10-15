@@ -34,7 +34,11 @@ export class BackupError extends Error {}
 
 const tmpPath = (name: string) => path.join(/*turbopackIgnore: true*/ config.dataDir, `.${name}-${newId()}.tmp`);
 
-export async function backupResponse(): Promise<Response> {
+/**
+ * The backup archive as a stream. `done` settles once every file went in (and
+ * the database snapshot is removed), or with the error that stopped it.
+ */
+async function createArchive(): Promise<{ zip: archiver.Archiver; manifest: Manifest; done: Promise<void> }> {
   const dbCopy = tmpPath("backup-db");
   await snapshotDb(dbCopy);
   const files: { key: string; size: number }[] = [];
@@ -54,7 +58,7 @@ export async function backupResponse(): Promise<Response> {
   zip.file(dbCopy, { name: "guestroll.db" });
   if (!config.sessionSecret && fs.existsSync(/*turbopackIgnore: true*/ config.secretFile)) zip.file(config.secretFile, { name: "session-secret" });
 
-  void (async () => {
+  const done = (async () => {
     for (const file of files) {
       const opened = await storage().open(file.key).catch(() => null);
       if (!opened) continue;
@@ -65,15 +69,23 @@ export async function backupResponse(): Promise<Response> {
         opened.stream.once("error", reject);
       });
     }
+    // finalize() resolves once the archive is written, the lazily read snapshot included.
     await zip.finalize();
   })()
     .catch((error) => {
-      console.error("[backup]", error);
       zip.abort();
+      throw error;
     })
-    // The ZIP reads the snapshot lazily: give it time before removing it.
-    .finally(() => setTimeout(() => fsp.rm(dbCopy, { force: true }), 60_000).unref());
+    .finally(() => fsp.rm(dbCopy, { force: true }));
+  return { zip, manifest, done };
+}
 
+// Milliseconds included: two backups in the same second must not share a name.
+export const backupName = (createdAt: string) => `guestroll-backup-${createdAt.slice(0, 23).replace(/[:T.]/g, "-")}.zip`;
+
+export async function backupResponse(): Promise<Response> {
+  const { zip, manifest, done } = await createArchive();
+  done.catch((error) => console.error("[backup]", error));
   const stamp = manifest.createdAt.slice(0, 16).replace(/[:T]/g, "-");
   return new Response(Readable.toWeb(zip) as ReadableStream, {
     headers: {
@@ -211,3 +223,11 @@ export async function cleanTempFiles(maxAgeMs = 86_400_000): Promise<void> {
   }
 }
 
+
+/** Writes a backup to a file of the data folder, for the scheduled backups to send on. */
+export async function writeBackupFile(): Promise<{ file: string; name: string; manifest: Manifest }> {
+  const { zip, manifest, done } = await createArchive();
+  const file = tmpPath("scheduled-backup");
+  await Promise.all([pipeline(zip, fs.createWriteStream(/*turbopackIgnore: true*/ file, { mode: 0o600 })), done]);
+  return { file, name: backupName(manifest.createdAt), manifest };
+}
