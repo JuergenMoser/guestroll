@@ -516,6 +516,8 @@ const en = {
       expired: "Too slow: sign in again.",
       reset: "Reset two-step verification",
       confirmReset: "Turn it off for them?",
+      confirmPassword: "Your password, to confirm it's you",
+      continue: "Continue",
     },
   },
   shared: {
@@ -1076,6 +1078,8 @@ const fr: DeepPartialStrings<Messages> = {
       expired: "Délai dépassé : reconnectez-vous.",
       reset: "Réinitialiser la validation en deux étapes",
       confirmReset: "La désactiver pour ce compte ?",
+      confirmPassword: "Votre mot de passe, pour confirmer que c'est vous",
+      continue: "Continuer",
     },
   },
   shared: {
@@ -1632,6 +1636,8 @@ const it: DeepPartialStrings<Messages> = {
       expired: "Troppo tempo: accedi di nuovo.",
       reset: "Reimposta la verifica in due passaggi",
       confirmReset: "Disattivarla per questo account?",
+      confirmPassword: "La tua password, per confermare che sei tu",
+      continue: "Continua",
     },
   },
   shared: {
@@ -2188,6 +2194,8 @@ const es: DeepPartialStrings<Messages> = {
       expired: "Demasiado tiempo: vuelve a iniciar sesión.",
       reset: "Restablecer la verificación en dos pasos",
       confirmReset: "¿Desactivarla para esta cuenta?",
+      confirmPassword: "Tu contraseña, para confirmar que eres tú",
+      continue: "Continuar",
     },
   },
   shared: {

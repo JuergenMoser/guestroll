@@ -146,7 +146,16 @@ describe("two-step verification at rest", () => {
     expect(row.totpPending).toBeNull();
     expect(row.recoveryCodes).not.toContain(codes[0]);
     expect(row.sessionVersion).toBe(account.sessionVersion + 1);
-    expect(tf.checkSecondFactor(row, codes[0])).toBe("recovery");
-    expect(tf.checkSecondFactor(accounts.getAccount(account.id)!, codes[0])).toBeNull();
+    expect(tf.checkSecondFactor(row, codes[1])).toBe("recovery");
+    expect(tf.checkSecondFactor(accounts.getAccount(account.id)!, codes[1])).toBeNull();
+    // Two requests that read the account before either wrote: only one spends the code.
+    const stale = accounts.getAccount(account.id)!;
+    expect(tf.checkSecondFactor(stale, codes[2])).toBe("recovery");
+    expect(tf.checkSecondFactor(stale, codes[3])).toBeNull();
+    const now = Date.now();
+    const code = hotp(base32Decode(secret), Math.floor(now / 30_000) + 1);
+    const before = accounts.getAccount(account.id)!;
+    expect(tf.checkSecondFactor(before, code, now)).toBe("totp");
+    expect(tf.checkSecondFactor(before, code, now)).toBeNull();
   });
 });

@@ -128,7 +128,7 @@ test.describe("two-step sign-in", () => {
     const username = `ui${Date.now()}`;
     const { password } = await (await owner.post("/api/admin/accounts", { data: { username, role: "owner" } })).json();
     const api = await signInApi(baseURL!, username, password);
-    const { secret } = await (await api.post("/api/admin/me/two-factor", { data: { action: "start" } })).json();
+    const { secret } = await (await api.post("/api/admin/me/two-factor", { data: { action: "start", password } })).json();
     await api.post("/api/admin/me/two-factor", { data: { action: "confirm", code: hotp(base32Decode(secret), Math.floor(Date.now() / 30_000)) } });
 
     await page.goto("/admin/login");

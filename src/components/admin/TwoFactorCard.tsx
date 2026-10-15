@@ -38,7 +38,15 @@ export function TwoFactorCard() {
     }
   }
 
-  const start = () => run(async () => setSetup(await api<{ secret: string; qr: string }>("/api/admin/me/two-factor", { body: { action: "start" } })));
+  const [starting, setStarting] = useState(false);
+  const start = (e: FormEvent) => {
+    e.preventDefault();
+    return run(async () => {
+      setSetup(await api<{ secret: string; qr: string }>("/api/admin/me/two-factor", { body: { action: "start", password } }));
+      setPassword("");
+      setStarting(false);
+    });
+  };
   const confirm = (e: FormEvent) => {
     e.preventDefault();
     return run(async () => {
@@ -63,8 +71,9 @@ export function TwoFactorCard() {
   const newCodes = (e: FormEvent) => {
     e.preventDefault();
     return run(async () => {
-      setCodes((await api<{ recoveryCodes: string[] }>("/api/admin/me/two-factor", { body: { action: "recovery", code } })).recoveryCodes);
+      setCodes((await api<{ recoveryCodes: string[] }>("/api/admin/me/two-factor", { body: { action: "recovery", code, password } })).recoveryCodes);
       setCode("");
+      setPassword("");
       await load();
     });
   };
@@ -95,10 +104,22 @@ export function TwoFactorCard() {
         </div>
       )}
 
-      {!status.enabled && !setup && (
-        <Button onClick={start} loading={busy}>
-          {t("admin.twoFactor.setUp")}
-        </Button>
+      {!status.enabled && !setup && !starting && <Button onClick={() => setStarting(true)}>{t("admin.twoFactor.setUp")}</Button>}
+
+      {starting && (
+        <form onSubmit={start} className="flex flex-wrap items-end gap-3">
+          <Field label={t("admin.twoFactor.confirmPassword")} error={error}>
+            {(id, describedBy) => (
+              <Input id={id} aria-describedby={describedBy} type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required autoFocus />
+            )}
+          </Field>
+          <Button type="submit" loading={busy}>
+            {t("admin.twoFactor.continue")}
+          </Button>
+          <Button variant="ghost" onClick={() => setStarting(false)}>
+            {t("common.cancel")}
+          </Button>
+        </form>
       )}
 
       {setup && (
@@ -131,9 +152,12 @@ export function TwoFactorCard() {
       {status.enabled && !disabling && (
         <div className="flex flex-wrap items-end gap-3">
           <p className="flex-1 text-sm text-ink-muted">{t("admin.twoFactor.codesLeft", { n: status.recoveryCodesLeft })}</p>
-          <form onSubmit={newCodes} className="flex items-end gap-2">
+          <form onSubmit={newCodes} className="flex flex-wrap items-end gap-2">
+            <Field label={t("admin.password")}>
+              {(id) => <Input id={id} type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" className="w-44" required />}
+            </Field>
             <Field label={t("admin.twoFactor.code")}>
-              {(id) => <Input id={id} value={code} onChange={(e) => setCode(e.target.value)} inputMode="numeric" maxLength={7} className="w-32 tabular-nums" />}
+              {(id) => <Input id={id} value={code} onChange={(e) => setCode(e.target.value)} inputMode="numeric" maxLength={7} className="w-32 tabular-nums" required />}
             </Field>
             <Button type="submit" variant="secondary" loading={busy}>
               {t("admin.twoFactor.newCodes")}

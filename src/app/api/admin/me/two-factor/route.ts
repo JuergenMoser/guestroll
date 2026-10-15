@@ -16,9 +16,10 @@ export async function GET(request: Request) {
 }
 
 /**
- * `{ action: "start" }`: a new secret and its QR code. `{ action: "confirm", code }`:
- * turns it on and returns the recovery codes, once. `{ action: "recovery", code }`:
- * new recovery codes, proven by a current code.
+ * `{ action: "start", password }`: a new secret and its QR code. `{ action: "confirm", code }`:
+ * turns it on and returns the recovery codes, once. `{ action: "recovery", password, code }`:
+ * new recovery codes. Starting and new codes take the password: a stolen session
+ * alone must not be able to put its own app on the account and lock its owner out.
  */
 export async function POST(request: Request) {
   const { admin, denied } = await requireAdmin(request);
@@ -28,9 +29,12 @@ export async function POST(request: Request) {
   const account = getAccount(admin.id)!;
   const body = (await readJson(request)) as { action?: unknown; code?: unknown } | undefined;
   const code = typeof body?.code === "string" ? body.code : "";
+  const password = typeof (body as { password?: unknown } | undefined)?.password === "string" ? (body as { password: string }).password : "";
+  const passwordOk = () => verifyAccountPassword(account, password);
 
   if (body?.action === "start") {
     if (account.totpSecret) return apiError("bad_request", { twoFactor: "already_on" });
+    if (!(await passwordOk())) return apiError("unauthorized", { password: "invalid" });
     const { secret, uri } = startTwoFactor(account, config.appName);
     const qr = await QRCode.toString(uri, { type: "svg", margin: 1, errorCorrectionLevel: "M" });
     return NextResponse.json({ secret, uri, qr });
@@ -45,6 +49,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ enabled: true, recoveryCodes: codes });
   }
   if (body?.action === "recovery") {
+    if (!(await passwordOk())) return apiError("unauthorized", { password: "invalid" });
     if (checkSecondFactor(account, code) !== "totp") return apiError("bad_request", { code: "invalid" });
     return NextResponse.json({ recoveryCodes: regenerateRecoveryCodes(account.id) });
   }

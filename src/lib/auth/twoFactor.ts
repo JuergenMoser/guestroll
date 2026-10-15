@@ -1,5 +1,5 @@
 import "server-only";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, isNull, lt, or, sql } from "drizzle-orm";
 import { getAccount } from "@/lib/accounts";
 import { open, seal } from "@/lib/crypto/secretBox";
 import { getDb } from "@/lib/db/client";
@@ -56,14 +56,24 @@ export function checkSecondFactor(account: AccountRow, code: string, now = Date.
   if (!secret) return null;
   const step = verifyTotp(secret, code, now, account.totpLastStep);
   if (step !== null) {
-    getDb().update(accounts).set({ totpLastStep: step }).where(eq(accounts.id, account.id)).run();
-    return "totp";
+    // Compare-and-set: two requests racing with the same code can't both pass.
+    const claimed = getDb()
+      .update(accounts)
+      .set({ totpLastStep: step })
+      .where(and(eq(accounts.id, account.id), or(isNull(accounts.totpLastStep), lt(accounts.totpLastStep, step))))
+      .run();
+    return claimed.changes > 0 ? "totp" : null;
   }
   const hash = hashRecoveryCode(code);
   const hashes = recoveryHashes(account);
   if (/[a-z]/i.test(code) && hashes.includes(hash)) {
-    getDb().update(accounts).set({ recoveryCodes: JSON.stringify(hashes.filter((h) => h !== hash)) }).where(eq(accounts.id, account.id)).run();
-    return "recovery";
+    // Only if the list is still the one read: a recovery code is spent once, even by concurrent requests.
+    const claimed = getDb()
+      .update(accounts)
+      .set({ recoveryCodes: JSON.stringify(hashes.filter((h) => h !== hash)) })
+      .where(and(eq(accounts.id, account.id), eq(accounts.recoveryCodes, account.recoveryCodes!)))
+      .run();
+    return claimed.changes > 0 ? "recovery" : null;
   }
   return null;
 }

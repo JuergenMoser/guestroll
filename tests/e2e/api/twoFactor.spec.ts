@@ -14,7 +14,8 @@ async function organizer(baseURL: string) {
 test.describe("two-step verification", () => {
   test("set up, then every sign-in asks for a code; a code works once", async ({ baseURL }) => {
     const { username, password, api } = await organizer(baseURL!);
-    const { secret, uri, qr } = await (await api.post("/api/admin/me/two-factor", { data: { action: "start" } })).json();
+    expect((await api.post("/api/admin/me/two-factor", { data: { action: "start" } })).status()).toBe(401);
+    const { secret, uri, qr } = await (await api.post("/api/admin/me/two-factor", { data: { action: "start", password } })).json();
     expect(uri).toContain(`Guestroll%3A${username}`);
     expect(qr).toContain("<svg");
     expect((await api.post("/api/admin/me/two-factor", { data: { action: "confirm", code: "000000" } })).status()).toBe(400);
@@ -48,7 +49,7 @@ test.describe("two-step verification", () => {
 
   test("turning it off takes the password and a code; an owner can reset a lost phone", async ({ baseURL }) => {
     const { owner, account, username, password, api } = await organizer(baseURL!);
-    const { secret } = await (await api.post("/api/admin/me/two-factor", { data: { action: "start" } })).json();
+    const { secret } = await (await api.post("/api/admin/me/two-factor", { data: { action: "start", password } })).json();
     await api.post("/api/admin/me/two-factor", { data: { action: "confirm", code: codeFor(secret) } });
     expect((await api.delete("/api/admin/me/two-factor", { data: { password: "wrong-password", code: codeFor(secret, 1) } })).status()).toBe(401);
 
@@ -58,6 +59,18 @@ test.describe("two-step verification", () => {
     // Reset ends their sessions, and the password alone signs in again.
     expect((await api.get("/api/admin/events")).status()).toBe(401);
     expect(await (await (await client(baseURL!)).post("/api/admin/login", { data: { username, password } })).json()).toEqual({ ok: true });
+  });
+
+  test("two sign-ins racing with the same code: only one gets in", async ({ baseURL }) => {
+    const { username, password, api } = await organizer(baseURL!);
+    const { secret } = await (await api.post("/api/admin/me/two-factor", { data: { action: "start", password } })).json();
+    await api.post("/api/admin/me/two-factor", { data: { action: "confirm", code: codeFor(secret) } });
+    const a = await client(baseURL!);
+    const b = await client(baseURL!);
+    for (const c of [a, b]) await c.post("/api/admin/login", { data: { username, password } });
+    const code = codeFor(secret, 1);
+    const statuses = (await Promise.all([a, b].map((c) => c.post("/api/admin/login/code", { data: { code } })))).map((r) => r.status()).sort();
+    expect(statuses).toEqual([200, 401]);
   });
 
   test("a stale or missing first step can't be completed", async ({ baseURL }) => {
