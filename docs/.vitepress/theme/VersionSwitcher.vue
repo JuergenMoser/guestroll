@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useData, useRoute } from 'vitepress'
+import { strings } from './strings'
 
-const { theme, site } = useData()
+const { theme, site, lang } = useData()
+const t = computed(() => strings(lang.value))
 const route = useRoute()
 const docs = computed(() => theme.value.docsVersions as { version: string, latest: string, versions: { version: string, base: string }[] })
 
 function label(version: string): string {
-  if (version === 'next') return 'next (develop)'
-  return version === docs.value.latest ? `${version} (latest)` : version
+  if (version === 'next') return t.value.nextLabel
+  return version === docs.value.latest ? t.value.latestLabel(version) : version
 }
 
-// Opens the same page in the chosen version, or its home page when that version does not
-// have the page.
+// Opens the same page, in the same language, in the chosen version, or that version's home
+// page when it does not have it (a release from before the translations, a newer page).
 async function go(event: Event): Promise<void> {
   const target = docs.value.versions.find((v) => v.version === (event.target as HTMLSelectElement).value)
   if (!target) return
@@ -29,7 +31,7 @@ async function go(event: Event): Promise<void> {
 </script>
 
 <template>
-  <label v-if="docs.versions.length > 1" class="docs-version" :title="'Documentation of Guestroll ' + docs.version">
+  <label v-if="docs.versions.length > 1" class="docs-version" :title="t.of(docs.version)">
     <span class="visually-hidden">Version</span>
     <select :value="docs.version" @change="go">
       <option v-for="v in docs.versions" :key="v.version" :value="v.version">{{ label(v.version) }}</option>

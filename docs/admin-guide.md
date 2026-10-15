@@ -93,6 +93,55 @@ and photos per challenge.
 
 ### Settings
 
+| Section | Setting | What it does |
+|---|---|---|
+| Event | Name, welcome message, date, accent color | What guests see at the top of their page. The color tints the camera and the buttons; the text on it adjusts automatically. |
+| Access | Access code | Optional, 6+ characters. Guests type it once. Leave empty to let the QR code alone grant access. |
+| Uploads | Accept uploads | Turn uploads off at any time; guests keep their own photos. |
+| | Close uploads automatically at | For example the morning after. |
+| | Capture mode | Camera only (the default), library only, or both. |
+| | Photos per guest | 0 for no limit. Guests see a counter of photos left. |
+| | Moderation | Publish immediately and hide later, or approve each photo first. |
+| Guests | Album language | Automatic (each guest's phone) or one fixed language. Guests can still switch. |
+| | Ask guests for their name | Shown next to their photos in the admin and on the live wall. |
+| Look | Frame | **Instant print** (white border, event name and date below, logo), **Event color** (a border in the accent color with the name), or **Logo stamp** in a corner. Drawn on the phone before sending. |
+| | Let guests pick a filter | Black & white, warm, vintage or vivid, chosen above the shutter. Frames and filters are part of the photo sent: the original isn't kept. Phones that can't decode a format in the browser (rare) send it plain. |
+| Challenges | List of prompts | Up to 30 photo ideas ("The dance floor", "The couple with a stranger"). Guests pick one above the shutter and see which ones they already did. Renaming a challenge keeps its photos; removing it keeps them too, untagged in the filter. |
+
+| After the event | Let guests leave their email to get the album | Adds a card on the guest page. Opt-in; addresses are deleted with the event. |
+| | Email me a summary when uploads close | Photos, photographers, views, what's still pending. |
+| | Email guests a gallery link when uploads close | One password-protected link for the event, sent to every address once. |
+| | Link valid for (days) | 0 for a link that never expires. |
+| | Guests can download the photos from the link | Off: the link shows photos but not originals or the ZIP. |
+| | Only send the favorites | The link shows the photos you starred instead of the whole album. Star them before the event ends. |
+| | Put the password in the email | Off: guests get the link only, and the password reaches you (summary email and the *End the event* card) so you can pass it on yourself. A forwarded email then isn't enough. |
+
+### Gallery links
+
+In **QR & sharing**, *Gallery links* creates private links to the visible
+photos of the event: for family who weren't there, or for guests afterwards.
+Each link has its own password (yours, or a generated one shown **once**), an
+optional expiry, a downloads switch, the whole album or the favorites only,
+and a view counter. **Revoke** cuts it off
+at once, even for someone who already opened it. A gallery link never lets
+anyone upload, and never shows pending or hidden photos.
+
+### End the event
+
+Uploads end on their own at the scheduled closing time; the end-of-event emails
+then go out within a minute. **End the event now** does it immediately. It runs
+once per event: ending again does nothing.
+
+**Duplicate this event** (owners): a new event with the same settings,
+colors, QR code design, logo, challenges and organizers, ready for next year.
+No photos, messages or links come along, and it gets its own QR code: the old
+one keeps pointing at the old event.
+
+**Danger zone**: deleting an event removes every photo from disk. Type the
+event name to confirm.
+
+## Settings
+
 Settings are split into five areas, listed on the left (a row of tabs on a
 phone). An area that needs your attention says so in the list: two-step
 verification off, no automatic backups, no email server, an update waiting.
