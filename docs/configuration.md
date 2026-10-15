@@ -99,7 +99,8 @@ scopes `openid email profile`.
 | `OIDC_LINK_BY_EMAIL` | `false` | A first sign-in links the organizer account with the same verified email. Only for a provider where people can't change their own email: many let them, and still call it verified. Owner accounts are never linked this way. |
 
 Each person links their identity once, from **Settings → Your account →
-Single sign-on**, signed in with their password: that proves they hold both.
+Single sign-on**, signed in and typing their password again: that proves they
+hold both. Changing the password unlinks it (relink it afterwards).
 After that, *Sign in with …* signs them in. Password sign-in stays available.
 An account with two-step verification still asks for its code after the
 provider.

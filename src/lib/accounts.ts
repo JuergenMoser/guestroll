@@ -93,10 +93,14 @@ export function updateAccount(id: string, input: Partial<AccountInput>): Account
 }
 
 /** Also signs the account out everywhere: older cookies carry the old version. */
+/**
+ * Also unlinks single sign-on: a new password is how an account is taken back
+ * after a compromise, and an identity linked by the intruder must not survive it.
+ */
 export function setAccountPassword(id: string, passwordHash: string): void {
   getDb()
     .update(accounts)
-    .set({ passwordHash, sessionVersion: sql`${accounts.sessionVersion} + 1` })
+    .set({ passwordHash, oidcSubject: null, sessionVersion: sql`${accounts.sessionVersion} + 1` })
     .where(eq(accounts.id, id))
     .run();
 }

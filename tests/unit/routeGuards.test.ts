@@ -43,6 +43,14 @@ describe("admin guards", () => {
     }
   });
 
+  it("linking an identity asks for the password and the second factor again", () => {
+    const route = fs.readFileSync(path.join(root, "api/admin/me/oidc/route.ts"), "utf8");
+    expect(route).toContain("verifyAccountPassword(account, password)");
+    expect(route).toContain("checkSecondFactor(account");
+    // Only that route sets up a link: the sign-in start never does.
+    expect(fs.readFileSync(path.join(root, "api/admin/oidc/start/route.ts"), "utf8")).toContain("linkAccountId: undefined");
+  });
+
   it("single sign-on only signs in with the state this browser holds", () => {
     const callback = fs.readFileSync(path.join(root, "api/admin/oidc/callback/route.ts"), "utf8");
     expect(callback).toContain("same(state, expected.state)");

@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { unlinkAccount } from "@/lib/auth/oidc";
 import { countOwners, deleteAccount, getAccount, getAccountByUsername, hashPassword, setAccountPassword, toAccountDto, updateAccount } from "@/lib/accounts";
 import { passwordManagedByEnv } from "@/lib/auth/admin";
 import { disableTwoFactor } from "@/lib/auth/twoFactor";
@@ -38,6 +39,8 @@ export async function PATCH(request: Request, { params }: Context) {
   if (body?.resetTwoFactor === true) {
     if (account.id === admin.id) return apiError("bad_request", { twoFactor: "self" });
     disableTwoFactor(account.id);
+    // A lost phone may be a stolen account: its single sign-on link goes too.
+    unlinkAccount(account.id);
   }
 
   let generated: string | null = null;

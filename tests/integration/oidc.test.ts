@@ -106,6 +106,10 @@ describe("single sign-on", () => {
     expect(oidc.linkAccount(b.id, identity)).toBe("taken");
     oidc.unlinkAccount(a.id);
     expect(oidc.resolveAccount(identity)).toEqual({ refused: "unknown" });
+    // A new password takes the account back: a link made by whoever had the session goes.
+    oidc.linkAccount(b.id, identity);
+    accounts.setAccountPassword(b.id, accounts.hashPassword("a-new-password-1"));
+    expect(oidc.resolveAccount(identity)).toEqual({ refused: "unknown" });
 
     env.cleanup();
     env = await sso({ OIDC_AUTO_CREATE: "true" });

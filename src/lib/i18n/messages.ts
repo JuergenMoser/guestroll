@@ -740,6 +740,9 @@ const en = {
       linked: "Linked to {name}",
       linkedNow: "Linked: you can now sign in with it.",
       taken: "This identity is already linked to another account.",
+      confirmIdentity: "Confirm it's you before linking: changing your password later unlinks it.",
+      continue: "Continue to {name}",
+      wrongPassword: "Wrong password.",
     },
   },
   shared: {
@@ -1545,6 +1548,9 @@ const fr: DeepPartialStrings<Messages> = {
       linked: "Lié à {name}",
       linkedNow: "Lié : vous pouvez maintenant vous connecter avec.",
       taken: "Cette identité est déjà liée à un autre compte.",
+      confirmIdentity: "Confirmez que c'est bien vous avant de lier : changer votre mot de passe plus tard la déliera.",
+      continue: "Continuer vers {name}",
+      wrongPassword: "Mot de passe incorrect.",
     },
   },
   shared: {
@@ -2346,6 +2352,9 @@ const it: DeepPartialStrings<Messages> = {
       linked: "Collegato a {name}",
       linkedNow: "Collegato: ora puoi accedere con esso.",
       taken: "Questa identità è già collegata a un altro account.",
+      confirmIdentity: "Conferma che sei tu prima di collegare: cambiare la password in seguito la scollegherà.",
+      continue: "Continua su {name}",
+      wrongPassword: "Password errata.",
     },
   },
   shared: {
@@ -3147,6 +3156,9 @@ const es: DeepPartialStrings<Messages> = {
       linked: "Vinculado a {name}",
       linkedNow: "Vinculado: ya puedes iniciar sesión con ello.",
       taken: "Esta identidad ya está vinculada a otra cuenta.",
+      confirmIdentity: "Confirma que eres tú antes de vincular: cambiar tu contraseña más adelante la desvinculará.",
+      continue: "Continuar a {name}",
+      wrongPassword: "Contraseña incorrecta.",
     },
   },
   shared: {

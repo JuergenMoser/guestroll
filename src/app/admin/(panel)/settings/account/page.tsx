@@ -34,7 +34,7 @@ export default async function AccountSettingsPage({ searchParams }: { searchPara
               {t(sso === "linked" ? "admin.sso.linkedNow" : "admin.sso.taken")}
             </p>
           )}
-          <SsoLink linked={Boolean(account.oidcSubject)} provider={config.oidc.name} />
+          <SsoLink linked={Boolean(account.oidcSubject)} provider={config.oidc.name} twoFactor={Boolean(account.totpSecret)} />
         </SettingsSection>
       )}
       <SettingsSection id="appearance" title={t("admin.settingsPage.appearance")} description={t("admin.settingsPage.appearanceLead")}>

@@ -49,8 +49,11 @@ links unchanged.
   checked against the provider's published keys, with its issuer, audience,
   expiry and nonce.
 - An identity is linked to one account, by its holder, signed in, from their
-  account page: whoever controls an identity at the provider can't claim an
-  account by setting its email there. Matching by email is opt-in
+  account page, after typing their password again (and their code with
+  two-step verification): whoever controls an identity at the provider can't
+  claim an account by setting its email there, and a stolen session can't
+  link one to keep a way in. A new password, or an owner resetting the
+  account's password or two-step verification, unlinks it. Matching by email is opt-in
   (`OIDC_LINK_BY_EMAIL`, verified addresses only), never for owners, and never
   moves an account already linked to another identity.
 - Accounts created by single sign-on get a random password nobody knows.
