@@ -18,3 +18,7 @@ brag-output*/
 # Playwright
 playwright-report/
 test-results/
+
+# Docs website
+docs/.vitepress/dist/
+docs/.vitepress/cache/

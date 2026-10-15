@@ -1,7 +1,8 @@
 # Admin guide
 
-Sign in at `/admin` with the admin password. The admin works on a phone, but
-it's most comfortable on a laptop.
+Sign in at `/admin` with your account: `admin` and the password from
+`ADMIN_PASSWORD` on a fresh install, or the one an owner gave you. The admin
+works on a phone, but it's most comfortable on a laptop.
 
 ## Dashboard
 
@@ -13,7 +14,8 @@ latest events.
 ## Events
 
 **New event** asks for a name and nothing else; every other setting has a
-default you can change later. Each event has four tabs.
+default you can change later. Each event has its tabs: Photos, Guestbook
+(once you turn it on), Stats, QR & sharing and Settings.
 
 ### Photos
 
