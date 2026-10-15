@@ -149,3 +149,14 @@ export function countVisiblePhotos(eventId: string, favoritesOnly = false): numb
 export function countFavorites(eventId: string): number {
   return getDb().select({ n: count() }).from(photos).where(and(eq(photos.eventId, eventId), eq(photos.favorite, true))).get()?.n ?? 0;
 }
+
+/** Only the guest who took it: the row is matched on event, photo AND guest. */
+export async function deleteGuestPhoto(photoId: string, eventId: string, guestId: string): Promise<boolean> {
+  const deleted = getDb()
+    .delete(photos)
+    .where(and(eq(photos.id, photoId), eq(photos.eventId, eventId), eq(photos.guestId, guestId)))
+    .returning({ id: photos.id })
+    .get();
+  if (deleted) await deletePhotoFiles(eventId, deleted.id);
+  return Boolean(deleted);
+}

@@ -1,8 +1,8 @@
 "use client";
 
 /* eslint-disable @next/next/no-img-element -- photos come from an auth-checked route */
-import { ChevronLeft, ChevronRight, Download, X } from "lucide-react";
-import { useCallback, useEffect } from "react";
+import { ChevronLeft, ChevronRight, Download, Trash2, X } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 import { useT } from "@/components/I18nProvider";
 import { buttonClass } from "@/components/ui";
 import type { PhotoDto } from "@/lib/photos";
@@ -13,10 +13,13 @@ interface LightboxProps {
   index: number;
   onIndex: (index: number | null) => void;
   canDownload: (photo: PhotoDto) => boolean;
+  /** Shown on the guest's own photos: they can take them back. */
+  onDelete?: (photo: PhotoDto) => Promise<void>;
 }
 
-export function Lightbox({ photos, index, onIndex, canDownload }: LightboxProps) {
+export function Lightbox({ photos, index, onIndex, canDownload, onDelete }: LightboxProps) {
   const t = useT();
+  const [confirming, setConfirming] = useState<string | null>(null);
   const photo = photos[index];
   const go = useCallback((delta: number) => onIndex((index + delta + photos.length) % photos.length), [index, onIndex, photos.length]);
 
@@ -36,6 +39,21 @@ export function Lightbox({ photos, index, onIndex, canDownload }: LightboxProps)
       <div className="flex items-center justify-between p-3">
         <span className="text-sm text-white/70">{photo.guestName ?? ""}</span>
         <div className="flex gap-2">
+          {onDelete && photo.mine && (
+            <button
+              type="button"
+              onClick={async () => {
+                if (confirming !== photo.id) return setConfirming(photo.id);
+                setConfirming(null);
+                await onDelete(photo);
+              }}
+              onBlur={() => setConfirming(null)}
+              className={buttonClass(confirming === photo.id ? "danger" : "ghost", "sm", confirming === photo.id ? "" : "text-white hover:bg-white/10 hover:text-white")}
+            >
+              <Trash2 className="size-4" aria-hidden />
+              {confirming === photo.id ? t("guest.deleteConfirm") : t("guest.delete")}
+            </button>
+          )}
           {canDownload(photo) && (
             <a href={mediaUrl(photo.id, "original", true)} className={buttonClass("secondary", "sm")}>
               <Download className="size-4" aria-hidden />

@@ -52,7 +52,7 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 - 🖼️ **Frames and filters** applied on the phone: an instant-print border with the event name, the event's color, or a logo stamp; black & white, warm, vintage, vivid.
 - 📝 **Guestbook**: a few words or a voice note for the hosts, moderated, exported as a ZIP.
 - 🎯 **Photo challenges**: prompts guests pick before shooting ("The dance floor", "The cake"), with their progress.
-- 🔒 Guests only ever see their own photos. The album belongs to the hosts.
+- 🔒 Guests only ever see their own photos, and can delete them. The album belongs to the hosts.
 - 🌍 English, French, Italian and Spanish, picked from the phone's language, switchable on the page.
 - 🌗 Light and dark themes.
 

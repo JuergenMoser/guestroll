@@ -103,7 +103,10 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
         {photos.length === 0 ? (
           <EmptyState>{t("guest.emptyMine")}</EmptyState>
         ) : (
-          <PhotoGrid photos={photos} onOpen={setOpen} />
+          <>
+            <PhotoGrid photos={photos} onOpen={setOpen} />
+            <p className="text-sm text-ink-muted">{t("guest.deleteHint")}</p>
+          </>
         )}
 
         {cursor !== null && (
@@ -131,7 +134,21 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
       )}
 
       {open !== null && (
-        <Lightbox photos={photos} index={open} onIndex={setOpen} canDownload={(p) => p.mine} />
+        <Lightbox
+          photos={photos}
+          index={open}
+          onIndex={setOpen}
+          canDownload={(p) => p.mine}
+          onDelete={async (photo) => {
+            const res = await fetch(`/api/e/${event.slug}/photos/${photo.id}`, { method: "DELETE" }).catch(() => null);
+            if (!res?.ok) return;
+            setPhotos((list) => list.filter((p) => p.id !== photo.id));
+            // A deleted photo gives its slot back when there's a per-guest limit.
+            setRemaining((n) => (n === null ? null : n + 1));
+            setSent((n) => Math.max(n - 1, 0));
+            setOpen(photos.length > 1 ? Math.min(open, photos.length - 2) : null);
+          }}
+        />
       )}
     </div>
   );

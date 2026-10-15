@@ -33,6 +33,9 @@ whatever the settings: this is a design decision, not an option.
 - **Rotating links.** "Generate a new link" changes the slug: the old QR code
   stops working immediately, e.g. after it leaked on social media.
 - **Optional access code** per event, hashed with bcrypt.
+- **Guests can take their photos back**, at any time, even after the event:
+  deleting one removes its files, from the album, the gallery links and the
+  wall. Only the browser that sent it can (same guest cookie).
 
 ## Gallery links
 

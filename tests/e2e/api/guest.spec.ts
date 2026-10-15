@@ -154,3 +154,25 @@ test.describe("guest API", () => {
     expect((await guest.post(`/api/e/${event.slug}/guest`, { data: { name: "" } })).status()).toBe(400);
   });
 });
+
+test.describe("taking a photo back", () => {
+  test("a guest deletes their own photos, never anyone else's, and gets the slot back", async ({ baseURL }) => {
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { maxPhotosPerGuest: 1 });
+    const alice = await client(baseURL!);
+    const bob = await client(baseURL!);
+    const [mine] = await joinAndUpload(alice, event.slug, 1);
+    await bob.post(`/api/e/${event.slug}/join`);
+
+    expect((await bob.delete(`/api/e/${event.slug}/photos/${mine}`)).status()).toBe(404);
+    expect((await client(baseURL!).then((c) => c.delete(`/api/e/${event.slug}/photos/${mine}`))).status()).toBe(404);
+    const crossSite = await alice.delete(`/api/e/${event.slug}/photos/${mine}`, { headers: { Origin: "https://evil.example" } });
+    expect(crossSite.status()).toBe(403);
+
+    expect((await alice.delete(`/api/e/${event.slug}/photos/${mine}`)).status()).toBe(200);
+    expect((await host.get(`/api/media/${mine}?v=original`)).status()).toBe(404);
+    expect((await (await host.get(`/api/admin/events/${event.id}/photos`)).json()).photos).toHaveLength(0);
+    // The quota of one counts what's kept: Alice can send another.
+    await joinAndUpload(alice, event.slug, 1);
+  });
+});

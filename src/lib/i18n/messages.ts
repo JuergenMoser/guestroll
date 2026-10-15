@@ -78,6 +78,9 @@ const en = {
       vintage: "Vintage",
       vivid: "Vivid",
     },
+    delete: "Delete",
+    deleteConfirm: "Delete for good?",
+    deleteHint: "Tap a photo to see it, download it or delete it.",
   },
   admin: {
     title: "Admin",
@@ -607,6 +610,9 @@ const fr: DeepPartialStrings<Messages> = {
       vintage: "Vintage",
       vivid: "Éclatant",
     },
+    delete: "Supprimer",
+    deleteConfirm: "Supprimer pour de bon ?",
+    deleteHint: "Touche une photo pour la voir, la télécharger ou la supprimer.",
   },
   admin: {
     title: "Admin",
@@ -1132,6 +1138,9 @@ const it: DeepPartialStrings<Messages> = {
       vintage: "Vintage",
       vivid: "Vivace",
     },
+    delete: "Elimina",
+    deleteConfirm: "Eliminare definitivamente?",
+    deleteHint: "Tocca una foto per vederla, scaricarla o eliminarla.",
   },
   admin: {
     title: "Admin",
@@ -1657,6 +1666,9 @@ const es: DeepPartialStrings<Messages> = {
       vintage: "Vintage",
       vivid: "Vivo",
     },
+    delete: "Eliminar",
+    deleteConfirm: "¿Eliminar definitivamente?",
+    deleteHint: "Toca una foto para verla, descargarla o eliminarla.",
   },
   admin: {
     title: "Admin",
