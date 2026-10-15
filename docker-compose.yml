@@ -15,5 +15,23 @@ services:
     volumes:
       - ${DATA_PATH:-guestroll-data}:/data
 
+  # One-click updates from the admin (optional): `docker compose --profile updater up -d`,
+  # with UPDATER_TOKEN and UPDATER_URL=http://updater:9900 in .env. It holds the
+  # Docker socket, which is root on this host: it has no published port, needs the
+  # token, and only ever replaces the guestroll container with a newer guestroll image.
+  updater:
+    image: ${GUESTROLL_IMAGE:-ghcr.io/achedon12/guestroll:latest}
+    profiles: ["updater"]
+    restart: unless-stopped
+    entrypoint: ["node", "/app/updater/server.mjs"]
+    environment:
+      UPDATER_TOKEN: ${UPDATER_TOKEN:-}
+      UPDATER_CONTAINER: ${CONTAINER_NAME:-guestroll}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    # The image's health check probes the app's port, which the updater doesn't serve.
+    healthcheck:
+      disable: true
+
 volumes:
   guestroll-data:

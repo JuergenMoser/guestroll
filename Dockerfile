@@ -50,6 +50,8 @@ COPY --from=build /app/.next/static ./.next/static
 COPY --from=build /app/drizzle ./drizzle
 COPY docker/entrypoint.sh /usr/local/bin/guestroll-entrypoint
 COPY docker/fonts.conf /app/fonts.conf
+# The optional updater (docker-compose profile "updater") runs from this same image.
+COPY updater ./updater
 
 VOLUME ["/data"]
 EXPOSE 3000

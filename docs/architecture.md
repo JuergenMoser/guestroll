@@ -72,6 +72,16 @@ Two rules keep this maintainable:
   `lib/qr/render.ts`, `lib/i18n/messages.ts`). Server-only modules import
   `server-only` so a mistake fails the build.
 
+## Updater
+
+`updater/` is a separate, dependency-free Node program shipped in the same
+image (`docker-compose` profile `updater`). `docker.mjs` speaks the Docker
+Engine API over the socket, `update.mjs` replaces a container with the same
+one on a new image (keeping its own settings, not its old image's defaults)
+and rolls back when the health check fails, `server.mjs` takes the app's
+token-authenticated requests. The app side is `src/lib/updates.ts` (GitHub
+checks, update history) and `src/lib/updater.ts` (the client).
+
 ## Data
 
 | Table | Holds |

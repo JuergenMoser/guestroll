@@ -10,7 +10,7 @@ import * as schema from "./schema";
 export type Db = BetterSQLite3Database<typeof schema> & { $client: Database.Database };
 
 // Survives Next's dev hot reloads, which would otherwise open a new handle per edit.
-const globalForDb = globalThis as unknown as { guestrollDb?: Db };
+const globalForDb = globalThis as unknown as { guestrollDb?: Db; guestrollMigrationsApplied?: string[] };
 
 function open(): Db {
   fs.mkdirSync(config.dataDir, { recursive: true });
@@ -23,9 +23,33 @@ function open(): Db {
   sqlite.pragma("busy_timeout = 5000");
 
   const db = drizzle(sqlite, { schema });
+  const before = appliedCount(sqlite);
   migrate(db, { migrationsFolder: path.join(process.cwd(), "drizzle") });
+  // Which migrations this start applied, for the admin's update history.
+  const journal = readJournal();
+  globalForDb.guestrollMigrationsApplied = journal.slice(before, appliedCount(sqlite));
   return db;
 }
+
+function appliedCount(sqlite: Database.Database): number {
+  try {
+    return (sqlite.prepare("select count(*) as n from __drizzle_migrations").get() as { n: number }).n;
+  } catch {
+    return 0;
+  }
+}
+
+function readJournal(): string[] {
+  try {
+    const journal = JSON.parse(fs.readFileSync(path.join(process.cwd(), "drizzle/meta/_journal.json"), "utf8")) as { entries: { tag: string }[] };
+    return journal.entries.map((e) => e.tag);
+  } catch {
+    return [];
+  }
+}
+
+/** Migrations the current process applied when it opened the database (empty when it was up to date). */
+export const migrationsAppliedAtStart = (): string[] => globalForDb.guestrollMigrationsApplied ?? [];
 
 let migratedThisModule = false;
 

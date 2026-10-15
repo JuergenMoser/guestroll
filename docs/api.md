@@ -109,6 +109,9 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | `GET /api/admin/backup[?download=1]` | | Owners: `{ files, bytes, storage, retentionDays }`, or the backup ZIP |
 | `POST /api/admin/backup/restore` | the ZIP as the body | `{ ok, manifest }`; `400 { details: { file } }` if refused |
 | `PUT /api/admin/backup/retention` | `{ days }`: 0, or 14 to 3650 | `{ retentionDays }` |
+| `GET /api/admin/updates` | | Owners: `{ current, latest, available, checkEnabled, history, updater }` |
+| `POST /api/admin/updates/check` | | `{ available }`, or `502` when GitHub can't be reached |
+| `POST /api/admin/updates/apply` | `{ version, skipBackup? }` (the available version only) | `202 { job, backup }`; `409/502` if the backup or the updater fails |
 | `GET /api/admin/stats[?eventId=]` | | Totals, time series, top guests |
 | `GET /api/admin/events/:id/messages?status=&before=` | | `{ messages, nextCursor }` |
 | `POST /api/admin/events/:id/messages` | `{ action: "approve"\|"hide"\|"delete", ids }` | `{ changed }` |

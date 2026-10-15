@@ -67,6 +67,12 @@ const en = {
     body: "The automatic backup couldn't be written. Your photos are still there, but there is no fresh copy of them: check where backups go, then run one by hand from the settings.",
     cta: "Open the settings",
   },
+  update: {
+    subject: "{app} {version} is available",
+    title: "Guestroll {version} is out.",
+    body: "This instance runs {current}. The release notes say what changed and what to check; you can update from the settings.",
+    cta: "See the update",
+  },
   storage: {
     subject: "{app}: the disk is {percent}% full",
     title: "Storage is running out.",
@@ -141,6 +147,12 @@ const fr: Strings<MailMessages> = {
     body: "La sauvegarde automatique n'a pas pu être écrite. Vos photos sont toujours là, mais il n'en existe pas de copie récente : vérifiez la destination des sauvegardes, puis lancez-en une à la main depuis les réglages.",
     cta: "Ouvrir les réglages",
   },
+  update: {
+    subject: "{app} {version} est disponible",
+    title: "Guestroll {version} est sorti.",
+    body: "Cette instance tourne en {current}. Les notes de version disent ce qui change et quoi vérifier ; la mise à jour se fait depuis les réglages.",
+    cta: "Voir la mise à jour",
+  },
   storage: {
     subject: "{app} : disque plein à {percent} %",
     title: "L'espace disque s'épuise.",
@@ -212,6 +224,12 @@ const it: Strings<MailMessages> = {
     body: "Non è stato possibile scrivere il backup automatico. Le foto ci sono ancora, ma non ne esiste una copia recente: controlla la destinazione dei backup, poi avviane uno a mano dalle impostazioni.",
     cta: "Apri le impostazioni",
   },
+  update: {
+    subject: "{app} {version} è disponibile",
+    title: "È uscito Guestroll {version}.",
+    body: "Questa istanza usa la {current}. Le note di rilascio dicono cosa cambia e cosa controllare; puoi aggiornare dalle impostazioni.",
+    cta: "Vedi l'aggiornamento",
+  },
   storage: {
     subject: "{app}: disco pieno al {percent}%",
     title: "Lo spazio sta finendo.",
@@ -282,6 +300,12 @@ const es: Strings<MailMessages> = {
     title: "La copia de seguridad automática no se ha hecho.",
     body: "No se ha podido escribir la copia automática. Tus fotos siguen ahí, pero no hay una copia reciente: revisa el destino de las copias y lanza una a mano desde los ajustes.",
     cta: "Abrir los ajustes",
+  },
+  update: {
+    subject: "{app} {version} está disponible",
+    title: "Ha salido Guestroll {version}.",
+    body: "Esta instancia usa la {current}. Las notas de la versión dicen qué cambia y qué revisar; puedes actualizar desde los ajustes.",
+    cta: "Ver la actualización",
   },
   storage: {
     subject: "{app}: disco al {percent} %",

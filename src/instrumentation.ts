@@ -4,6 +4,9 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     const { bootstrapAdmin } = await import("@/lib/auth/admin");
     bootstrapAdmin();
+    const { recordStartup } = await import("@/lib/updates");
+    const update = recordStartup();
+    if (update) console.log(`[updates] ${update.from} → ${update.to}, migrations applied: ${update.migrations.join(", ") || "none"}`);
     const { storage } = await import("@/lib/storage");
     const { checkBucket } = await import("@/lib/storage/s3");
     const driver = storage();

@@ -157,6 +157,11 @@ event name to confirm.
   code, or ask an owner to reset it from **Accounts**.
 - **Password**: changing it signs out your other sessions. Not available for
   the account set by `ADMIN_PASSWORD`: change the variable and restart instead.
+- **Updates** (owners): the version you run, the newest one with its release
+  notes, **Check now**, and, with the updater container, **Update to X.Y.Z**:
+  a backup, the new image, a health check, the old one back if anything goes
+  wrong. The history lists every update and the database migrations it
+  applied. A line under the navigation tells owners when a version is out.
 - **Accounts** (owners): add people and pick their role.
 
   | Role | Can |

@@ -54,6 +54,18 @@ whatever the settings: this is a design decision, not an option.
 - Generated passwords (`xxxx-xxxx-xxxx-xxxx`, ~82 bits) are shown once and
   never stored in clear.
 
+## Updates
+
+- The update check is one anonymous `GET` to GitHub's API every 12 hours
+  (`UPDATE_CHECK=false` turns it off). Nothing about the instance is sent.
+- The optional updater holds the Docker socket, which is root on the host. It
+  publishes no port, requires a 24+ character token compared in constant time,
+  accepts only a `x.y.z` version, only ever replaces `UPDATER_CONTAINER`, and
+  only pulls that container's own image repository at the requested version.
+  The app only asks it for the version GitHub announced, after a backup.
+- A new version that doesn't pass its health check is replaced by the previous
+  container automatically.
+
 ## Backups
 
 - Only owners download or restore backups. A backup holds everything,

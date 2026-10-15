@@ -148,12 +148,45 @@ Copying the folder while the container is stopped works just as well.
 
 ## Upgrades
 
+Guestroll checks GitHub for new releases every 12 hours. When one is out, the
+owners get an email (and the webhooks subscribed to *A new version is
+available*), and **Admin → Settings → Updates** shows its release notes.
+
+### From the admin, in one click
+
+Like Matomo's: **Update to X.Y.Z** makes a full backup, then replaces the
+running container with the same one on the new image (volumes, ports,
+networks, variables, restart policy kept), waits for its health check, and
+puts the previous container back if the new one doesn't come up healthy.
+Database migrations run on their own at start; the update history lists the
+ones each update applied.
+
+It needs the small **updater** container next to Guestroll, because a
+container can't replace itself:
+
+```bash
+# .env
+UPDATER_URL=http://updater:9900
+UPDATER_TOKEN=$(openssl rand -hex 32)   # paste the value
+
+docker compose --profile updater up -d
+```
+
+The updater holds the Docker socket, which gives root on the host. It publishes
+no port, answers only with the token, only ever replaces the Guestroll
+container, and only pulls new versions of that container's own image. Leave it
+off if you'd rather not run anything with the socket: updates then stay a
+command.
+
+### From the server
+
 ```bash
 docker compose pull && docker compose up -d
 ```
 
-Database migrations run on startup. Read the release notes before a major
-version bump, and take a backup first.
+Either way, read the release notes' **Upgrading** list first. Every release is
+tested by starting it on the data of the previous one (see
+[Development](development.md#upgrades)).
 
 ## Health check
 

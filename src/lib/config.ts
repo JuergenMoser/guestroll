@@ -120,6 +120,13 @@ export const config = {
       forcePathStyle: bool("BACKUP_S3_FORCE_PATH_STYLE", true),
     },
   },
+  /** Ask GitHub every 12 hours whether a newer release exists. */
+  updateCheck: bool("UPDATE_CHECK", true),
+  /** The optional updater container (docker-compose profile `updater`): where it listens, and the token they share. */
+  updater: {
+    url: process.env.UPDATER_URL?.replace(/\/+$/, "") || "",
+    token: process.env.UPDATER_TOKEN || "",
+  },
   /** Time zone of scheduled backups (and of stats): the container's TZ. */
   timeZone: process.env.TZ?.trim() || "UTC",
 

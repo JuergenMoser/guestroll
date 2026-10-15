@@ -114,6 +114,18 @@ voice note, and the generated session secret.
 A failed backup emails the owners and the instance address, and notifies
 webhooks subscribed to *A scheduled backup failed*.
 
+## Updates
+
+| Variable | Default | Description |
+|---|---|---|
+| `UPDATE_CHECK` | `true` | Ask GitHub every 12 hours for the latest release and tell the owners about new ones. `false` makes no outbound call. |
+| `UPDATER_URL` | *(none)* | Where the updater container answers, `http://updater:9900` with the bundled compose file. Turns on one-click updates. |
+| `UPDATER_TOKEN` | *(none)* | A long random secret shared by the app and the updater (24+ characters). |
+
+The updater itself reads `UPDATER_TOKEN`, `UPDATER_CONTAINER` (the container to
+replace, `guestroll` by default) and `UPDATER_PORT` (`9900`). See
+[Deployment](deployment.md#upgrades).
+
 ## Email
 
 Optional. Without SMTP, everything else works and no email is ever sent.

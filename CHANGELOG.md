@@ -23,6 +23,12 @@ always run on their own at startup; take a backup first all the same
 - Scheduled backups (node-cron) to a folder or an S3 bucket, with rotation,
   a list to download or restore from, and an alert when one fails.
 
+- Update notifications: the admin shows new releases with their notes; owners
+  get an email and a webhook once per version.
+- One-click updates from the admin with the optional updater container: a
+  backup, the new image, a health check, automatic rollback, and an update
+  history listing the migrations each update applied.
+
 ### Security
 
 - Every page carries a nonce-based Content-Security-Policy.

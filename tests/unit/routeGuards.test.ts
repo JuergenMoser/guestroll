@@ -49,7 +49,7 @@ describe("admin guards", () => {
   });
 
   it("instance-wide routes are for owners only", () => {
-    for (const dir of ["api/admin/mail", "api/admin/accounts", "api/admin/webhooks", "api/admin/backup"]) {
+    for (const dir of ["api/admin/mail", "api/admin/accounts", "api/admin/webhooks", "api/admin/backup", "api/admin/updates"]) {
       for (const route of files(path.join(root, dir), "route.ts")) {
         const source = fs.readFileSync(route, "utf8");
         const handlers = source.match(/export async function (GET|POST|PATCH|DELETE|PUT)/g) ?? [];

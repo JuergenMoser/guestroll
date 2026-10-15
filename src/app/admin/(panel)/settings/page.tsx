@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/admin/PageHeader";
 import { PasswordForm } from "@/components/admin/PasswordForm";
 import { ProfileForm } from "@/components/admin/ProfileForm";
 import { TwoFactorCard } from "@/components/admin/TwoFactorCard";
+import { UpdatesCard } from "@/components/admin/UpdatesCard";
 import { LanguagePicker } from "@/components/LanguagePicker";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardTitle } from "@/components/ui";
@@ -45,6 +46,7 @@ export default async function SettingsPage() {
       <TwoFactorCard />
       {owner && (
         <>
+          <UpdatesCard locale={locale} />
           <AccountsPanel selfId={admin.id} events={listEvents(admin.scope).map((e) => ({ id: e.id, name: e.name }))} locale={locale} />
           <MailSettings locale={locale} />
           <WebhookSettings locale={locale} />

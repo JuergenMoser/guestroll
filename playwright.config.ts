@@ -49,6 +49,8 @@ export default defineConfig({
       SMTP_FROM: "Guestroll <photos@example.test>",
       ADMIN_EMAIL: "host@example.test",
       PUBLIC_URL: `http://127.0.0.1:${PORT}`,
+      // No calls to GitHub from test runs.
+      UPDATE_CHECK: "false",
     },
   },
 });

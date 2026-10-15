@@ -210,3 +210,12 @@ export function backupFailedMail(c: Common & { url: string; error: string }): Re
     cta: { label: m.backupFailed.cta, url: c.url },
   });
 }
+
+export function updateAvailableMail(c: Common & { url: string; version: string; current: string }): RenderedMail {
+  const m = mailMessages[c.locale];
+  return make(m, c, fill(m.update.subject, { app: c.app, version: c.version }), {
+    title: fill(m.update.title, { version: c.version }),
+    paragraphs: [fill(m.update.body, { version: c.version, current: c.current })],
+    cta: { label: m.update.cta, url: c.url },
+  });
+}
