@@ -1,8 +1,25 @@
-import { defineConfig } from "vitest/config";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { defineConfig } from "vitest/config";
+
+const root = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
-  resolve: { alias: { "@": path.resolve(path.dirname(fileURLToPath(import.meta.url)), "src") } },
-  test: { environment: "node", include: ["tests/**/*.test.ts"] },
+  resolve: {
+    alias: {
+      "@": path.resolve(root, "src"),
+      "server-only": path.resolve(root, "tests/helpers/server-only.ts"),
+    },
+  },
+  test: {
+    environment: "node",
+    include: ["tests/unit/**/*.test.ts", "tests/integration/**/*.test.ts"],
+    // Integration tests open real SQLite files and run sharp: give them room.
+    testTimeout: 30_000,
+    coverage: {
+      provider: "v8",
+      include: ["src/lib/**"],
+      reporter: ["text-summary", "lcov"],
+    },
+  },
 });

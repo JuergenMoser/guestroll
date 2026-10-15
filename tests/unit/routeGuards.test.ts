@@ -7,7 +7,7 @@ import { describe, expect, it } from "vitest";
  * here instead of shipping. Next renders layouts and pages in parallel, so the
  * layout check alone is not enough.
  */
-const root = path.resolve(__dirname, "../src/app");
+const root = path.resolve(__dirname, "../../src/app");
 
 function files(dir: string, name: string): string[] {
   return fs.readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
