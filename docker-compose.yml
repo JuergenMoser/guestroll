@@ -1,0 +1,20 @@
+# Minimal production setup. Put a TLS-terminating reverse proxy in front
+# (Caddy, Traefik, nginx…): phone cameras only open on HTTPS pages.
+services:
+  guestroll:
+    image: achedon12/guestroll:latest
+    container_name: guestroll
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      PUBLIC_URL: https://photos.example.com
+      ADMIN_PASSWORD: change-me-please
+      DEFAULT_LOCALE: en
+      # Set to true only when a reverse proxy you control sets X-Forwarded-For.
+      TRUST_PROXY: "false"
+    volumes:
+      - guestroll-data:/data
+
+volumes:
+  guestroll-data:
