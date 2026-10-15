@@ -1,0 +1,50 @@
+import "server-only";
+import { cookies } from "next/headers";
+import { getIronSession, type SessionOptions } from "iron-session";
+import { config } from "@/lib/config";
+import { newId } from "@/lib/security/ids";
+import { sessionSecret } from "./secret";
+
+export interface AdminSession {
+  isAdmin?: boolean;
+  /** Bumped on password change so every older admin cookie stops working. */
+  passwordVersion?: number;
+}
+
+export interface GuestSession {
+  guestId?: string;
+  name?: string;
+  /** Events whose access code this browser has entered. */
+  unlocked?: string[];
+}
+
+const ADMIN_TTL_SECONDS = 12 * 60 * 60;
+const GUEST_TTL_SECONDS = 30 * 24 * 60 * 60;
+
+function options(cookieName: string, ttl: number): SessionOptions {
+  return {
+    cookieName,
+    password: sessionSecret(),
+    ttl,
+    cookieOptions: {
+      httpOnly: true,
+      secure: config.secureCookies,
+      sameSite: "lax",
+      path: "/",
+    },
+  };
+}
+
+export async function getAdminSession() {
+  return getIronSession<AdminSession>(await cookies(), options("gr_admin", ADMIN_TTL_SECONDS));
+}
+
+export async function getGuestSession() {
+  return getIronSession<GuestSession>(await cookies(), options("gr_guest", GUEST_TTL_SECONDS));
+}
+
+/** Returns the guest id, minting one on first visit. Callers must `save()` the session. */
+export function ensureGuestId(session: GuestSession): string {
+  session.guestId ??= newId();
+  return session.guestId;
+}
