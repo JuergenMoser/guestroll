@@ -19,7 +19,7 @@ RUN npm run build
 # ---- runtime: bare Alpine + the node binary + the standalone server ----
 # Starting from alpine instead of node:alpine drops npm, yarn and corepack
 # (~40 MB the server never uses): files deleted in a later layer would still ship.
-FROM alpine:3.22 AS runtime
+FROM alpine:3.24 AS runtime
 WORKDIR /app
 COPY --from=deps /usr/local/bin/node /usr/local/bin/node
 
