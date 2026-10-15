@@ -5,11 +5,7 @@ import { getViewer } from "@/lib/auth/viewer";
 import { config } from "@/lib/config";
 import { getEventBySlug } from "@/lib/events";
 import { apiError, rateLimited } from "@/lib/http";
-import {
-  InvalidImageError,
-  processPhoto,
-  type ProcessedPhoto,
-} from "@/lib/images/process";
+import { ImageQueueFullError, InvalidImageError, processPhoto, type ProcessedPhoto } from "@/lib/images/process";
 import {
   countGuestPhotos,
   insertPhoto,
@@ -20,7 +16,7 @@ import { canEnterEvent, uploadState, type Viewer } from "@/lib/policy";
 import { readChallenges } from "@/lib/challenges";
 import type { EventRow } from "@/lib/db/schema";
 import { newId } from "@/lib/security/ids";
-import { limiters, takeUploadSlot, uploadLocks } from "@/lib/security/limiters";
+import { limiters, uploadLocks } from "@/lib/security/limiters";
 import {
   BodyTooLargeError,
   clientIp,
@@ -100,13 +96,7 @@ export async function POST(
     }
     if (await storageFull()) return apiError("storage_full");
 
-    const release = takeUploadSlot();
-    if (!release) return rateLimited(2_000);
-    try {
-      return await receive(request, event, guestId, session, viewer);
-    } finally {
-      release();
-    }
+    return await receive(request, event, guestId, session, viewer);
   } finally {
     uploadLocks.delete(guestId);
   }
@@ -150,6 +140,8 @@ async function receive(
     processed = await processPhoto(Buffer.from(await file.arrayBuffer()));
   } catch (error) {
     if (error instanceof InvalidImageError) return apiError("invalid_image");
+    // The guest's queue retries on its own: busy, not broken.
+    if (error instanceof ImageQueueFullError) return rateLimited(2_000);
     throw error;
   }
 

@@ -3,7 +3,9 @@ import { and, asc, desc, eq, lte, sql } from "drizzle-orm";
 import { config } from "@/lib/config";
 import { getDb } from "@/lib/db/client";
 import { webhookDeliveries, type WebhookDeliveryRow } from "@/lib/db/schema";
-import { assertPublicUrl } from "@/lib/security/addresses";
+import { request as httpRequest } from "node:http";
+import { request as httpsRequest } from "node:https";
+import { assertPublicHost, publicLookup } from "@/lib/security/addresses";
 import { newId } from "@/lib/security/ids";
 import { formatWebhook, type HttpRequest } from "./format";
 import { getWebhook, webhooksFor, type Webhook } from "./settings";
@@ -14,11 +16,27 @@ const MAX_ATTEMPTS = BACKOFF_MS.length + 1;
 
 export type HttpSend = (request: HttpRequest) => Promise<void>;
 
-export const httpSend: HttpSend = async ({ url, headers, body }) => {
-  if (!config.webhookAllowPrivate) await assertPublicUrl(url);
-  const res = await fetch(url, { method: "POST", headers, body, redirect: "error", signal: AbortSignal.timeout(10_000) });
-  if (!res.ok) throw new Error(`HTTP ${res.status}${res.statusText ? ` ${res.statusText}` : ""}`);
-};
+/**
+ * node:http rather than fetch: only it lets the connection use our own DNS
+ * lookup, which refuses internal addresses for the very IP it connects to.
+ * Redirects aren't followed (a 3xx is a failure), 10 seconds in all.
+ */
+export const httpSend: HttpSend = ({ url, headers, body }) =>
+  new Promise<void>((resolve, reject) => {
+    const target = new URL(url);
+    const guarded = !config.webhookAllowPrivate;
+    if (guarded) assertPublicHost(target);
+    const send = target.protocol === "https:" ? httpsRequest : httpRequest;
+    const req = send(target, { method: "POST", headers: { ...headers, "Content-Length": Buffer.byteLength(body) }, timeout: 10_000, ...(guarded ? { lookup: publicLookup } : {}) }, (res) => {
+      res.resume();
+      const status = res.statusCode ?? 0;
+      if (status >= 200 && status < 300) resolve();
+      else reject(new Error(`HTTP ${status}${res.statusMessage ? ` ${res.statusMessage}` : ""}`));
+    });
+    req.on("timeout", () => req.destroy(new Error("Timed out after 10 s")));
+    req.on("error", reject);
+    req.end(body);
+  });
 
 /**
  * Queues the notice for every enabled webhook subscribed to its kind. With a

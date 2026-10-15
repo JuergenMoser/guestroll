@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { setLogoVersion, toAdminEvent } from "@/lib/events";
-import { apiError, requireEventAdmin } from "@/lib/http";
-import { InvalidImageError, processLogo } from "@/lib/images/process";
+import { apiError, rateLimited, requireEventAdmin } from "@/lib/http";
+import { ImageQueueFullError, InvalidImageError, processLogo } from "@/lib/images/process";
 import { BodyTooLargeError, readBodyCapped } from "@/lib/security/request";
 import { deleteLogo, writeLogo } from "@/lib/storage/files";
 
@@ -27,6 +27,7 @@ export async function POST(request: Request, { params }: Context) {
     await writeLogo(event.id, await processLogo(Buffer.from(await file.arrayBuffer())));
   } catch (error) {
     if (error instanceof InvalidImageError) return apiError("invalid_image");
+    if (error instanceof ImageQueueFullError) return rateLimited(2_000);
     throw error;
   }
   return NextResponse.json({ event: toAdminEvent(setLogoVersion(event.id, Date.now())!) });

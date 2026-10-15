@@ -84,11 +84,11 @@ whatever the settings: this is a design decision, not an option.
 - Requests are plain `POST`s with a 10-second timeout and no redirects
   followed. They go to public addresses only: a URL whose host is or resolves
   to a private, loopback or link-local address (the server itself, the local
-  network, cloud metadata, the updater) fails with a message saying so. To
-  reach a Home Assistant or ntfy on your own network, set
-  `WEBHOOK_ALLOW_PRIVATE=true`. The check runs before connecting, so a name
-  that changes its answer in between isn't covered: owners remain trusted with
-  outbound requests.
+  network, cloud metadata, the updater) fails with a message saying so,
+  however the address is written (IPv4 inside IPv6 included). The check is
+  made by the connection's own DNS lookup, on the address it then connects to,
+  so a name can't answer differently in between. To reach a Home Assistant or
+  ntfy on your own network, set `WEBHOOK_ALLOW_PRIVATE=true`.
 - Notices carry event names, counts and admin links, never photos, guest
   emails or message audio.
 
@@ -135,9 +135,11 @@ whatever the settings: this is a design decision, not an option.
 - One upload at a time per guest, so parallel requests from one guest can't
   bypass the per-guest quota. A guest is a cookie, though: a script that drops
   it is a new guest every time. What holds then is the per-event and per-address
-  limits below, at most 6 uploads received at once across the instance (the
-  others are asked to retry; guests' phones do so on their own), and a refusal
-  once the disk has less than 512 MB free.
+  limits below, at most 3 images decoded at once with 12 waiting (past that the
+  upload is asked to retry, which guests' phones do on their own), and a
+  refusal once the disk has less than 512 MB free. The limit applies once a
+  photo is received, not while it is: a slot held during the upload would let a
+  few deliberately slow connections block every guest.
 
 ## Authentication
 
@@ -171,7 +173,7 @@ whatever the settings: this is a design decision, not an option.
 
 | Limit | Default |
 |---|---|
-| Admin login | 5 wrong passwords per minute per address and username, 30 per minute per username, 30 attempts per minute per address |
+| Admin login | 5 wrong passwords per minute per address and username, 30 attempts per minute per address (behind `TRUST_PROXY`) |
 | Access code | 10 attempts per minute per guest, 30 wrong codes per minute per event, in-flight guesses included |
 | Uploads | 30 per minute per guest, 300 per event, 120 per address (behind `TRUST_PROXY`), plus the per-guest quota |
 | Guestbook | 10 messages per minute per guest, 60 per event, 30 per address (behind `TRUST_PROXY`) |
@@ -180,7 +182,9 @@ whatever the settings: this is a design decision, not an option.
 
 Wrong codes and passwords are counted before they are checked, then given back
 when they turn out right: a burst of parallel guesses all counts. A successful
-sign-in only clears the limits of the account that signed in.
+sign-in only clears the limits of the account that signed in. There is no
+ceiling per username across addresses: anyone could then lock a known account
+out from anywhere.
 
 Without `TRUST_PROXY`, every client looks like the same address to the app, so
 per-address limits are shared by everyone; behind a reverse proxy, turn it on.

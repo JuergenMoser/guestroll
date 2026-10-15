@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import sharp from "sharp";
 import { describe, expect, it } from "vitest";
 import { config } from "@/lib/config";
-import { InvalidImageError, processLogo, processPhoto } from "@/lib/images/process";
+import { ImageQueueFullError, InvalidImageError, processLogo, processPhoto } from "@/lib/images/process";
 import { jpeg, png } from "../helpers/images";
 
 describe("processPhoto", () => {
@@ -55,6 +55,16 @@ describe("processPhoto", () => {
     const inputs = await Promise.all(Array.from({ length: 8 }, () => png(200, 150)));
     const outs = await Promise.all(inputs.map((i) => processPhoto(i)));
     expect(outs.every((o) => o.width === 200)).toBe(true);
+  });
+
+  it("asks the 16th of a burst to come back later instead of queueing without end", async () => {
+    const inputs = await Promise.all(Array.from({ length: 16 }, () => png(200, 150)));
+    const results = await Promise.allSettled(inputs.map((i) => processPhoto(i)));
+    const refused = results.filter((r) => r.status === "rejected");
+    expect(refused).toHaveLength(1);
+    expect((refused[0] as PromiseRejectedResult).reason).toBeInstanceOf(ImageQueueFullError);
+    // The queue drained: the next one goes through.
+    expect((await processPhoto(inputs[0])).width).toBe(200);
   });
 
   it("rejects files that aren't images, whatever they claim to be", async () => {

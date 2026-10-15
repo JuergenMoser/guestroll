@@ -28,10 +28,13 @@ function create() {
      * published one) reset the budget between guesses at the owner's password.
      */
     login: new RateLimiter(config.rateLimit.loginPerMinute, MINUTE),
-    // Every attempt from one address, successes included: never reset.
+    /**
+     * Every attempt from one address, successes included: never reset. Only for a
+     * real address (behind TRUST_PROXY): without it every client is "direct", and
+     * one script would lock every admin out. No per-username ceiling either, for
+     * the same reason: anyone could lock a known account out from anywhere.
+     */
     loginPerIp: new RateLimiter(config.rateLimit.loginPerMinute * 6, MINUTE),
-    // Wrong passwords per username from anywhere: guesses spread over many addresses.
-    loginPerAccount: new RateLimiter(config.rateLimit.loginPerMinute * 6, MINUTE),
     // Second step, per account: six digits are guessable without a ceiling.
     twoFactor: new RateLimiter(5, MINUTE),
     // Setting it up or off from the settings, per account: its own budget, so a
@@ -77,26 +80,3 @@ const globalForLocks = globalThis as unknown as {
 export const uploadLocks = (globalForLocks.guestrollUploadLocks ??=
   new Set<string>());
 
-const globalForSlots = globalThis as unknown as {
-  guestrollUploadSlots?: { busy: number };
-};
-const slots = (globalForSlots.guestrollUploadSlots ??= { busy: 0 });
-
-/**
- * Uploads being received at once, across all guests. Each holds up to three
- * copies of a 25 MB body while it is read and decoded: past this, the next one
- * is asked to retry in a moment (the guest's queue does so on its own) instead
- * of the server running out of memory.
- */
-export const MAX_UPLOADS_AT_ONCE = 6;
-
-export function takeUploadSlot(): (() => void) | null {
-  if (slots.busy >= MAX_UPLOADS_AT_ONCE) return null;
-  slots.busy++;
-  let released = false;
-  return () => {
-    if (released) return;
-    released = true;
-    slots.busy--;
-  };
-}

@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { config } from "@/lib/config";
-import { apiError, requireEventAdmin } from "@/lib/http";
-import { InvalidImageError, processPhoto } from "@/lib/images/process";
+import { apiError, rateLimited, requireEventAdmin } from "@/lib/http";
+import { ImageQueueFullError, InvalidImageError, processPhoto } from "@/lib/images/process";
 import { insertPhoto, toPhotoDto } from "@/lib/photos";
 import { newId } from "@/lib/security/ids";
 import { BodyTooLargeError, readBodyCapped } from "@/lib/security/request";
@@ -35,6 +35,7 @@ export async function POST(request: Request, { params }: RouteContext<"/api/admi
     processed = await processPhoto(Buffer.from(await file.arrayBuffer()));
   } catch (error) {
     if (error instanceof InvalidImageError) return apiError("invalid_image");
+    if (error instanceof ImageQueueFullError) return rateLimited(2_000);
     throw error;
   }
 

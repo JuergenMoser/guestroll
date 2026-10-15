@@ -37,14 +37,24 @@ async function decodeHeic(input: Buffer): Promise<ReturnType<typeof sharp>> {
   }
 }
 
+/** Too many images already waiting: the caller asks the client to come back shortly. */
+export class ImageQueueFullError extends Error {}
+
 // Decoding and re-encoding take a few hundred MB for the largest photos: past a
-// handful at once, a burst of uploads would exhaust the server's memory.
+// handful at once, a burst of uploads would exhaust the server's memory. The
+// limit sits here, once the body is received, and not around receiving it: a
+// slot held while a client trickles its upload in let six slow connections
+// block every guest of the instance.
 const MAX_CONCURRENT = 3;
+const MAX_WAITING = 12;
 let running = 0;
 const waiting: (() => void)[] = [];
 
 async function withSlot<T>(work: () => Promise<T>): Promise<T> {
-  if (running >= MAX_CONCURRENT) await new Promise<void>((resolve) => waiting.push(resolve));
+  if (running >= MAX_CONCURRENT) {
+    if (waiting.length >= MAX_WAITING) throw new ImageQueueFullError("Too many images waiting");
+    await new Promise<void>((resolve) => waiting.push(resolve));
+  }
   running++;
   try {
     return await work();
