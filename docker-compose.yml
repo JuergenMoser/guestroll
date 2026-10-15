@@ -1,20 +1,19 @@
-# Minimal production setup. Put a TLS-terminating reverse proxy in front
-# (Caddy, Traefik, nginx…): phone cameras only open on HTTPS pages.
+# Production setup. Every setting comes from `.env` (copy .env.example):
+#   cp .env.example .env && docker compose up -d
+#
+# Put a TLS-terminating reverse proxy in front (Caddy, Traefik, nginx…):
+# phone cameras only open on HTTPS pages. See docs/deployment.md.
 services:
   guestroll:
-    image: achedon12/guestroll:latest
-    container_name: guestroll
+    image: ${GUESTROLL_IMAGE:-achedon12/guestroll:latest}
+    container_name: ${CONTAINER_NAME:-guestroll}
     restart: unless-stopped
+    env_file: .env
     ports:
-      - "3000:3000"
-    environment:
-      PUBLIC_URL: https://photos.example.com
-      ADMIN_PASSWORD: change-me-please
-      DEFAULT_LOCALE: en
-      # Set to true only when a reverse proxy you control sets X-Forwarded-For.
-      TRUST_PROXY: "false"
+      # HOST_BIND=127.0.0.1 keeps it reachable only through the local reverse proxy.
+      - "${HOST_BIND:-0.0.0.0}:${HOST_PORT:-3000}:${PORT:-3000}"
     volumes:
-      - guestroll-data:/data
+      - ${DATA_PATH:-guestroll-data}:/data
 
 volumes:
   guestroll-data:
