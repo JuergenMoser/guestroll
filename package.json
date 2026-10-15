@@ -16,7 +16,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
-    "seed:demo": "node scripts/seed-demo.mjs"
+    "seed:demo": "node scripts/seed-demo.mjs",
+    "screenshots": "node scripts/brand/compose-screenshots.mjs"
   },
   "dependencies": {
     "archiver": "^7.0.1",
@@ -49,6 +50,7 @@
     "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",
     "eslint-config-next": "^16.4.1",
+    "puppeteer-core": "^25.14.0",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
     "vitest": "^5.0.4"
