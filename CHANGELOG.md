@@ -61,6 +61,12 @@ always run on their own at startup; take a backup first all the same
 - Demo mode (`DEMO_MODE=true`): seeded events, a shared account, a nightly
   reset, nothing sent out. `docker-compose.demo.yml` runs one.
 
+### Fixed
+
+- The live wall's mosaic and grid showed photos cropped to a square (frames
+  and edges cut off): they are now shown whole, over a blurred copy that fills
+  the tile.
+
 ### Changed
 
 - Settings are split into five areas (account, team, notifications, data,

@@ -209,7 +209,10 @@ function TileWall({ layout, photos, caption }: { layout: "mosaic" | "grid"; phot
         const text = caption(photo);
         return (
           <li key={photo.id} className={cn("relative min-h-0 animate-[wall-in_700ms_ease-out] overflow-hidden rounded-lg bg-white/5", layout === "mosaic" && i === 0 && "col-span-2 row-span-2")}>
-            <img src={mediaUrl(photo.id, layout === "mosaic" && i === 0 ? "display" : "thumb")} alt="" className="size-full object-cover" />
+            {/* The whole photo, never cropped: the thumbnail is a square crop, so the display
+                copy is shown fitted, over a blurred copy of itself that fills the tile. */}
+            <img src={mediaUrl(photo.id, "thumb")} alt="" className="absolute inset-0 size-full scale-110 object-cover opacity-40 blur-xl" />
+            <img src={mediaUrl(photo.id, "display")} alt="" className="relative size-full object-contain" />
             {text && (
               <span className="absolute inset-x-0 bottom-0 truncate bg-gradient-to-t from-black/80 to-transparent px-3 pt-8 pb-2 text-[clamp(0.9rem,1.8vh,1.4rem)] font-semibold">
                 {text}
