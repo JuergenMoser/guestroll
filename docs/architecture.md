@@ -79,7 +79,10 @@ Two rules keep this maintainable:
 | `events` | Settings, access-code hash, QR style (JSON), logo version |
 | `photos` | One row per photo: event, guest id, optional name, size, status, download count |
 | `activity` | Append-only log behind every stat (view, upload, download, failed code…) |
-| `settings` | Key/value: admin password hash and its version |
+| `settings` | Key/value: admin password hash and its version, SMTP (password sealed), alert choices |
+| `share_links` | Gallery links: token, password hash, expiry, downloads switch, views, revocation |
+| `guest_contacts` | Opt-in guest emails, one per guest and event, deleted with the event |
+| `outbox` | Email queue: rendered message, state, attempts, next retry, dedupe key |
 
 Guests have no table: a guest is a random id in their cookie. Their name is
 copied onto each photo they send.
@@ -88,6 +91,11 @@ Files: `uploads/<event-id>/<photo-id>.{original.jpg,display.webp,thumb.webp}`
 and `uploads/<event-id>/logo.png`.
 
 ## Choices worth knowing
+
+- **Email goes through a queue in SQLite**, drained by an in-process scheduler
+  (`src/lib/scheduler.ts`, started from `instrumentation.ts`). An SMTP outage
+  never fails a request, and each email has a dedupe key so a retried job
+  can't send it twice. Ending an event is claimed atomically on `ended_at`.
 
 - **SQLite in WAL mode** handles a wedding's burst of uploads comfortably and
   makes backups a file copy. The flip side: one process, no horizontal scaling.

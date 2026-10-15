@@ -71,7 +71,9 @@ light and dark themes.
 color and logo; optional access code; moderation (publish then hide, or approve
 first); a **live wall** for a projector; a **QR code designer** whose presets are
 all scan-tested; a printable A4 table card; one-click ZIP of the whole album;
-stats.
+stats; **gallery links** protected by a password; **automatic emails** at
+the end of an event (summary for you, album link for guests who opted in) and
+admin alerts, through your own SMTP server.
 
 | Guest page | Contact sheet | QR code designer |
 |---|---|---|
@@ -105,6 +107,9 @@ Everything is an environment variable; all are optional.
 | `TRUST_PROXY` | `false` | `true` behind a reverse proxy you control |
 | `MAX_UPLOAD_MB` | `25` | Largest accepted photo |
 | `SESSION_SECRET` | generated | 32+ characters; stored in `/data` when generated |
+| `SMTP_HOST` / `SMTP_PORT` | none / `587` | Your SMTP server; turns email on (also settable in the admin) |
+| `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM` | none | Credentials and sender |
+| `ADMIN_EMAIL` | none | Where alerts and event summaries go |
 
 Full reference: [Configuration](https://github.com/achedon12/guestroll/wiki/Configuration).
 

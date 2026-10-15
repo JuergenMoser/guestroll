@@ -34,6 +34,32 @@ whatever the settings: this is a design decision, not an option.
   stops working immediately, e.g. after it leaked on social media.
 - **Optional access code** per event, hashed with bcrypt.
 
+## Gallery links
+
+- A link is a 32-character random token **plus** a password (bcrypt). The
+  token alone shows a password form, nothing else; unknown, expired and revoked
+  links all answer `404`.
+- Unlocking writes the link into a separate encrypted cookie (`gr_share`).
+  Access is re-checked on every request, so revoking or expiring a link stops
+  it immediately, including for browsers that already opened it.
+- Links see visible photos only. Originals and the ZIP need the link's
+  *downloads* switch. A link never grants uploading.
+- Wrong passwords: 10 attempts per minute per IP and link, and a per-link
+  ceiling across all IPs.
+- Generated passwords (`xxxx-xxxx-xxxx-xxxx`, ~82 bits) are shown once and
+  never stored in clear.
+
+## Email
+
+- Guest addresses are **opt-in**, offered only on events whose hosts asked for
+  them, used for that event's album only, and deleted with the event. A guest
+  can remove theirs from the page.
+- The SMTP password set in the admin is encrypted at rest and never sent back
+  to the browser.
+- Every value in an email is HTML-escaped; each email has a plain-text twin.
+- Choosing to keep the password out of guests' emails means a forwarded email
+  doesn't open the album.
+
 ## Uploads
 
 - Files are identified by their bytes, never by name or `Content-Type`; only
@@ -63,6 +89,8 @@ whatever the settings: this is a design decision, not an option.
 | Admin login | 5 attempts per minute per IP |
 | Access code | 10 attempts per minute per guest, 30 wrong codes per minute per event |
 | Uploads | 30 per minute per guest, plus the per-guest quota |
+| Gallery link password | 10 attempts per minute per IP and link |
+| Test email | 5 per minute |
 
 The per-event ceiling on wrong codes is a deliberate trade-off: someone flooding
 wrong codes can make real guests wait up to a minute, but can't brute-force a

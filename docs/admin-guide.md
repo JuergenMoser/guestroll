@@ -61,11 +61,39 @@ useful unit), page views, downloads, wrong access codes and top photographers.
 | Guests | Album language | Automatic (each guest's phone) or one fixed language. Guests can still switch. |
 | | Ask guests for their name | Shown next to their photos in the admin and on the live wall. |
 
+| After the event | Let guests leave their email to get the album | Adds a card on the guest page. Opt-in; addresses are deleted with the event. |
+| | Email me a summary when uploads close | Photos, photographers, views, what's still pending. |
+| | Email guests a gallery link when uploads close | One password-protected link for the event, sent to every address once. |
+| | Link valid for (days) | 0 for a link that never expires. |
+| | Guests can download the photos from the link | Off: the link shows photos but not originals or the ZIP. |
+| | Put the password in the email | Off: guests get the link only, and the password reaches you (summary email and the *End the event* card) so you can pass it on yourself. A forwarded email then isn't enough. |
+
+### Gallery links
+
+In **QR & sharing**, *Gallery links* creates private links to the visible
+photos of the event: for family who weren't there, or for guests afterwards.
+Each link has its own password (yours, or a generated one shown **once**), an
+optional expiry, a downloads switch, and a view counter. **Revoke** cuts it off
+at once, even for someone who already opened it. A gallery link never lets
+anyone upload, and never shows pending or hidden photos.
+
+### End the event
+
+Uploads end on their own at the scheduled closing time; the end-of-event emails
+then go out within a minute. **End the event now** does it immediately. It runs
+once per event: ending again does nothing.
+
 **Danger zone**: deleting an event removes every photo from disk. Type the
 event name to confirm.
 
 ## Settings
 
 - **Language and theme** for your own browser.
+- **Email**: SMTP server (or read-only when set by `SMTP_HOST`), where alerts
+  go, a **Send a test email** button that shows the server's answer, and the
+  last emails with their state. Failed ones can be retried.
+- **Alerts**, each switchable: photos waiting for approval (at most every 30
+  minutes, only when the count grows), an event's end summary, 10+ wrong admin
+  passwords within 15 minutes (at most hourly), disk 90% full (at most daily).
 - **Admin password**: changing it signs out every other session. Not available
   when `ADMIN_PASSWORD` is set: change the variable and restart instead.

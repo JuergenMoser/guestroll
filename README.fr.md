@@ -55,6 +55,9 @@ jamais votre machine.
 - Fermeture programmée des envois, limite de photos par invité, langue par album.
 - ZIP de tout l'album en un clic, diffusé en flux (même pour plusieurs Go).
 - Statistiques : envois dans le temps, vues, téléchargements, stockage, meilleurs photographes.
+- **Liens de galerie** : un lien privé + mot de passe vers l'album, pour la famille ou pour les invités après coup. Expiration, consultation seule ou téléchargement, révocable.
+- **E-mails automatiques** via votre serveur SMTP : à la fermeture des envois, un bilan pour vous et le lien de l'album pour les invités qui l'ont demandé. Vous choisissez ce qui part.
+- Alertes admin : photos en attente de validation, connexions échouées, disque presque plein.
 
 **Pour qui héberge**
 - Un seul conteneur, multi-architecture (`amd64`, `arm64` : un Raspberry Pi suffit).

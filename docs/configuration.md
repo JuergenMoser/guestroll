@@ -72,3 +72,26 @@ Per minute. Upload limits apply per guest, login limits per client IP.
 | `RATE_LIMIT_UPLOADS_PER_MINUTE` | `30` | Photos one guest can send per minute. |
 | `RATE_LIMIT_LOGIN_PER_MINUTE` | `5` | Admin login attempts per IP. |
 | `RATE_LIMIT_UNLOCK_PER_MINUTE` | `10` | Access-code attempts per guest; three times this value is the ceiling for wrong codes on one event, across all guests. |
+
+## Email
+
+Optional. Without SMTP, everything else works and no email is ever sent.
+SMTP can also be set in **Admin → Settings → Email**, where the password is
+stored encrypted (AES-256-GCM, key derived from `SESSION_SECRET`). When
+`SMTP_HOST` is set, the environment wins and the admin form is read-only.
+
+| Variable | Default | Description |
+|---|---|---|
+| `SMTP_HOST` | *(none)* | SMTP server, e.g. `smtp.fastmail.com`. Setting it turns email on. |
+| `SMTP_PORT` | `587` | `587` (STARTTLS) or `465` (TLS). |
+| `SMTP_SECURE` | `false` | `true` for implicit TLS on port 465. |
+| `SMTP_USER` / `SMTP_PASSWORD` | *(none)* | Credentials, when the server asks for them. |
+| `SMTP_FROM` | `SMTP_USER` | Sender, e.g. `Guestroll <photos@example.com>`. |
+| `ADMIN_EMAIL` | *(none)* | Where alerts and event summaries go. Settable in the admin when empty. |
+| `SCHEDULER_INTERVAL_SECONDS` | `60` | How often the background worker sends queued mail, closes scheduled events and checks alerts. `0` turns it off. |
+
+Emails wait in a queue in the database and are retried after 1, 5, 15 minutes,
+1 and 6 hours, then marked failed (Admin → Settings shows them, with a retry
+button). Set `PUBLIC_URL`: links in emails are built from it, since a
+background job has no request to read the host from.
+

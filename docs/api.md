@@ -33,6 +33,19 @@ Authenticated by the `gr_guest` cookie.
 | `GET /api/e/:slug/logo?v=<n>` | | The event logo (PNG), public with the slug |
 | `GET /api/media/:id?v=thumb\|display\|original[&download=1]` | | The image, if the viewer may see it |
 
+| `POST /api/e/:slug/contact` | `{ email }` | `{ email }`. Only on events that collect emails. |
+| `DELETE /api/e/:slug/contact` | | `{ ok }`, the address is deleted |
+
+### Gallery link routes
+
+Authenticated by the `gr_share` cookie, set by `unlock`.
+
+| Route | Body | Response |
+|---|---|---|
+| `POST /api/g/:token/unlock` | `{ password }` | `{ ok }`, or `invalid_code` |
+| `GET /api/g/:token/photos?before=<ms>` | | `{ photos, nextCursor }`, visible photos only; `403` until unlocked |
+| `GET /api/g/:token/archive` | | Streamed ZIP, if the link allows downloads |
+
 ```ts
 interface PhotoDto {
   id: string;
@@ -68,12 +81,22 @@ Authenticated by the `gr_admin` cookie.
 | `POST /api/admin/events/:id/photos` | `{ action: "approve"\|"hide"\|"delete", ids }` | `{ changed }` |
 | `GET /api/admin/events/:id/archive[?all=1]` | | Streamed ZIP; `all=1` includes pending and hidden |
 | `GET /api/admin/stats[?eventId=]` | | Totals, time series, top guests |
+| `GET /api/admin/events/:id/shares` | | `{ shares }` |
+| `POST /api/admin/events/:id/shares` | `{ password?, label?, allowDownload?, expiresInDays? }` | `201 { share, password }`; `password` is the generated one, else `null` |
+| `DELETE /api/admin/events/:id/shares/:shareId` | | `{ ok }`, revoked |
+| `POST /api/admin/events/:id/end` | | `{ event, result }`; `400` if already ended |
+| `GET /api/admin/mail` | | SMTP settings (never the password), alerts, queue |
+| `PUT /api/admin/mail` | `{ smtp?, adminEmail?, alerts? }` | Same as `GET` |
+| `POST /api/admin/mail/test` | `{ to? }` | `{ ok, to }`, or `502 { error: "smtp_failed", message }` |
+| `POST /api/admin/mail/retry` | | `{ requeued, sent, failed }`: failed emails requeued, then the queue is processed |
 
 Event fields: `name`, `description`, `eventDate` (`YYYY-MM-DD`), `accentColor`
 (`#rrggbb`), `accessCode` (string to set, `null` to remove), `uploadsOpen`,
 `uploadsCloseAt` (epoch ms or `null`), `moderation` (`post`|`pre`),
 `captureMode` (`camera`|`picker`|`both`), `askGuestName`, `maxPhotosPerGuest`,
-`defaultLocale` (`en`|`fr`|`it`|`es`|`null`), `qrStyle` (object, see
+`defaultLocale` (`en`|`fr`|`it`|`es`|`null`), `collectGuestEmails`,
+`notifyAdminSummary`, `emailGuestsGallery`, `galleryLinkDays` (0–3650),
+`galleryLinkDownload`, `galleryMailIncludesPassword`, `qrStyle` (object, see
 `src/lib/qr/style.ts`).
 
 ## Health
