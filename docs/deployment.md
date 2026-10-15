@@ -22,7 +22,7 @@ and [Docker Hub](https://hub.docker.com/r/achedon12/guestroll) (`achedon12/guest
 ```yaml
 services:
   guestroll:
-    image: ghcr.io/achedon12/guestroll:1
+    image: ghcr.io/achedon12/guestroll:latest
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000" # only reachable through the reverse proxy

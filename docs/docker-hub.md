@@ -44,7 +44,7 @@ No `ADMIN_PASSWORD`? One is generated on first start and printed once in
 ```yaml
 services:
   guestroll:
-    image: achedon12/guestroll:0.1
+    image: achedon12/guestroll:latest
     restart: unless-stopped
     ports:
       - "127.0.0.1:3000:3000"   # reachable through your reverse proxy only
@@ -84,8 +84,8 @@ admin alerts, through your own SMTP server.
 | Tag | Meaning |
 |---|---|
 | `latest` | Newest release |
-| `0`, `0.1` | Newest release in that major / minor line |
-| `0.1.0` | An exact release: pin this in production |
+| `0`, `0.4` | Newest release in that major / minor line |
+| `0.4.0` | An exact release: pin this in production |
 
 Every tag is multi-arch: `linux/amd64` and `linux/arm64` (a Raspberry Pi 4/5
 works). Images carry provenance and an SBOM. The same tags are published on
