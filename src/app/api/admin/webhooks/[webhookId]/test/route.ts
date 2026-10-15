@@ -17,7 +17,7 @@ export async function POST(request: Request, { params }: RouteContext<"/api/admi
   if (!webhook) return apiError("not_found");
   const m = mailMessages[config.locale].notice;
   try {
-    await sendNow(webhook, { kind: "test", title: m.testTitle.replace("{app}", config.appName), message: m.testBody, url: `${backgroundBaseUrl()}/admin/settings` });
+    await sendNow(webhook, { kind: "test", title: m.testTitle.replace("{app}", config.appName), message: m.testBody, url: `${backgroundBaseUrl()}/admin/settings/notifications#webhooks` });
     return NextResponse.json({ ok: true });
   } catch (error) {
     return NextResponse.json({ ok: false, error: "webhook_failed", message: (error as Error).message.slice(0, 300) }, { status: 502 });

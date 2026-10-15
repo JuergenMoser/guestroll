@@ -3,7 +3,8 @@
 import { ShieldCheck } from "lucide-react";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useT } from "@/components/I18nProvider";
-import { Badge, Button, Card, CardTitle, Field, Input } from "@/components/ui";
+import { Badge, Button, Field, Input } from "@/components/ui";
+import { SettingsSection } from "./settings/SettingsSection";
 import { ApiError, api } from "@/lib/client/api";
 import { CopyField } from "./CopyField";
 
@@ -80,17 +81,23 @@ export function TwoFactorCard() {
 
   if (!status) return null;
   return (
-    <Card className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <CardTitle className="flex items-center gap-2">
-            <ShieldCheck className="size-4" aria-hidden />
-            {t("admin.twoFactor.title")}
-          </CardTitle>
-          <p className="max-w-prose text-sm text-ink-muted">{t("admin.twoFactor.hint")}</p>
-        </div>
-        {status.enabled ? <Badge tone="ok">{t("admin.twoFactor.on")}</Badge> : <Badge>{t("admin.twoFactor.off")}</Badge>}
-      </div>
+    <SettingsSection
+      id="two-factor"
+      title={t("admin.twoFactor.title")}
+      description={t("admin.twoFactor.hint")}
+      aside={
+        <p className="pt-1">
+          {status.enabled ? (
+            <Badge tone="ok">
+              <ShieldCheck className="size-3.5" aria-hidden />
+              {t("admin.twoFactor.on")}
+            </Badge>
+          ) : (
+            <Badge tone="danger">{t("admin.twoFactor.off")}</Badge>
+          )}
+        </p>
+      }
+    >
 
       {codes && (
         <div role="status" className="space-y-3 rounded-lg bg-sunken p-4">
@@ -188,6 +195,6 @@ export function TwoFactorCard() {
           </div>
         </form>
       )}
-    </Card>
+    </SettingsSection>
   );
 }

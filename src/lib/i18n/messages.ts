@@ -221,6 +221,8 @@ const en = {
       retry: "Retry failed emails",
       status: { pending: "Waiting", sent: "Sent", failed: "Failed" },
       notConfigured: "No SMTP server yet: emails are kept in the queue and sent once one is configured.",
+      alertsHint: "Sent to the address above and to the owners. Events' own emails go to their organizers too.",
+      queueHint: "The last emails, retried on their own when the server didn't answer.",
     },
     share: {
       title: "Guest link",
@@ -262,6 +264,8 @@ const en = {
       changed: "Password changed. Other sessions were signed out.",
       managedByEnv: "The password is set by the ADMIN_PASSWORD environment variable. Change it there and restart.",
       about: "About",
+      passwordLead: "Ten characters or more. Changing it signs out your other sessions.",
+      appearanceLead: "For this browser only.",
     },
     qr: {
       title: "QR code design",
@@ -303,6 +307,7 @@ const en = {
       title: "Your account",
       signedInAs: "Signed in as {username}.",
       emailHint: "Summaries and alerts for your events go here.",
+      lead: "How others see you in the admin, and where your events' summaries and alerts go.",
     },
     accounts: {
       title: "Accounts",
@@ -438,6 +443,7 @@ const en = {
       confirmDelete: "Delete this webhook?",
       limit: "10 webhooks at most.",
       recent: "Recent deliveries",
+      recentHint: "The last notices sent, retried on their own after a failure.",
     },
     backup: {
       title: "Backup and retention",
@@ -475,6 +481,7 @@ const en = {
       lastRun: "Last backup: {date}",
       nextRun: "Next: {date}",
       fromEnv: "Set by BACKUP_CRON: {cron}, the last {keep} kept.",
+      retentionLead: "Ended events and their photos can be deleted on their own after a while.",
     },
     look: {
       title: "Look",
@@ -569,6 +576,28 @@ const en = {
       noMigrations: "no migration",
       banner: "Guestroll {version} is available.",
       see: "See the update",
+      historyHint: "Each update this instance went through, and the database changes it made.",
+    },
+    settingsNav: {
+      account: "Your account",
+      team: "Team",
+      notifications: "Notifications",
+      data: "Data",
+      system: "System",
+      twoFactorOff: "Two-step verification off",
+      updateAvailable: "Version {version} available",
+      noEmail: "No email server yet",
+      noBackups: "No automatic backups",
+    },
+    about: {
+      lead: "What this instance runs with.",
+      version: "Version",
+      language: "Default language",
+      storage: "Photo storage",
+      localStorage: "Local folder",
+      maxUpload: "Largest photo",
+      publicUrl: "Public address",
+      timeZone: "Time zone",
     },
   },
   shared: {
@@ -841,6 +870,8 @@ const fr: DeepPartialStrings<Messages> = {
       retry: "Relancer les e-mails en échec",
       status: { pending: "En attente", sent: "Envoyé", failed: "Échec" },
       notConfigured: "Pas encore de serveur SMTP : les e-mails restent en file et partiront dès qu'il sera configuré.",
+      alertsHint: "Envoyées à l'adresse ci-dessus et aux propriétaires. Les e-mails d'un évènement vont aussi à ses organisateurs.",
+      queueHint: "Les derniers e-mails, renvoyés automatiquement quand le serveur n'a pas répondu.",
     },
     share: {
       title: "Lien invité",
@@ -882,6 +913,8 @@ const fr: DeepPartialStrings<Messages> = {
       changed: "Mot de passe changé. Les autres sessions ont été déconnectées.",
       managedByEnv: "Le mot de passe est défini par la variable ADMIN_PASSWORD. Modifie-la puis redémarre.",
       about: "À propos",
+      passwordLead: "Dix caractères ou plus. Le changer déconnecte vos autres sessions.",
+      appearanceLead: "Pour ce navigateur uniquement.",
     },
     qr: {
       title: "Design du QR code",
@@ -923,6 +956,7 @@ const fr: DeepPartialStrings<Messages> = {
       title: "Votre compte",
       signedInAs: "Connecté en tant que {username}.",
       emailHint: "Les bilans et alertes de vos évènements arrivent ici.",
+      lead: "Ce que les autres voient de vous dans l'admin, et où arrivent les bilans et alertes de vos évènements.",
     },
     accounts: {
       title: "Comptes",
@@ -1058,6 +1092,7 @@ const fr: DeepPartialStrings<Messages> = {
       confirmDelete: "Supprimer ce webhook ?",
       limit: "10 webhooks au maximum.",
       recent: "Derniers envois",
+      recentHint: "Les dernières notifications envoyées, renvoyées automatiquement après un échec.",
     },
     backup: {
       title: "Sauvegarde et conservation",
@@ -1095,6 +1130,7 @@ const fr: DeepPartialStrings<Messages> = {
       lastRun: "Dernière sauvegarde : {date}",
       nextRun: "Prochaine : {date}",
       fromEnv: "Défini par BACKUP_CRON : {cron}, les {keep} dernières gardées.",
+      retentionLead: "Les évènements terminés et leurs photos peuvent être supprimés automatiquement après un délai.",
     },
     look: {
       title: "Rendu",
@@ -1189,6 +1225,28 @@ const fr: DeepPartialStrings<Messages> = {
       noMigrations: "aucune migration",
       banner: "Guestroll {version} est disponible.",
       see: "Voir la mise à jour",
+      historyHint: "Chaque mise à jour de cette instance, et les changements de base de données qu'elle a appliqués.",
+    },
+    settingsNav: {
+      account: "Votre compte",
+      team: "Équipe",
+      notifications: "Notifications",
+      data: "Données",
+      system: "Système",
+      twoFactorOff: "Validation en deux étapes désactivée",
+      updateAvailable: "Version {version} disponible",
+      noEmail: "Pas encore de serveur e-mail",
+      noBackups: "Aucune sauvegarde automatique",
+    },
+    about: {
+      lead: "Avec quoi tourne cette instance.",
+      version: "Version",
+      language: "Langue par défaut",
+      storage: "Stockage des photos",
+      localStorage: "Dossier local",
+      maxUpload: "Photo la plus lourde",
+      publicUrl: "Adresse publique",
+      timeZone: "Fuseau horaire",
     },
   },
   shared: {
@@ -1457,6 +1515,8 @@ const it: DeepPartialStrings<Messages> = {
       retry: "Riprova le e-mail non riuscite",
       status: { pending: "In attesa", sent: "Inviata", failed: "Non riuscita" },
       notConfigured: "Nessun server SMTP: le e-mail restano in coda e partiranno appena sarà configurato.",
+      alertsHint: "Inviati all'indirizzo qui sopra e ai proprietari. Le e-mail di un evento vanno anche ai suoi organizzatori.",
+      queueHint: "Le ultime e-mail, reinviate da sole quando il server non ha risposto.",
     },
     share: {
       title: "Link per gli ospiti",
@@ -1498,6 +1558,8 @@ const it: DeepPartialStrings<Messages> = {
       changed: "Password cambiata. Le altre sessioni sono state disconnesse.",
       managedByEnv: "La password è impostata dalla variabile ADMIN_PASSWORD. Modificala lì e riavvia.",
       about: "Informazioni",
+      passwordLead: "Dieci caratteri o più. Cambiarla disconnette le altre sessioni.",
+      appearanceLead: "Solo per questo browser.",
     },
     qr: {
       title: "Design del codice QR",
@@ -1539,6 +1601,7 @@ const it: DeepPartialStrings<Messages> = {
       title: "Il tuo account",
       signedInAs: "Accesso effettuato come {username}.",
       emailHint: "Qui arrivano i riepiloghi e gli avvisi dei tuoi eventi.",
+      lead: "Come ti vedono gli altri nell'admin, e dove arrivano riepiloghi e avvisi dei tuoi eventi.",
     },
     accounts: {
       title: "Account",
@@ -1674,6 +1737,7 @@ const it: DeepPartialStrings<Messages> = {
       confirmDelete: "Eliminare questo webhook?",
       limit: "Massimo 10 webhook.",
       recent: "Ultimi invii",
+      recentHint: "Le ultime notifiche inviate, reinviate da sole dopo un errore.",
     },
     backup: {
       title: "Backup e conservazione",
@@ -1711,6 +1775,7 @@ const it: DeepPartialStrings<Messages> = {
       lastRun: "Ultimo backup: {date}",
       nextRun: "Prossimo: {date}",
       fromEnv: "Impostato da BACKUP_CRON: {cron}, conservati gli ultimi {keep}.",
+      retentionLead: "Gli eventi terminati e le loro foto possono essere eliminati da soli dopo un po'.",
     },
     look: {
       title: "Aspetto",
@@ -1805,6 +1870,28 @@ const it: DeepPartialStrings<Messages> = {
       noMigrations: "nessuna migrazione",
       banner: "È disponibile Guestroll {version}.",
       see: "Vedi l'aggiornamento",
+      historyHint: "Ogni aggiornamento di questa istanza, e le modifiche al database che ha applicato.",
+    },
+    settingsNav: {
+      account: "Il tuo account",
+      team: "Team",
+      notifications: "Notifiche",
+      data: "Dati",
+      system: "Sistema",
+      twoFactorOff: "Verifica in due passaggi disattivata",
+      updateAvailable: "Versione {version} disponibile",
+      noEmail: "Ancora nessun server e-mail",
+      noBackups: "Nessun backup automatico",
+    },
+    about: {
+      lead: "Con cosa funziona questa istanza.",
+      version: "Versione",
+      language: "Lingua predefinita",
+      storage: "Archiviazione foto",
+      localStorage: "Cartella locale",
+      maxUpload: "Foto più pesante",
+      publicUrl: "Indirizzo pubblico",
+      timeZone: "Fuso orario",
     },
   },
   shared: {
@@ -2073,6 +2160,8 @@ const es: DeepPartialStrings<Messages> = {
       retry: "Reintentar los correos fallidos",
       status: { pending: "En espera", sent: "Enviado", failed: "Fallido" },
       notConfigured: "Aún no hay servidor SMTP: los correos se quedan en cola y saldrán en cuanto se configure.",
+      alertsHint: "Se envían a la dirección de arriba y a los propietarios. Los correos de un evento llegan también a sus organizadores.",
+      queueHint: "Los últimos correos, reenviados solos cuando el servidor no respondió.",
     },
     share: {
       title: "Enlace para invitados",
@@ -2114,6 +2203,8 @@ const es: DeepPartialStrings<Messages> = {
       changed: "Contraseña cambiada. Se han cerrado las demás sesiones.",
       managedByEnv: "La contraseña la define la variable ADMIN_PASSWORD. Cámbiala ahí y reinicia.",
       about: "Acerca de",
+      passwordLead: "Diez caracteres o más. Cambiarla cierra tus otras sesiones.",
+      appearanceLead: "Solo para este navegador.",
     },
     qr: {
       title: "Diseño del código QR",
@@ -2155,6 +2246,7 @@ const es: DeepPartialStrings<Messages> = {
       title: "Tu cuenta",
       signedInAs: "Sesión iniciada como {username}.",
       emailHint: "Aquí llegan los resúmenes y avisos de tus eventos.",
+      lead: "Cómo te ven los demás en el admin, y adónde llegan los resúmenes y avisos de tus eventos.",
     },
     accounts: {
       title: "Cuentas",
@@ -2290,6 +2382,7 @@ const es: DeepPartialStrings<Messages> = {
       confirmDelete: "¿Eliminar este webhook?",
       limit: "10 webhooks como máximo.",
       recent: "Últimos envíos",
+      recentHint: "Los últimos avisos enviados, reenviados solos tras un fallo.",
     },
     backup: {
       title: "Copia de seguridad y conservación",
@@ -2327,6 +2420,7 @@ const es: DeepPartialStrings<Messages> = {
       lastRun: "Última copia: {date}",
       nextRun: "Próxima: {date}",
       fromEnv: "Definido por BACKUP_CRON: {cron}, se conservan las {keep} últimas.",
+      retentionLead: "Los eventos terminados y sus fotos pueden eliminarse solos tras un tiempo.",
     },
     look: {
       title: "Aspecto",
@@ -2421,6 +2515,28 @@ const es: DeepPartialStrings<Messages> = {
       noMigrations: "ninguna migración",
       banner: "Guestroll {version} está disponible.",
       see: "Ver la actualización",
+      historyHint: "Cada actualización de esta instancia, y los cambios de base de datos que aplicó.",
+    },
+    settingsNav: {
+      account: "Tu cuenta",
+      team: "Equipo",
+      notifications: "Notificaciones",
+      data: "Datos",
+      system: "Sistema",
+      twoFactorOff: "Verificación en dos pasos desactivada",
+      updateAvailable: "Versión {version} disponible",
+      noEmail: "Aún sin servidor de correo",
+      noBackups: "Sin copias automáticas",
+    },
+    about: {
+      lead: "Con qué funciona esta instancia.",
+      version: "Versión",
+      language: "Idioma por defecto",
+      storage: "Almacenamiento de fotos",
+      localStorage: "Carpeta local",
+      maxUpload: "Foto más pesada",
+      publicUrl: "Dirección pública",
+      timeZone: "Zona horaria",
     },
   },
   shared: {

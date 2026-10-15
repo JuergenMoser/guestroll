@@ -7,6 +7,7 @@ import { useT } from "@/components/I18nProvider";
 import { Badge, Button, buttonClass, Field, Input, Select, StatusMessage, Switch } from "@/components/ui";
 import { ApiError, api } from "@/lib/client/api";
 import { formatBytes } from "@/lib/format";
+import { SettingsSection } from "./settings/SettingsSection";
 
 interface State {
   schedule: { enabled: boolean; cron: string; keep: number };
@@ -94,17 +95,7 @@ export function ScheduledBackups({ locale }: { locale: string }) {
   }
 
   return (
-    <section className="space-y-4 border-t border-line pt-5">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <h3 className="font-semibold">{t("admin.backup.scheduled")}</h3>
-          <p className="max-w-prose text-sm text-ink-muted">{t("admin.backup.scheduledHint", { target: state.target })}</p>
-        </div>
-        <Button variant="secondary" size="sm" onClick={runNow} loading={busy === "run"}>
-          {t("admin.backup.runNow")}
-        </Button>
-      </div>
-
+    <SettingsSection id="automatic-backups" title={t("admin.backup.scheduled")} description={t("admin.backup.scheduledHint", { target: state.target })}>
       {state.scheduleFromEnv ? (
         <p className="rounded-lg bg-sunken p-3 text-sm text-ink-soft">{t("admin.backup.fromEnv", { cron: state.schedule.cron, keep: state.schedule.keep })}</p>
       ) : (
@@ -131,11 +122,19 @@ export function ScheduledBackups({ locale }: { locale: string }) {
               </Field>
             </div>
           )}
-          <Button size="sm" onClick={save} loading={busy === "save"}>
-            {t("common.save")}
-          </Button>
         </div>
       )}
+
+      <div className="flex flex-wrap items-center justify-end gap-2">
+        <Button variant="secondary" onClick={runNow} loading={busy === "run"}>
+          {t("admin.backup.runNow")}
+        </Button>
+        {!state.scheduleFromEnv && (
+          <Button onClick={save} loading={busy === "save"}>
+            {t("common.save")}
+          </Button>
+        )}
+      </div>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted">
         {state.lastRun && (
@@ -169,6 +168,6 @@ export function ScheduledBackups({ locale }: { locale: string }) {
           ))}
         </ul>
       )}
-    </section>
+    </SettingsSection>
   );
 }

@@ -90,7 +90,7 @@ export async function checkForUpdate(fetcher: Fetcher = fetch, now = Date.now())
 }
 
 function announce(release: Release) {
-  const url = `${backgroundBaseUrl()}/admin/settings#updates`;
+  const url = `${backgroundBaseUrl()}/admin/settings/system#updates`;
   const mail = updateAvailableMail({ app: config.appName, locale: config.locale, url, version: release.version, current: currentVersion() });
   for (const to of instanceRecipients()) enqueueMail({ to, mail, kind: "update", dedupeKey: `update:${release.version}:${to}` });
   const m = mailMessages[config.locale].update;

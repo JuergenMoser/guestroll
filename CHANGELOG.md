@@ -7,7 +7,7 @@ notes on GitHub are this file's section for it.
 
 **Upgrading** sections list what to check before updating. Database migrations
 always run on their own at startup; take a backup first all the same
-(Admin → Settings → Backup and retention).
+(Admin → Settings → Data).
 
 ## [Unreleased]
 
@@ -31,6 +31,13 @@ always run on their own at startup; take a backup first all the same
 
 - Demo mode (`DEMO_MODE=true`): seeded events, a shared account, a nightly
   reset, nothing sent out. `docker-compose.demo.yml` runs one.
+
+### Changed
+
+- Settings are split into five areas (account, team, notifications, data,
+  system), each a page of its own; the list says which area needs attention:
+  two-step verification off, no automatic backups, no email server, an update
+  waiting.
 
 ### Security
 

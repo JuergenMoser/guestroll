@@ -9,7 +9,7 @@ export function UpdateBanner({ version }: { version: string }) {
   return (
     <div className="border-b border-line bg-accent/15 px-4 py-2 text-center text-sm">
       {t("admin.updates.banner", { version })}{" "}
-      <Link href="/admin/settings#updates" className="font-semibold underline underline-offset-2">
+      <Link href="/admin/settings/system#updates" className="font-semibold underline underline-offset-2">
         {t("admin.updates.see")}
       </Link>
     </div>

@@ -132,7 +132,7 @@ Run it under systemd or another supervisor, as an unprivileged user that owns `D
 
 ## Backups
 
-The simplest way: **Admin → Settings → Backup and retention → Download a
+The simplest way: **Admin → Settings → Data → Download a
 backup** (owners). One ZIP with the database (an online snapshot, consistent
 while guests keep uploading), every photo, logo and voice note whatever the
 storage driver, and the generated session secret. **Restore** on the same page
@@ -167,7 +167,7 @@ Copying the folder while the container is stopped works just as well.
 
 Guestroll checks GitHub for new releases every 12 hours. When one is out, the
 owners get an email (and the webhooks subscribed to *A new version is
-available*), and **Admin → Settings → Updates** shows its release notes.
+available*), and **Admin → Settings → System** shows its release notes.
 
 ### From the admin, in one click
 

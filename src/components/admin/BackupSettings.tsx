@@ -4,7 +4,8 @@ import { Download, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@/components/I18nProvider";
-import { Button, buttonClass, Card, CardTitle, Field, Input, StatusMessage } from "@/components/ui";
+import { Button, buttonClass, Field, Input, StatusMessage } from "@/components/ui";
+import { SettingsSection } from "./settings/SettingsSection";
 import { api } from "@/lib/client/api";
 import { formatBytes } from "@/lib/format";
 import { ScheduledBackups } from "./ScheduledBackups";
@@ -77,27 +78,22 @@ export function BackupSettings({ locale }: { locale: string }) {
   }
 
   return (
-    <Card className="space-y-6">
-      <div className="space-y-1">
-        <CardTitle>{t("admin.backup.title")}</CardTitle>
-        <p className="max-w-prose text-sm text-ink-muted">{t("admin.backup.hint")}</p>
-      </div>
-
-      <section className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm tabular-nums text-ink-soft">
-          {info ? t("admin.backup.contents", { files: info.files, size: formatBytes(info.bytes, locale), storage: info.storage }) : "…"}
-        </p>
-        <a href="/api/admin/backup?download=1" className={buttonClass("secondary")}>
-          <Download className="size-4" aria-hidden />
-          {t("admin.backup.download")}
-        </a>
-      </section>
+    <>
+      <SettingsSection id="backup" title={t("admin.backup.title")} description={t("admin.backup.hint")}>
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-sunken p-4">
+          <p className="text-sm tabular-nums text-ink-soft">
+            {info ? t("admin.backup.contents", { files: info.files, size: formatBytes(info.bytes, locale), storage: info.storage }) : "…"}
+          </p>
+          <a href="/api/admin/backup?download=1" className={buttonClass("secondary")}>
+            <Download className="size-4" aria-hidden />
+            {t("admin.backup.download")}
+          </a>
+        </div>
+      </SettingsSection>
 
       <ScheduledBackups locale={locale} />
 
-      <section className="space-y-3 border-t border-line pt-5">
-        <h3 className="font-semibold">{t("admin.backup.restore")}</h3>
-        <p className="max-w-prose text-sm text-ink-muted">{t("admin.backup.restoreHint")}</p>
+      <SettingsSection id="restore" title={t("admin.backup.restore")} description={t("admin.backup.restoreHint")}>
         <input ref={input} type="file" accept=".zip,application/zip" hidden onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="secondary" onClick={() => input.current?.click()} disabled={progress !== null}>
@@ -116,22 +112,19 @@ export function BackupSettings({ locale }: { locale: string }) {
           </p>
         )}
         {restoreError && <p className="text-sm text-danger">{restoreError}</p>}
-      </section>
+      </SettingsSection>
 
-      <section className="space-y-3 border-t border-line pt-5">
-        <h3 className="font-semibold">{t("admin.backup.retention")}</h3>
-        <div className="flex flex-wrap items-end gap-3">
-          <Field label={t("admin.backup.retentionDays")} hint={t("admin.backup.retentionHint")}>
-            {(id, describedBy) => (
-              <Input id={id} aria-describedby={describedBy} type="number" min={0} max={3650} value={days} onChange={(e) => setDays(Number(e.target.value) || 0)} className="max-w-32" />
-            )}
-          </Field>
-          <Button variant="secondary" onClick={saveRetention}>
-            {t("common.save")}
-          </Button>
+      <SettingsSection id="retention" title={t("admin.backup.retention")} description={t("admin.backup.retentionLead")}>
+        <Field label={t("admin.backup.retentionDays")} hint={t("admin.backup.retentionHint")}>
+          {(id, describedBy) => (
+            <Input id={id} aria-describedby={describedBy} type="number" min={0} max={3650} value={days} onChange={(e) => setDays(Number(e.target.value) || 0)} className="max-w-32" />
+          )}
+        </Field>
+        <div className="flex flex-wrap items-center justify-end gap-2">
           <StatusMessage message={message} />
+          <Button onClick={saveRetention}>{t("common.save")}</Button>
         </div>
-      </section>
-    </Card>
+      </SettingsSection>
+    </>
   );
 }

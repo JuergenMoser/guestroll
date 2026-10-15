@@ -3,7 +3,8 @@
 import { Plus, Send, Webhook as WebhookIcon } from "lucide-react";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useT } from "@/components/I18nProvider";
-import { Badge, Button, Card, CardTitle, EmptyState, Field, Input, SegmentedControl, Switch } from "@/components/ui";
+import { Badge, Button, EmptyState, Field, Input, SegmentedControl, Switch } from "@/components/ui";
+import { SettingsSection } from "./settings/SettingsSection";
 import { ApiError, api } from "@/lib/client/api";
 import { errorText } from "@/lib/i18n/errors";
 import { WEBHOOK_KINDS, WEBHOOK_TYPES, type WebhookDto, type WebhookType } from "@/lib/webhooks/types";
@@ -166,19 +167,14 @@ export function WebhookSettings({ locale }: { locale: string }) {
   );
 
   return (
-    <Card className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <CardTitle>{t("admin.webhooks.title")}</CardTitle>
-          <p className="max-w-prose text-sm text-ink-muted">{t("admin.webhooks.hint")}</p>
-        </div>
-        {editing !== "new" && (
-          <Button size="sm" onClick={() => open()}>
-            <Plus className="size-4" aria-hidden />
-            {t("admin.webhooks.add")}
-          </Button>
-        )}
-      </div>
+    <>
+    <SettingsSection id="webhooks" title={t("admin.webhooks.title")} description={t("admin.webhooks.hint")}>
+      {editing !== "new" && (
+        <Button size="sm" onClick={() => open()}>
+          <Plus className="size-4" aria-hidden />
+          {t("admin.webhooks.add")}
+        </Button>
+      )}
 
       {editing === "new" && form}
       {hooks && hooks.length === 0 && editing !== "new" && <EmptyState className="py-6">{t("admin.webhooks.empty")}</EmptyState>}
@@ -212,9 +208,9 @@ export function WebhookSettings({ locale }: { locale: string }) {
         </ul>
       )}
 
+    </SettingsSection>
       {deliveries.length > 0 && (
-        <section className="space-y-2 border-t border-line pt-4">
-          <h3 className="font-semibold">{t("admin.webhooks.recent")}</h3>
+        <SettingsSection title={t("admin.webhooks.recent")} description={t("admin.webhooks.recentHint")}>
           <ul role="list" className="divide-y divide-line rounded-lg text-sm ring-1 ring-line">
             {deliveries.map((d) => (
               <li key={d.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 p-3">
@@ -228,8 +224,8 @@ export function WebhookSettings({ locale }: { locale: string }) {
               </li>
             ))}
           </ul>
-        </section>
+        </SettingsSection>
       )}
-    </Card>
+    </>
   );
 }

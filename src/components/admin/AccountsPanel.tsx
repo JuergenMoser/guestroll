@@ -3,7 +3,8 @@
 import { Plus, UserRound } from "lucide-react";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useT } from "@/components/I18nProvider";
-import { Badge, Button, Card, CardTitle, EmptyState, Field, Input, SegmentedControl } from "@/components/ui";
+import { Badge, Button, EmptyState, Field, Input, SegmentedControl } from "@/components/ui";
+import { SettingsSection } from "./settings/SettingsSection";
 import type { AccountDto } from "@/lib/accounts";
 import { ApiError, api } from "@/lib/client/api";
 import { errorText } from "@/lib/i18n/errors";
@@ -188,19 +189,13 @@ export function AccountsPanel({ selfId, events, locale }: { selfId: string; even
   );
 
   return (
-    <Card className="space-y-4">
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="space-y-1">
-          <CardTitle>{t("admin.accounts.title")}</CardTitle>
-          <p className="max-w-prose text-sm text-ink-muted">{t("admin.accounts.hint")}</p>
-        </div>
-        {editing !== "new" && (
-          <Button size="sm" onClick={() => open()}>
-            <Plus className="size-4" aria-hidden />
-            {t("admin.accounts.add")}
-          </Button>
-        )}
-      </div>
+    <SettingsSection title={t("admin.accounts.title")} description={t("admin.accounts.hint")}>
+      {editing !== "new" && (
+        <Button size="sm" onClick={() => open()}>
+          <Plus className="size-4" aria-hidden />
+          {t("admin.accounts.add")}
+        </Button>
+      )}
 
       {secret && (
         <div role="status" className="space-y-2 rounded-lg bg-sunken p-3">
@@ -245,6 +240,6 @@ export function AccountsPanel({ selfId, events, locale }: { selfId: string; even
           )}
         </ul>
       )}
-    </Card>
+    </SettingsSection>
   );
 }

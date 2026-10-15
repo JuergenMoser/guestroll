@@ -117,7 +117,7 @@ export async function runBackup(reason: "scheduled" | "manual" | "before-update"
 }
 
 function alertFailure(error: string, reason: string) {
-  const url = `${backgroundBaseUrl()}/admin/settings`;
+  const url = `${backgroundBaseUrl()}/admin/settings/data#automatic-backups`;
   const mail = backupFailedMail({ app: config.appName, locale: config.locale, url, error });
   const day = Math.floor(Date.now() / 86_400_000);
   for (const to of instanceRecipients()) enqueueMail({ to, mail, kind: "alert:backup", dedupeKey: `backup-failed:${day}:${to}` });

@@ -19,7 +19,7 @@ docker run -d --name guestroll \
 - `-v guestroll-data:/data` keeps the database and photos when the container is recreated. **Don't skip it.**
 - `PUBLIC_URL` is the address encoded in your QR codes. Use the public HTTPS address guests will reach.
 - Sign in at `/admin` as `admin`. Without `ADMIN_PASSWORD`, a random password is generated and printed once: `docker logs guestroll`.
-- Need helpers? Add accounts for them in **Admin → Settings → Accounts**: an *organizer* only sees the events you assign.
+- Need helpers? Add accounts for them in **Admin → Settings → Team**: an *organizer* only sees the events you assign.
 
 Other ways to run it (Compose, plain Node.js) are in [Deployment](deployment.md).
 

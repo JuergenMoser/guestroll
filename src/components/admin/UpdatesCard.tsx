@@ -1,9 +1,10 @@
 "use client";
 
-import { ArrowUpCircle, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useT } from "@/components/I18nProvider";
-import { Badge, Button, Card, CardTitle, StatusMessage, Switch } from "@/components/ui";
+import { Badge, Button, StatusMessage, Switch } from "@/components/ui";
+import { SettingsSection } from "./settings/SettingsSection";
 import { renderMarkdown } from "@/lib/markdown";
 import type { UpdaterJob } from "@/lib/updater";
 
@@ -94,18 +95,18 @@ export function UpdatesCard({ locale }: { locale: string }) {
 
   const job = info.updater.job;
   return (
-    <Card className="space-y-5">
-      <div id="updates" className="flex flex-wrap items-start justify-between gap-3 scroll-mt-24">
-        <div className="space-y-1">
-          <CardTitle className="flex items-center gap-2">
-            <ArrowUpCircle className="size-4" aria-hidden />
-            {t("admin.updates.title")}
-          </CardTitle>
-          <p className="text-sm text-ink-muted">
-            {t("admin.updates.running", { version: info.current })}
-            {info.latest && ` ${t("admin.updates.checked", { date: when(info.latest.checkedAt) })}`}
-          </p>
-        </div>
+    <>
+    <SettingsSection
+      id="updates"
+      title={t("admin.updates.title")}
+      description={
+        <>
+          {t("admin.updates.running", { version: info.current })}
+          {info.latest && ` ${t("admin.updates.checked", { date: when(info.latest.checkedAt) })}`}
+        </>
+      }
+    >
+      <div>
         <Button size="sm" variant="secondary" onClick={check} loading={busy === "check"} disabled={!info.checkEnabled}>
           <RefreshCw className="size-4" aria-hidden />
           {t("admin.updates.checkNow")}
@@ -141,7 +142,7 @@ export function UpdatesCard({ locale }: { locale: string }) {
           )}
         </section>
       ) : (
-        info.latest && <p className="text-sm text-ok">{t("admin.updates.upToDate")}</p>
+        info.checkEnabled && info.latest && <p className="text-sm text-ok">{t("admin.updates.upToDate")}</p>
       )}
 
       {phase !== "idle" && (
@@ -158,9 +159,9 @@ export function UpdatesCard({ locale }: { locale: string }) {
       )}
       <StatusMessage message={message} />
 
+    </SettingsSection>
       {info.history.length > 0 && (
-        <section className="space-y-2 border-t border-line pt-4">
-          <h3 className="font-semibold">{t("admin.updates.history")}</h3>
+        <SettingsSection title={t("admin.updates.history")} description={t("admin.updates.historyHint")}>
           <ul role="list" className="space-y-1 text-sm">
             {info.history.map((h) => (
               <li key={h.at} className="text-ink-soft">
@@ -170,8 +171,8 @@ export function UpdatesCard({ locale }: { locale: string }) {
               </li>
             ))}
           </ul>
-        </section>
+        </SettingsSection>
       )}
-    </Card>
+    </>
   );
 }

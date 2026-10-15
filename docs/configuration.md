@@ -95,11 +95,11 @@ At startup Guestroll writes, reads back and deletes a small probe file, and
 logs `[storage] S3 bucket NOT usable` with the reason if that fails. Files are
 never served from the bucket directly, so photos stay private even with a
 bucket on a public endpoint. To move existing photos to a bucket, make a backup
-(Admin → Settings → Backup), switch the driver, then restore it.
+(Admin → Settings → Data), switch the driver, then restore it.
 
 ## Scheduled backups
 
-Owners set them in **Admin → Settings → Backup and retention**; these variables
+Owners set them in **Admin → Settings → Data**; these variables
 set them from the environment instead (the admin then shows them read-only).
 Each backup is the same ZIP as a manual one: database, every photo, logo and
 voice note, and the generated session secret.
@@ -136,7 +136,7 @@ replace, `guestroll` by default) and `UPDATER_PORT` (`9900`). See
 ## Email
 
 Optional. Without SMTP, everything else works and no email is ever sent.
-SMTP can also be set in **Admin → Settings → Email**, where the password is
+SMTP can also be set in **Admin → Settings → Notifications**, where the password is
 stored encrypted (AES-256-GCM, key derived from `SESSION_SECRET`). When
 `SMTP_HOST` is set, the environment wins and the admin form is read-only.
 

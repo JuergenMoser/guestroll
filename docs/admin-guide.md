@@ -93,87 +93,45 @@ and photos per challenge.
 
 ### Settings
 
-| Section | Setting | What it does |
-|---|---|---|
-| Event | Name, welcome message, date, accent color | What guests see at the top of their page. The color tints the camera and the buttons; the text on it adjusts automatically. |
-| Access | Access code | Optional, 6+ characters. Guests type it once. Leave empty to let the QR code alone grant access. |
-| Uploads | Accept uploads | Turn uploads off at any time; guests keep their own photos. |
-| | Close uploads automatically at | For example the morning after. |
-| | Capture mode | Camera only (the default), library only, or both. |
-| | Photos per guest | 0 for no limit. Guests see a counter of photos left. |
-| | Moderation | Publish immediately and hide later, or approve each photo first. |
-| Guests | Album language | Automatic (each guest's phone) or one fixed language. Guests can still switch. |
-| | Ask guests for their name | Shown next to their photos in the admin and on the live wall. |
-| Look | Frame | **Instant print** (white border, event name and date below, logo), **Event color** (a border in the accent color with the name), or **Logo stamp** in a corner. Drawn on the phone before sending. |
-| | Let guests pick a filter | Black & white, warm, vintage or vivid, chosen above the shutter. Frames and filters are part of the photo sent: the original isn't kept. Phones that can't decode a format in the browser (rare) send it plain. |
-| Challenges | List of prompts | Up to 30 photo ideas ("The dance floor", "The couple with a stranger"). Guests pick one above the shutter and see which ones they already did. Renaming a challenge keeps its photos; removing it keeps them too, untagged in the filter. |
+Settings are split into five areas, listed on the left (a row of tabs on a
+phone). An area that needs your attention says so in the list: two-step
+verification off, no automatic backups, no email server, an update waiting.
+Organizers only see **Your account**.
 
-| After the event | Let guests leave their email to get the album | Adds a card on the guest page. Opt-in; addresses are deleted with the event. |
-| | Email me a summary when uploads close | Photos, photographers, views, what's still pending. |
-| | Email guests a gallery link when uploads close | One password-protected link for the event, sent to every address once. |
-| | Link valid for (days) | 0 for a link that never expires. |
-| | Guests can download the photos from the link | Off: the link shows photos but not originals or the ZIP. |
-| | Only send the favorites | The link shows the photos you starred instead of the whole album. Star them before the event ends. |
-| | Put the password in the email | Off: guests get the link only, and the password reaches you (summary email and the *End the event* card) so you can pass it on yourself. A forwarded email then isn't enough. |
+### Your account
 
-### Gallery links
-
-In **QR & sharing**, *Gallery links* creates private links to the visible
-photos of the event: for family who weren't there, or for guests afterwards.
-Each link has its own password (yours, or a generated one shown **once**), an
-optional expiry, a downloads switch, the whole album or the favorites only,
-and a view counter. **Revoke** cuts it off
-at once, even for someone who already opened it. A gallery link never lets
-anyone upload, and never shows pending or hidden photos.
-
-### End the event
-
-Uploads end on their own at the scheduled closing time; the end-of-event emails
-then go out within a minute. **End the event now** does it immediately. It runs
-once per event: ending again does nothing.
-
-**Duplicate this event** (owners): a new event with the same settings,
-colors, QR code design, logo, challenges and organizers, ready for next year.
-No photos, messages or links come along, and it gets its own QR code: the old
-one keeps pointing at the old event.
-
-**Danger zone**: deleting an event removes every photo from disk. Type the
-event name to confirm.
-
-## Settings
-
-- **Language and theme** for your own browser.
-- **Email**: SMTP server (or read-only when set by `SMTP_HOST`), where alerts
-  go, a **Send a test email** button that shows the server's answer, and the
-  last emails with their state. Failed ones can be retried.
-- **Alerts**, each switchable: photos waiting for approval (at most every 30
-  minutes, only when the count grows), an event's end summary, 10+ wrong admin
-  passwords within 15 minutes (at most hourly), disk 90% full (at most daily).
-- **Your account**: display name and the address where *your* events'
-  summaries and alerts go.
+- **Profile**: display name and the address where *your* events' summaries
+  and alerts go.
+- **Password**: changing it signs out your other sessions. Not available for
+  the account set by `ADMIN_PASSWORD`: change the variable and restart instead.
 - **Two-step verification**: scan the QR code with an authenticator app,
   type the code, and keep the ten recovery codes shown once. Every sign-in then
   asks for a code after the password. Lost your phone? Sign in with a recovery
-  code, or ask an owner to reset it from **Accounts**.
-- **Password**: changing it signs out your other sessions. Not available for
-  the account set by `ADMIN_PASSWORD`: change the variable and restart instead.
-- **Updates** (owners): the version you run, the newest one with its release
-  notes, **Check now**, and, with the updater container, **Update to X.Y.Z**:
-  a backup, the new image, a health check, the old one back if anything goes
-  wrong. The history lists every update and the database migrations it
-  applied. A line under the navigation tells owners when a version is out.
-- **Accounts** (owners): add people and pick their role.
+  code, or ask an owner to reset it from **Team**.
+- **Language and theme** for your own browser.
 
-  | Role | Can |
-  |---|---|
-  | Owner | Everything: every event, creating and deleting events, accounts, email, alerts |
-  | Organizer | Only the events assigned to them: photos and moderation, settings, QR code, gallery links, live wall, ending the event. Not deleting it. |
+### Team (owners)
 
-  A new account gets a generated password, shown once for you to pass on.
-  *New password* generates another one and signs the person out; *Delete*
-  ends their access at once. The last owner can't be demoted or deleted.
+Add people and pick their role.
 
-- **Webhooks** (owners): the same alerts on your phone or in a chat, whatever
+| Role | Can |
+|---|---|
+| Owner | Everything: every event, creating and deleting events, accounts, email, alerts |
+| Organizer | Only the events assigned to them: photos and moderation, settings, QR code, gallery links, live wall, ending the event. Not deleting it. |
+
+A new account gets a generated password, shown once for you to pass on.
+*New password* generates another one and signs the person out; *Delete*
+ends their access at once. The last owner can't be demoted or deleted.
+
+### Notifications (owners)
+
+- **Email**: SMTP server (or read-only when set by `SMTP_HOST`), where alerts
+  go, and a **Send a test email** button that shows the server's answer.
+- **Alerts**, each switchable: photos waiting for approval (at most every 30
+  minutes, only when the count grows), an event's end summary, 10+ wrong admin
+  passwords within 15 minutes (at most hourly), disk 90% full (at most daily).
+- **Recent emails** with their state. Failed ones can be retried.
+- **Webhooks**: the same alerts on your phone or in a chat, whatever
   the email settings. Up to 10, each with its own choice of alerts (event
   ended, photos waiting, new guestbook message, failed sign-ins, storage).
 
@@ -188,14 +146,28 @@ event name to confirm.
   alerts go through a queue retried like emails (1, 5, 15 minutes, 1 and 6
   hours); the last deliveries are listed under the webhooks.
 
-- **Backup and retention** (owners): download a backup of everything (see
-  [Deployment](deployment.md#backups)), restore one, schedule **automatic
-  backups** (every night, every 6 hours, weekly, or any cron expression) to a
-  folder or an S3 bucket with the newest N kept, each listed with download and
-  restore buttons, and choose how long ended events are kept. With a number of days (14 or more), an event is deleted
-  that long after it ended, photos and messages included; its hosts get an
-  email a week before, and the date shows on the event's *QR & sharing* tab.
-  Events that never ended (no closing time, never ended by hand) are kept.
+### Data (owners)
+
+- **Backup**: download a backup of everything (see
+  [Deployment](deployment.md#backups)).
+- **Automatic backups**: every night, every 6 hours, weekly, or any cron
+  expression, to a folder or an S3 bucket with the newest N kept, each listed
+  with download and restore buttons. **Back up now** runs one at once.
+- **Restore** a backup file.
+- **Delete ended events**: with a number of days (14 or more), an event is
+  deleted that long after it ended, photos and messages included; its hosts
+  get an email a week before, and the date shows on the event's *QR & sharing*
+  tab. Events that never ended (no closing time, never ended by hand) are kept.
+
+### System (owners)
+
+- **Updates**: the version you run, the newest one with its release
+  notes, **Check now**, and, with the updater container, **Update to X.Y.Z**:
+  a backup, the new image, a health check, the old one back if anything goes
+  wrong. The history lists every update and the database migrations it
+  applied. A line under the navigation tells owners when a version is out.
+- **About**: version, default language, photo storage, largest photo
+  accepted, public address and time zone of the instance.
 
 Event emails (summaries, photos waiting for approval) go to the instance
 address in **Email** and to every account managing the event that set an

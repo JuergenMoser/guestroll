@@ -3,7 +3,8 @@
 import { RotateCcw, Send } from "lucide-react";
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import { useT } from "@/components/I18nProvider";
-import { Badge, Button, Card, CardTitle, Field, Input, StatusMessage, Switch } from "@/components/ui";
+import { Badge, Button, Field, Input, StatusMessage, Switch } from "@/components/ui";
+import { SettingsSection } from "./settings/SettingsSection";
 import { ApiError, api } from "@/lib/client/api";
 import { errorText } from "@/lib/i18n/errors";
 import type { MessageKey } from "@/lib/i18n/translate";
@@ -93,12 +94,8 @@ export function MailSettings({ locale }: { locale: string }) {
   const time = (ms: number) => new Intl.DateTimeFormat(locale, { dateStyle: "short", timeStyle: "short" }).format(new Date(ms));
 
   return (
-    <Card className="space-y-6">
-      <div className="space-y-1">
-        <CardTitle>{t("admin.mail.title")}</CardTitle>
-        <p className="text-sm text-ink-muted">{t("admin.mail.hint")}</p>
-      </div>
-
+    <>
+    <SettingsSection id="email" title={t("admin.mail.title")} description={t("admin.mail.hint")}>
       <form onSubmit={save} className="space-y-5">
         {fromEnv ? (
           <p className="rounded-lg bg-sunken p-3 text-sm text-ink-soft">{t("admin.mail.fromEnv")}</p>
@@ -163,8 +160,9 @@ export function MailSettings({ locale }: { locale: string }) {
         </div>
       </form>
 
-      <section className="space-y-3 border-t border-line pt-5">
-        <h3 className="font-semibold">{t("admin.mail.alerts")}</h3>
+    </SettingsSection>
+
+    <SettingsSection id="alerts" title={t("admin.mail.alerts")} description={t("admin.mail.alertsHint")}>
         {ALERTS.map(({ key, label }) => (
           <Switch
             key={key}
@@ -177,11 +175,10 @@ export function MailSettings({ locale }: { locale: string }) {
             }}
           />
         ))}
-      </section>
+    </SettingsSection>
 
-      <section className="space-y-3 border-t border-line pt-5">
+    <SettingsSection title={t("admin.mail.queue")} description={t("admin.mail.queueHint")}>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h3 className="font-semibold">{t("admin.mail.queue")}</h3>
           <span className="flex items-center gap-2">
             {state.outbox.pending > 0 && <Badge>{t("admin.mail.pending", { n: state.outbox.pending })}</Badge>}
             {state.outbox.failed > 0 && (
@@ -213,7 +210,7 @@ export function MailSettings({ locale }: { locale: string }) {
             ))}
           </ul>
         )}
-      </section>
-    </Card>
+    </SettingsSection>
+    </>
   );
 }
