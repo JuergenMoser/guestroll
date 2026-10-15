@@ -11,6 +11,16 @@ export interface HttpRequest {
 // Discord embed colors: amber for things to do, red for security, green otherwise.
 const COLORS: Record<string, number> = { failed_logins: 0xd93025, storage: 0xd93025, photos_pending: 0xf59e0b };
 
+// Notices carry text guests wrote (guestbook messages, names, event names):
+// each service gets it escaped, so a guest can't ping a channel or slip in a
+// disguised link.
+
+/** Slack reads `<!channel>`, `<@U123>` and `<url|label>`: its three control characters become entities. */
+const slackEscape = (s: string) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+/** Discord renders markdown in embeds, `[label](url)` included: every markdown character is backslash-escaped. */
+const discordEscape = (s: string) => s.replace(/[\\`*_~|>[\]()#:-]/g, "\\$&").replace(/@/g, "@\u200b");
+
 /** Pure: turns a notice into the request each service expects. */
 export function formatWebhook(webhook: Pick<Webhook, "type" | "url" | "secret">, notice: Notice, appName: string, now = Date.now()): HttpRequest {
   switch (webhook.type) {
@@ -34,14 +44,15 @@ export function formatWebhook(webhook: Pick<Webhook, "type" | "url" | "secret">,
         body: JSON.stringify({
           username: appName,
           allowed_mentions: { parse: [] },
-          embeds: [{ title: notice.title.slice(0, 256), description: notice.message.slice(0, 4000), url: notice.url, color: COLORS[notice.kind] ?? 0x16a34a }],
+          embeds: [{ title: discordEscape(notice.title).slice(0, 256), description: discordEscape(notice.message).slice(0, 4000), url: notice.url, color: COLORS[notice.kind] ?? 0x16a34a }],
         }),
       };
     case "slack":
       return {
         url: webhook.url,
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text: `*${notice.title}*\n${notice.message}\n<${notice.url}|Open>` }),
+        // The URL is built by the server, never by a guest: it's the only unescaped part.
+        body: JSON.stringify({ text: `*${slackEscape(notice.title)}*\n${slackEscape(notice.message)}\n<${notice.url}|Open>` }),
       };
     case "json": {
       const body = JSON.stringify({ app: appName, kind: notice.kind, title: notice.title, message: notice.message, url: notice.url, event: notice.event ?? null, data: notice.data ?? {}, sentAt: new Date(now).toISOString() });
