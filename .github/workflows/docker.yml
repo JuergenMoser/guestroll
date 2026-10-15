@@ -80,6 +80,52 @@ jobs:
           test "$(curl -s -o /dev/null -w '%{http_code}' "$base/api/media/$id?v=thumb")" = 404
           test -n "$(find "$RUNNER_TEMP/data/uploads" -name '*.original.jpg')"
 
+      # What `docker pull` does to an instance in use: the latest release fills a
+      # data folder, then this build starts on it. Migrations must apply and
+      # nothing may be lost.
+      - name: Upgrade from the latest release
+        run: |
+          base=http://127.0.0.1:4100
+          data="$RUNNER_TEMP/upgrade"
+          mkdir -p "$data"
+          start() {
+            docker run -d --name "$1" -p 4100:3000 -e PUID="$(id -u)" -e PGID="$(id -g)" \
+              -e ADMIN_PASSWORD=ci-admin-password -e SECURE_COOKIES=false -v "$data:/data" "$2"
+            for _ in $(seq 1 30); do
+              if curl -fsS "$base/api/health" > /dev/null; then return 0; fi
+              sleep 2
+            done
+            docker logs "$1"
+            return 1
+          }
+          start previous ghcr.io/achedon12/guestroll:latest
+          echo "Previous release: $(docker inspect previous --format '{{ index .Config.Labels "org.opencontainers.image.version" }}')"
+          jar=$(mktemp)
+          curl -fsS -c "$jar" -b "$jar" -H "Origin: $base" -H 'Content-Type: application/json' -d '{"password":"ci-admin-password"}' "$base/api/admin/login"
+          event=$(curl -fsS -c "$jar" -b "$jar" -H "Origin: $base" -H 'Content-Type: application/json' \
+            -d '{"name":"Before the upgrade","description":"Kept","accentColor":"#336699"}' "$base/api/admin/events")
+          event_id=$(echo "$event" | jq -r .event.id)
+          slug=$(echo "$event" | jq -r .event.slug)
+          guest=$(mktemp)
+          curl -fsS -c "$guest" -b "$guest" -H "Origin: $base" -X POST "$base/api/e/$slug/join"
+          photo_id=$(curl -fsS -c "$guest" -b "$guest" -H "Origin: $base" -F photo=@photo.jpg "$base/api/e/$slug/photos" | jq -r .photo.id)
+          docker stop previous > /dev/null
+
+          start upgraded guestroll:ci
+          jar=$(mktemp)
+          curl -fsS -c "$jar" -b "$jar" -H "Origin: $base" -H 'Content-Type: application/json' -d '{"username":"admin","password":"ci-admin-password"}' "$base/api/admin/login"
+          curl -fsS -b "$jar" "$base/api/admin/events/$event_id" | jq -e '.event.name == "Before the upgrade" and .event.description == "Kept" and .event.accentColor == "#336699"'
+          curl -fsS -b "$jar" "$base/api/admin/events/$event_id/photos" | jq -e --arg id "$photo_id" '[.photos[].id] == [$id]'
+          test "$(curl -s -o /dev/null -w '%{http_code}' -b "$jar" "$base/api/media/$photo_id?v=original")" = 200
+          # The guest's cookie from before the upgrade still opens their photo.
+          test "$(curl -s -o /dev/null -w '%{http_code}' -b "$guest" "$base/api/media/$photo_id?v=thumb")" = 200
+
+      - name: Upgrade logs
+        if: failure()
+        run: |
+          docker logs previous || true
+          docker logs upgraded || true
+
       # Vulnerabilities in the image (Alpine packages and node_modules): every
       # finding to the Security tab, and the build fails on a critical one that
       # already has a fix.

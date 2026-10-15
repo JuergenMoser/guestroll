@@ -16,6 +16,7 @@ export async function freshEnv(extra: Record<string, string> = {}) {
   delete g.guestrollDb;
   delete g.guestrollLimiters;
   delete g.guestrollUploadLocks;
+  delete g.guestrollStorage;
   vi.stubEnv("DATA_DIR", dir);
   vi.stubEnv("ADMIN_PASSWORD", "test-admin-password");
   for (const [key, value] of Object.entries(extra)) vi.stubEnv(key, value);

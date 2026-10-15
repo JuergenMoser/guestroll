@@ -66,7 +66,7 @@ production. Every change on either branch runs:
 | Quality | Lint, types, production build |
 | Tests | Vitest with coverage, then Playwright on a production build |
 | Security | CodeQL (code and workflows) and `npm audit` on production dependencies, plus a weekly run |
-| Docker image | Builds the image, runs it on a custom port and user, uploads a photo end to end |
+| Docker image | Builds the image, runs it on a custom port and user, uploads a photo end to end, then **upgrades**: the latest release fills a data folder and the new image must start on it with every event and photo intact |
 | Workflows | actionlint and zizmor on `.github/` |
 
 **Publish to production** (manual) fast-forwards `main` to `develop` once
@@ -75,6 +75,13 @@ Quality and Tests passed there; **Align develop** carries anything that lands on
 multi-arch image on GHCR (and Docker Hub when its secrets are set) and a GitHub
 release with generated notes. **Docs** builds the website and the wiki from
 `docs/` (see below) when `develop` changes them and when a release is tagged.
+
+## Upgrades
+
+`tests/integration/upgrade.test.ts` rebuilds the database of every release from
+the migrations it shipped, fills it the way that version did, and opens it with
+today's code. When a release adds migrations, add it to `SHIPPED_MIGRATIONS`.
+Never edit a migration once it's released: instances already applied it.
 
 ## Releasing
 
