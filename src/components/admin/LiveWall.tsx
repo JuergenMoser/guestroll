@@ -55,29 +55,27 @@ export function LiveWall({ eventId, eventName, joinUrl }: { eventId: string; eve
   }, [photos, current]);
 
   return (
-    <div className="relative h-dvh w-full overflow-hidden bg-black text-white">
-      {current ? (
-        <>
-          <img key={`bg-${current.id}`} src={mediaUrl(current.id, "display")} alt="" className="absolute inset-0 size-full scale-110 object-cover opacity-30 blur-2xl" />
-          <img
-            key={current.id}
-            src={mediaUrl(current.id, "display")}
-            alt=""
-            className="absolute inset-0 m-auto max-h-[86%] max-w-[86%] animate-[wall-in_700ms_ease-out] border-[10px] border-white object-contain shadow-2xl"
-          />
-          {current.guestName && (
-            <p className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/60 px-5 py-2 text-2xl font-semibold">
-              {t("admin.wall.by", { name: current.guestName })}
-            </p>
-          )}
-        </>
-      ) : (
-        <p className="absolute inset-0 grid place-items-center text-4xl font-semibold text-white/60">{t("admin.wall.waiting")}</p>
-      )}
-      <div className="absolute top-6 left-8 space-y-1">
-        <p className="text-lg text-white/70">{joinUrl.replace(/^https?:\/\//, "")}</p>
-        <p className="text-4xl font-extrabold tracking-tight [font-stretch:80%]">{eventName}</p>
-      </div>
+    <div className="flex h-dvh w-full flex-col overflow-hidden bg-black text-white">
+      <header className="flex shrink-0 items-baseline justify-between gap-6 px-10 pt-7 pb-4">
+        <p className="truncate text-4xl font-extrabold tracking-tight [font-stretch:80%]">{eventName}</p>
+        <p className="shrink-0 text-xl text-white/60">{joinUrl.replace(/^https?:\/\//, "")}</p>
+      </header>
+      <main className="relative grid min-h-0 flex-1 place-items-center px-10 pb-10">
+        {current ? (
+          <>
+            <img key={`bg-${current.id}`} src={mediaUrl(current.id, "display")} alt="" className="absolute inset-0 size-full scale-110 object-cover opacity-25 blur-3xl" />
+            {/* A print: white border, wider at the bottom where the photographer is credited. */}
+            <figure key={current.id} className="relative flex max-h-full animate-[wall-in_700ms_ease-out] flex-col bg-white p-[1.2vh] pb-0 shadow-2xl">
+              <img src={mediaUrl(current.id, "display")} alt="" className="max-h-[calc(100dvh-14rem)] max-w-[80vw] object-contain" />
+              <figcaption className="flex h-[7vh] min-h-12 items-center justify-center text-[clamp(1rem,2.4vh,1.75rem)] font-semibold text-[#1a1b1d]">
+                {current.guestName ? t("admin.wall.by", { name: current.guestName }) : ""}
+              </figcaption>
+            </figure>
+          </>
+        ) : (
+          <p className="text-4xl font-semibold text-white/60">{t("admin.wall.waiting")}</p>
+        )}
+      </main>
     </div>
   );
 }
