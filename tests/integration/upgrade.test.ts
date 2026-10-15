@@ -13,7 +13,7 @@ import { freshEnv } from "../helpers/env";
  * release's database is rebuilt from the migrations it shipped (releases never
  * change their migrations), then filled the way that version wrote it.
  */
-const SHIPPED_MIGRATIONS = { "0.1.0": 1, "0.2.0": 2, "0.3.0": 9, "0.4.0": 10 } as const;
+const SHIPPED_MIGRATIONS = { "0.1.0": 1, "0.2.0": 2, "0.3.0": 9, "0.4.0": 10, "0.5.0": 17 } as const;
 type Release = keyof typeof SHIPPED_MIGRATIONS;
 
 const root = path.resolve(__dirname, "../..");

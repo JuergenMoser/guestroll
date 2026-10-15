@@ -11,6 +11,8 @@ always run on their own at startup; take a backup first all the same
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-15
+
 ### Added
 
 - Shared album, per event and off by default: guests can also see the others'
@@ -36,6 +38,19 @@ always run on their own at startup; take a backup first all the same
 - Single sign-on with any OpenID Connect provider (Authentik, Authelia,
   Keycloak…): `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`.
 - Prometheus metrics at `/api/metrics`, behind `METRICS_TOKEN`.
+
+### Changed
+
+- An event's settings tab: an outline that follows the page, what each section
+  is for, the frame picked from previews, the save bar only when something
+  changed (with *Discard*, and a warning before leaving), and duplicating and
+  deleting laid out like the rest.
+
+### Fixed
+
+- The live wall's mosaic and grid showed photos cropped to a square (frames
+  and edges cut off): they are now shown whole, over a blurred copy that fills
+  the tile.
 
 ## [0.4.0] - 2026-10-15
 
@@ -67,18 +82,7 @@ always run on their own at startup; take a backup first all the same
 - Demo mode (`DEMO_MODE=true`): seeded events, a shared account, a nightly
   reset, nothing sent out. `docker-compose.demo.yml` runs one.
 
-### Fixed
-
-- The live wall's mosaic and grid showed photos cropped to a square (frames
-  and edges cut off): they are now shown whole, over a blurred copy that fills
-  the tile.
-
 ### Changed
-
-- An event's settings tab: an outline that follows the page, what each section
-  is for, the frame picked from previews, the save bar only when something
-  changed (with *Discard*, and a warning before leaving), and duplicating and
-  deleting laid out like the rest.
 
 - Settings are split into five areas (account, team, notifications, data,
   system), each a page of its own; the list says which area needs attention:
@@ -208,7 +212,8 @@ First release.
 - English, French, Italian and Spanish; light and dark themes.
 - One multi-arch Docker image with a `/data` volume.
 
-[Unreleased]: https://github.com/achedon12/guestroll/compare/v0.4.0...develop
+[Unreleased]: https://github.com/achedon12/guestroll/compare/v0.5.0...develop
+[0.5.0]: https://github.com/achedon12/guestroll/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/achedon12/guestroll/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/achedon12/guestroll/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/achedon12/guestroll/compare/v0.1.1...v0.2.0
