@@ -29,7 +29,7 @@ export function SharePanel({ event, url }: { event: AdminEvent; url: string }) {
     <div className="space-y-4">
       <Card className="space-y-3">
         <CardTitle>{t("admin.share.title")}</CardTitle>
-        <p className="text-sm text-ink-400">{t("admin.share.hint")}</p>
+        <p className="text-sm text-ink-muted">{t("admin.share.hint")}</p>
         <CopyField value={url} />
       </Card>
 
@@ -49,7 +49,7 @@ export function SharePanel({ event, url }: { event: AdminEvent; url: string }) {
         <Card className="flex flex-col justify-between gap-4">
           <div className="space-y-1">
             <CardTitle>{t("admin.share.wall")}</CardTitle>
-            <p className="text-sm text-ink-400">{t("admin.share.wallHint")}</p>
+            <p className="text-sm text-ink-muted">{t("admin.share.wallHint")}</p>
           </div>
           <a href={`/admin/events/${event.id}/wall`} target="_blank" className={buttonClass("primary")}>
             <MonitorPlay className="size-4" aria-hidden />
@@ -59,7 +59,7 @@ export function SharePanel({ event, url }: { event: AdminEvent; url: string }) {
         <Card className="flex flex-col justify-between gap-4">
           <div className="space-y-1">
             <CardTitle>{t("admin.share.rotate")}</CardTitle>
-            <p className="text-sm text-ink-400">{t("admin.share.rotateHint")}</p>
+            <p className="text-sm text-ink-muted">{t("admin.share.rotateHint")}</p>
           </div>
           <Button variant={confirming ? "danger" : "secondary"} onClick={rotate} loading={busy} onBlur={() => setConfirming(false)}>
             <RefreshCw className="size-4" aria-hidden />

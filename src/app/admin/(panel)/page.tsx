@@ -16,7 +16,6 @@ export default async function DashboardPage() {
   return (
     <>
       <PageHeader
-        kicker={t("admin.title")}
         title={t("admin.dashboard")}
         actions={
           <Link href="/admin/events/new" className={buttonClass()}>
@@ -28,7 +27,7 @@ export default async function DashboardPage() {
       <div className="space-y-10">
         <StatsPanel stats={getStats()} locale={locale} />
         <section className="space-y-4">
-          <h2 className="kicker">{t("admin.events")}</h2>
+          <h2 className="text-xl font-bold tracking-tight">{t("admin.events")}</h2>
           <EventList events={listEvents().slice(0, 5)} locale={locale} />
         </section>
       </div>

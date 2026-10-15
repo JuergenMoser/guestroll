@@ -35,7 +35,7 @@ export default async function EventPage({ params, searchParams }: Props) {
   return (
     <EventTheme color={event.accentColor}>
       <PageHeader
-        kicker={event.eventDate ?? t("admin.events")}
+        context={event.eventDate ? <time dateTime={event.eventDate} className="font-medium tabular-nums text-stamp">{event.eventDate}</time> : undefined}
         title={event.name}
         actions={
           <a href={url} target="_blank" rel="noreferrer" className={buttonClass("secondary")}>
@@ -45,7 +45,7 @@ export default async function EventPage({ params, searchParams }: Props) {
         }
       />
 
-      <nav className="mb-6 flex gap-6 overflow-x-auto overflow-y-hidden border-b border-ink-800">
+      <nav className="mb-6 flex gap-6 overflow-x-auto overflow-y-hidden border-b border-line">
         {TABS.map((key) => (
           <Link
             key={key}
@@ -53,12 +53,12 @@ export default async function EventPage({ params, searchParams }: Props) {
             aria-current={tab === key ? "page" : undefined}
             className={cn(
               "-mb-px shrink-0 border-b-2 pb-3 text-sm transition",
-              tab === key ? "border-accent text-paper" : "border-transparent text-ink-400 hover:text-paper",
+              tab === key ? "border-accent text-ink" : "border-transparent text-ink-muted hover:text-ink",
             )}
           >
             {t(`admin.tabs.${key}`)}
             {key === "photos" && stats.totals.pending > 0 && (
-              <span className="ml-2 rounded-full bg-accent px-1.5 text-xs text-ink-950">{stats.totals.pending}</span>
+              <span className="ml-2 rounded-full bg-accent px-1.5 text-xs text-accent-ink">{stats.totals.pending}</span>
             )}
           </Link>
         ))}

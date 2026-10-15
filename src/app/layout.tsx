@@ -1,18 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Bricolage_Grotesque } from "next/font/google";
 import { I18nProvider } from "@/components/I18nProvider";
 import { config } from "@/lib/config";
 import { messages } from "@/lib/i18n/messages";
 import { getLocale } from "@/lib/i18n/server";
+import { getTheme } from "@/lib/theme/server";
 import { baseUrl } from "@/lib/urls";
 import "./globals.css";
 
 // Locale and app name come from runtime env vars: nothing may be frozen at build time.
 export const dynamic = "force-dynamic";
 
-const sans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
-const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
-const display = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-display-serif" });
+// One family for everything: its optical-size axis tightens display sizes and
+// opens up small ones, so body text stays readable without a second face.
+const bricolage = Bricolage_Grotesque({ subsets: ["latin"], variable: "--font-bricolage", axes: ["opsz", "wdth"] });
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -29,16 +30,19 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const viewport: Viewport = {
-  themeColor: "#0c0a09",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f2f3f0" },
+    { media: "(prefers-color-scheme: dark)", color: "#121314" },
+  ],
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const locale = await getLocale();
+  const [locale, theme] = await Promise.all([getLocale(), getTheme()]);
   return (
-    <html lang={locale} className={`${sans.variable} ${mono.variable} ${display.variable}`}>
+    <html lang={locale} className={bricolage.variable} data-theme={theme === "system" ? undefined : theme}>
       <body className="min-h-dvh">
         <I18nProvider messages={messages[locale]}>{children}</I18nProvider>
       </body>

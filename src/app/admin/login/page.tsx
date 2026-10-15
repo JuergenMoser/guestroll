@@ -1,6 +1,6 @@
-import { Aperture } from "lucide-react";
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/admin/LoginForm";
+import { Logo } from "@/components/Logo";
 import { isAdmin } from "@/lib/auth/admin";
 import { config } from "@/lib/config";
 import { getT } from "@/lib/i18n/server";
@@ -11,13 +11,17 @@ export default async function LoginPage() {
   if (await isAdmin()) redirect("/admin");
   const t = await getT();
   return (
-    <main className="grain grid min-h-dvh place-items-center px-4">
+    <main className="grid min-h-dvh place-items-center px-5">
       <div className="w-full max-w-sm space-y-8">
-        <div className="space-y-3 text-center">
-          <Aperture className="mx-auto size-8 text-accent" aria-hidden />
-          <p className="kicker">{config.appName}</p>
-          <h1 className="font-display text-4xl">{t("admin.loginTitle")}</h1>
-          <p className="text-sm text-ink-400">{t("admin.loginHint")}</p>
+        <div className="space-y-4">
+          <p className="flex items-center gap-2 text-[17px] font-bold tracking-tight">
+            <Logo className="size-7" />
+            {config.appName}
+          </p>
+          <div className="space-y-1">
+            <h1 className="text-3xl font-bold tracking-tight">{t("admin.loginTitle")}</h1>
+            <p className="text-ink-muted">{t("admin.loginHint")}</p>
+          </div>
         </div>
         <LoginForm />
       </div>

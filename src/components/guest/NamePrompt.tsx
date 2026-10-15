@@ -28,10 +28,10 @@ export function NamePrompt({ slug, initial = "", onDone }: NamePromptProps) {
   }
 
   return (
-    <form onSubmit={submit} className="mx-auto w-full max-w-sm space-y-5 text-center">
+    <form onSubmit={submit} className="w-full space-y-5">
       <div className="space-y-2">
-        <h2 className="font-display text-3xl">{t("guest.nameTitle")}</h2>
-        <p className="text-sm text-ink-300">{t("guest.nameHint")}</p>
+        <h2 className="text-3xl font-bold tracking-tight">{t("guest.nameTitle")}</h2>
+        <p className="text-[15px] text-pretty text-ink-soft">{t("guest.nameHint")}</p>
       </div>
       <Input
         value={name}
@@ -41,7 +41,7 @@ export function NamePrompt({ slug, initial = "", onDone }: NamePromptProps) {
         maxLength={40}
         autoComplete="given-name"
         required
-        className="text-center text-lg"
+        className="h-13 text-lg"
       />
       <div className="flex flex-col gap-2">
         <Button type="submit" size="lg" loading={busy}>

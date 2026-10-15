@@ -14,38 +14,45 @@ interface PhotoGridProps {
   onOpen?: (index: number) => void;
   selected?: ReadonlySet<string>;
   onToggle?: (id: string) => void;
+  /** `prints`: white-bordered prints for guests. `sheet`: a tight contact sheet for admins. */
+  variant?: "prints" | "sheet";
   className?: string;
 }
 
-export function PhotoGrid({ photos, onOpen, selected, onToggle, className }: PhotoGridProps) {
+export function PhotoGrid({ photos, onOpen, selected, onToggle, variant = "prints", className }: PhotoGridProps) {
   const t = useT();
+  const sheet = variant === "sheet";
   return (
-    <ul role="list" className={cn("grid grid-cols-3 gap-1 sm:grid-cols-4 lg:grid-cols-6", className)}>
+    <ul
+      role="list"
+      className={cn(sheet ? "grid grid-cols-3 gap-1 sm:grid-cols-5 lg:grid-cols-8" : "grid grid-cols-3 gap-3 sm:grid-cols-4", className)}
+    >
       {photos.map((photo, index) => {
         const isSelected = selected?.has(photo.id) ?? false;
         return (
-          <li key={photo.id} className="relative aspect-square">
+          <li key={photo.id} className={cn("relative", !sheet && "print")}>
             <button
               type="button"
               onClick={() => (onToggle ? onToggle(photo.id) : onOpen?.(index))}
               aria-pressed={onToggle ? isSelected : undefined}
               aria-label={photo.guestName ?? t("admin.anonymous")}
-              className={cn(
-                "block size-full overflow-hidden rounded-md bg-ink-800 focus-visible:outline-2 focus-visible:outline-accent",
-                isSelected && "ring-3 ring-accent ring-inset",
-              )}
+              className="block aspect-square w-full overflow-hidden bg-sunken focus-visible:outline-3 focus-visible:-outline-offset-3 focus-visible:outline-ink"
             >
               <img
                 src={mediaUrl(photo.id, "thumb")}
                 alt=""
                 loading="lazy"
                 decoding="async"
-                className={cn("size-full object-cover transition", isSelected && "scale-90 rounded", photo.status === "hidden" && "opacity-30")}
+                className={cn("size-full object-cover", photo.status === "hidden" && "opacity-30 grayscale")}
               />
             </button>
+            {isSelected && <span className="pointer-events-none absolute inset-0 ring-4 ring-accent ring-inset" />}
             {photo.status === "pending" && (
-              <span className="pointer-events-none absolute top-1 left-1 rounded-full bg-ink-950/80 p-1" title={t("guest.pendingReview")}>
-                <Clock className="size-3 text-accent" aria-label={t("guest.pendingReview")} />
+              <span
+                className={cn("pointer-events-none absolute grid size-6 place-items-center rounded-full bg-surface text-ink shadow-sm", sheet ? "top-1 left-1" : "top-2.5 left-2.5")}
+                title={t("guest.pendingReview")}
+              >
+                <Clock className="size-3.5" aria-label={t("guest.pendingReview")} />
               </span>
             )}
           </li>

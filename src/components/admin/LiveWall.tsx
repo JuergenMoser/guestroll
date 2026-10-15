@@ -55,7 +55,7 @@ export function LiveWall({ eventId, eventName, joinUrl }: { eventId: string; eve
   }, [photos, current]);
 
   return (
-    <div className="relative h-dvh w-full overflow-hidden bg-black">
+    <div className="relative h-dvh w-full overflow-hidden bg-black text-white">
       {current ? (
         <>
           <img key={`bg-${current.id}`} src={mediaUrl(current.id, "display")} alt="" className="absolute inset-0 size-full scale-110 object-cover opacity-30 blur-2xl" />
@@ -63,20 +63,20 @@ export function LiveWall({ eventId, eventName, joinUrl }: { eventId: string; eve
             key={current.id}
             src={mediaUrl(current.id, "display")}
             alt=""
-            className="absolute inset-0 m-auto max-h-[88%] max-w-[88%] animate-[wall-in_700ms_ease-out] rounded-lg object-contain shadow-2xl"
+            className="absolute inset-0 m-auto max-h-[86%] max-w-[86%] animate-[wall-in_700ms_ease-out] border-[10px] border-white object-contain shadow-2xl"
           />
           {current.guestName && (
-            <p className="absolute bottom-8 left-1/2 -translate-x-1/2 rounded-full bg-black/60 px-5 py-2 font-display text-2xl italic">
+            <p className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/60 px-5 py-2 text-2xl font-semibold">
               {t("admin.wall.by", { name: current.guestName })}
             </p>
           )}
         </>
       ) : (
-        <p className="absolute inset-0 grid place-items-center font-display text-4xl text-ink-300">{t("admin.wall.waiting")}</p>
+        <p className="absolute inset-0 grid place-items-center text-4xl font-semibold text-white/60">{t("admin.wall.waiting")}</p>
       )}
       <div className="absolute top-6 left-8 space-y-1">
-        <p className="kicker text-paper/70">{joinUrl.replace(/^https?:\/\//, "")}</p>
-        <p className="font-display text-3xl">{eventName}</p>
+        <p className="text-lg text-white/70">{joinUrl.replace(/^https?:\/\//, "")}</p>
+        <p className="text-4xl font-extrabold tracking-tight [font-stretch:80%]">{eventName}</p>
       </div>
     </div>
   );

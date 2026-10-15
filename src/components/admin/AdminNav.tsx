@@ -1,13 +1,18 @@
 "use client";
 
-import { Aperture, CalendarDays, LayoutDashboard, LogOut, Settings } from "lucide-react";
+import { CalendarDays, LayoutDashboard, LogOut, Settings } from "lucide-react";
+import { LanguagePicker } from "@/components/LanguagePicker";
+import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import type { Locale } from "@/lib/constants";
+import type { Theme } from "@/lib/theme/theme";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useT } from "@/components/I18nProvider";
 import { cn } from "@/components/ui";
 import { api } from "@/lib/client/api";
 
-export function AdminNav({ appName }: { appName: string }) {
+export function AdminNav({ appName, locale, theme }: { appName: string; locale: Locale; theme: Theme }) {
   const t = useT();
   const pathname = usePathname();
   const router = useRouter();
@@ -25,10 +30,10 @@ export function AdminNav({ appName }: { appName: string }) {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-ink-800 bg-ink-950/85 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-line bg-surface">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4">
-        <Link href="/admin" className="mr-4 flex items-center gap-2 font-semibold tracking-tight">
-          <Aperture className="size-5 text-accent" aria-hidden />
+        <Link href="/admin" className="mr-4 flex items-center gap-2 text-[17px] font-bold tracking-tight">
+          <Logo className="size-6" />
           <span className="hidden sm:inline">{appName}</span>
         </Link>
         <nav className="flex flex-1 items-center gap-1 overflow-x-auto">
@@ -38,8 +43,8 @@ export function AdminNav({ appName }: { appName: string }) {
               href={href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex shrink-0 items-center gap-2 rounded-full px-3 py-1.5 text-sm transition",
-                active ? "bg-ink-800 text-paper" : "text-ink-400 hover:text-paper",
+                "flex shrink-0 items-center gap-2 rounded-md px-3 py-1.5 text-[15px] transition-colors",
+                active ? "bg-sunken font-medium text-ink" : "text-ink-muted hover:text-ink",
               )}
             >
               <Icon className="size-4" aria-hidden />
@@ -47,10 +52,12 @@ export function AdminNav({ appName }: { appName: string }) {
             </Link>
           ))}
         </nav>
+        <LanguagePicker current={locale} className="hidden md:inline-flex" />
+        <ThemeToggle initial={theme} className="hidden md:inline-flex" />
         <button
           type="button"
           onClick={signOut}
-          className="flex items-center gap-2 rounded-full px-3 py-1.5 text-sm text-ink-400 hover:text-paper"
+          className="flex items-center gap-2 rounded-md px-3 py-1.5 text-[15px] text-ink-muted hover:text-ink"
         >
           <LogOut className="size-4" aria-hidden />
           <span className="hidden sm:inline">{t("admin.signOut")}</span>

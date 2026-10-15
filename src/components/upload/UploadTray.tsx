@@ -12,50 +12,46 @@ interface UploadTrayProps {
   onDismiss: (id: string) => void;
 }
 
+/** Prints sliding out of the camera, one per photo in the queue. */
 export function UploadTray({ items, onRetry, onDismiss }: UploadTrayProps) {
   const t = useT();
   if (items.length === 0) return null;
   const active = items.filter((i) => i.status !== "done" && i.status !== "error").length;
+  const failed = items.find((i) => i.status === "error");
 
   return (
     <section aria-live="polite" className="space-y-2">
-      {active > 0 && <p className="kicker">{t("guest.uploading", { n: active })}</p>}
-      <ul role="list" className="flex gap-2 overflow-x-auto pb-1">
+      <ul role="list" className="flex gap-3 overflow-x-auto px-1 pt-1 pb-2">
         {items.slice(0, 12).map((item) => (
-          <li key={item.id} className="relative size-16 shrink-0 overflow-hidden rounded-xl bg-ink-800 ring-1 ring-ink-700">
-            <img src={item.preview} alt="" className="size-full object-cover" />
-            {item.status === "uploading" || item.status === "compressing" || item.status === "queued" ? (
-              <span className="absolute inset-x-0 bottom-0 h-1 bg-ink-950/60">
-                <span className="block h-full bg-accent transition-[width]" style={{ width: `${Math.round(item.progress * 100)}%` }} />
+          <li key={item.id} className="print relative w-20 shrink-0 animate-[print-in_420ms_cubic-bezier(.2,.8,.2,1)]">
+            <img src={item.preview} alt="" className="aspect-square w-full object-cover" />
+            {item.status === "done" ? (
+              <span className="absolute right-1 bottom-1 grid size-5 place-items-center rounded-full bg-ok text-white" title={t("guest.uploaded")}>
+                <Check className="size-3.5" aria-label={t("guest.uploaded")} />
               </span>
-            ) : item.status === "done" ? (
-              <span className="absolute inset-0 grid place-items-center bg-ink-950/40" title={t("guest.uploaded")}>
-                <Check className="size-6 text-ok" aria-label={t("guest.uploaded")} />
+            ) : item.status === "error" ? (
+              <span className="absolute inset-1.5 flex items-center justify-center gap-1 bg-white/85">
+                <button type="button" onClick={() => onRetry(item.id)} aria-label={t("common.retry")} className="grid size-8 place-items-center rounded-md bg-ink text-white">
+                  <RotateCcw className="size-4" />
+                </button>
+                <button type="button" onClick={() => onDismiss(item.id)} aria-label={t("common.close")} className="grid size-8 place-items-center rounded-md bg-surface ring-1 ring-line-2">
+                  <X className="size-4" />
+                </button>
               </span>
             ) : (
-              <span className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-ink-950/70 p-1 text-center">
-                <span className="sr-only">{errorText(t, item.error)}</span>
-                <span className="flex gap-1">
-                  <button type="button" onClick={() => onRetry(item.id)} aria-label={t("common.retry")} className="rounded-full bg-ink-800 p-1">
-                    <RotateCcw className="size-3.5" />
-                  </button>
-                  <button type="button" onClick={() => onDismiss(item.id)} aria-label={t("common.close")} className="rounded-full bg-ink-800 p-1">
-                    <X className="size-3.5" />
-                  </button>
-                </span>
+              <span className="absolute inset-x-1.5 bottom-1.5 h-1 bg-white/70">
+                <span className="block h-full bg-ink transition-[width]" style={{ width: `${Math.max(Math.round(item.progress * 100), 4)}%` }} />
               </span>
             )}
           </li>
         ))}
       </ul>
-      {items
-        .filter((i) => i.status === "error")
-        .slice(0, 1)
-        .map((i) => (
-          <p key={i.id} role="alert" className="text-sm text-danger">
-            {errorText(t, i.error)}
-          </p>
-        ))}
+      {active > 0 && <p className="text-sm text-ink-muted">{t("guest.uploading", { n: active })}</p>}
+      {failed && (
+        <p role="alert" className="text-sm font-medium text-danger">
+          {errorText(t, failed.error)}
+        </p>
+      )}
     </section>
   );
 }

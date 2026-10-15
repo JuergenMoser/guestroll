@@ -18,11 +18,12 @@ interface GuestAppProps {
   initialCursor: number | null;
   closedReason: "closed" | "quota" | null;
   remaining: number | null;
+  sentCount: number;
 }
 
 const skipKey = (slug: string) => `guestroll:skip-name:${slug}`;
 
-export function GuestApp({ event, guestName, initialPhotos, initialCursor, closedReason, remaining: initialRemaining }: GuestAppProps) {
+export function GuestApp({ event, guestName, initialPhotos, initialCursor, closedReason, remaining: initialRemaining, sentCount }: GuestAppProps) {
   const t = useT();
   const [name, setName] = useState(guestName);
   const [askName, setAskName] = useState(false);
@@ -30,6 +31,7 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
   const [cursor, setCursor] = useState(initialCursor);
   const [loadingMore, setLoadingMore] = useState(false);
   const [remaining, setRemaining] = useState(initialRemaining);
+  const [sent, setSent] = useState(sentCount);
   const [open, setOpen] = useState<number | null>(null);
 
   useEffect(() => {
@@ -45,6 +47,7 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
   const onUploaded = useCallback((photo: PhotoDto) => {
     setPhotos((list) => [photo, ...list]);
     setRemaining((n) => (n === null ? null : Math.max(n - 1, 0)));
+    setSent((n) => n + 1);
   }, []);
 
   async function loadMore() {
@@ -77,27 +80,20 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
   }
 
   return (
-    <div className="space-y-10">
-      <CaptureHost event={event} closedReason={closedReason} remaining={remaining} onUploaded={onUploaded} />
+    <div className="space-y-9">
+      <CaptureHost event={event} closedReason={closedReason} remaining={remaining} sent={sent} onUploaded={onUploaded} />
 
-      {event.askGuestName && name && (
-        <p className="text-center text-xs text-ink-400">
-          {t("guest.signedAs", { name })}{" "}
-          <button type="button" onClick={() => setAskName(true)} className="underline underline-offset-2 hover:text-paper">
-            {t("guest.changeName")}
-          </button>
-        </p>
-      )}
-
-      <section className="space-y-3">
-        <h2 className="kicker">{t("guest.yourPhotos")}</h2>
-        <p className="flex items-center gap-2 text-xs text-ink-400">
-          <EyeOff className="size-3.5" aria-hidden />
-          {t("guest.privateNotice")}
-        </p>
+      <section className="space-y-4">
+        <div className="space-y-1">
+          <h2 className="text-xl font-bold tracking-tight">{t("guest.yourPhotos")}</h2>
+          <p className="flex items-center gap-1.5 text-sm text-ink-muted">
+            <EyeOff className="size-3.5 shrink-0" aria-hidden />
+            {t("guest.privateNotice")}
+          </p>
+        </div>
 
         {photos.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-ink-700 py-10 text-center text-sm text-ink-400">{t("guest.emptyMine")}</p>
+          <p className="border-2 border-dashed border-line-2 px-4 py-8 text-center text-[15px] text-ink-muted">{t("guest.emptyMine")}</p>
         ) : (
           <PhotoGrid photos={photos} onOpen={setOpen} />
         )}
@@ -110,6 +106,15 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
           </div>
         )}
       </section>
+
+      {event.askGuestName && name && (
+        <p className="text-sm text-ink-muted">
+          {t("guest.signedAs", { name })}{" "}
+          <button type="button" onClick={() => setAskName(true)} className="font-medium text-ink underline underline-offset-2">
+            {t("guest.changeName")}
+          </button>
+        </p>
+      )}
 
       {open !== null && (
         <Lightbox photos={photos} index={open} onIndex={setOpen} canDownload={(p) => p.mine} />

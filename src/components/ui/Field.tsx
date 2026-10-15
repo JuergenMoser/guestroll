@@ -2,8 +2,8 @@ import { useId, type InputHTMLAttributes, type ReactNode, type TextareaHTMLAttri
 import { cn } from "./cn";
 
 const control =
-  "w-full rounded-xl bg-ink-900 px-3.5 py-2.5 text-paper ring-1 ring-ink-700 placeholder:text-ink-400 " +
-  "focus:outline-none focus:ring-2 focus:ring-accent transition";
+  "w-full rounded-md bg-surface px-3 py-2 text-[15px] text-ink ring-1 ring-line-2 placeholder:text-ink-faint " +
+  "focus:outline-none focus:ring-2 focus:ring-ink";
 
 interface FieldProps {
   label: string;
@@ -17,12 +17,12 @@ export function Field({ label, hint, error, children }: FieldProps) {
   const hintId = hint || error ? `${id}-hint` : undefined;
   return (
     <div className="space-y-1.5">
-      <label htmlFor={id} className="block text-sm font-medium text-ink-300">
+      <label htmlFor={id} className="block text-sm font-medium text-ink">
         {label}
       </label>
       {children(id, hintId)}
       {(hint || error) && (
-        <p id={hintId} className={cn("text-xs", error ? "text-danger" : "text-ink-400")}>
+        <p id={hintId} className={cn("text-xs", error ? "text-danger" : "text-ink-muted")}>
           {error ?? hint}
         </p>
       )}

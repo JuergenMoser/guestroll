@@ -13,7 +13,7 @@ export function CameraCapture({ onFiles, disabled }: CaptureProps) {
     <div className="flex flex-col items-center gap-3">
       {camera.input}
       <ShutterButton onClick={camera.open} disabled={disabled} label={t("guest.takePhoto")} />
-      <span className="text-sm font-medium text-ink-300">{t("guest.takePhoto")}</span>
+      <span className="text-base font-semibold text-accent-ink">{t("guest.takePhoto")}</span>
     </div>
   );
 }

@@ -1,19 +1,21 @@
-import { Aperture } from "lucide-react";
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { buttonClass } from "@/components/ui";
 import { config } from "@/lib/config";
 import { getT } from "@/lib/i18n/server";
 
-/** Visitors normally land on /e/<slug> from a QR code; this page is for whoever runs the instance. */
+/** Guests land on /e/<slug> from a QR code; this page is for whoever runs the instance. */
 export default async function HomePage() {
   const t = await getT();
   return (
-    <main className="grain grid min-h-dvh place-items-center px-4">
-      <div className="max-w-xl space-y-8 text-center">
-        <Aperture className="mx-auto size-10 text-accent" aria-hidden />
-        <p className="kicker">{config.appName}</p>
-        <h1 className="font-display text-5xl leading-[1.05] text-balance sm:text-6xl">{t("home.title")}</h1>
-        <p className="text-ink-300 text-pretty">{t("home.lead")}</p>
+    <main className="mx-auto flex min-h-dvh max-w-2xl flex-col justify-center gap-8 px-5 py-16">
+      <p className="flex items-center gap-2 text-[17px] font-bold tracking-tight">
+        <Logo className="size-7" />
+        {config.appName}
+      </p>
+      <h1 className="text-[clamp(2.5rem,8vw,4.25rem)] leading-[0.95] font-extrabold tracking-[-0.03em] text-balance [font-stretch:85%]">{t("home.title")}</h1>
+      <p className="max-w-lg text-lg text-pretty text-ink-soft">{t("home.lead")}</p>
+      <div>
         <Link href="/admin" className={buttonClass("primary", "lg")}>
           {t("home.admin")}
         </Link>

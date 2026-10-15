@@ -23,10 +23,12 @@ export async function GET(request: Request, { params }: RouteContext<"/api/e/[sl
   const viewer = await getViewer();
   if (!canEnterEvent(event, viewer)) return apiError("forbidden");
 
+  // Guest endpoint: own photos only, admin or not (admins list through /api/admin).
+  const asGuest = { ...viewer, isAdmin: false };
   const before = Number(new URL(request.url).searchParams.get("before")) || undefined;
-  const rows = listPhotos(event, viewer, { before, limit: 48 });
+  const rows = listPhotos(event, asGuest, { before, limit: 48 });
   return NextResponse.json(
-    { photos: rows.map((p) => toPhotoDto(p, viewer)), nextCursor: rows.length === 48 ? rows[rows.length - 1].createdAt : null },
+    { photos: rows.map((p) => toPhotoDto(p, asGuest)), nextCursor: rows.length === 48 ? rows[rows.length - 1].createdAt : null },
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }

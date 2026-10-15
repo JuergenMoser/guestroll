@@ -21,7 +21,7 @@ interface QrDesignerProps {
 
 function Segmented<T extends string>({ value, options, onChange, label }: { value: T; options: readonly T[]; onChange: (v: T) => void; label: (v: T) => string }) {
   return (
-    <div role="radiogroup" className="flex gap-1 rounded-full bg-ink-950 p-1 ring-1 ring-ink-800">
+    <div role="radiogroup" className="flex gap-1 rounded-full bg-canvas p-1 ring-1 ring-line">
       {options.map((option) => (
         <button
           key={option}
@@ -29,7 +29,7 @@ function Segmented<T extends string>({ value, options, onChange, label }: { valu
           role="radio"
           aria-checked={value === option}
           onClick={() => onChange(option)}
-          className={cn("flex-1 rounded-full px-3 py-1 text-sm transition", value === option ? "bg-ink-700 text-paper" : "text-ink-400 hover:text-paper")}
+          className={cn("flex-1 rounded-full px-3 py-1 text-sm transition", value === option ? "bg-sunken-2 text-ink" : "text-ink-muted hover:text-ink")}
         >
           {label(option)}
         </button>
@@ -41,7 +41,7 @@ function Segmented<T extends string>({ value, options, onChange, label }: { valu
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="space-y-2">
-      <p className="text-sm font-medium text-ink-300">{label}</p>
+      <p className="text-sm font-medium text-ink-soft">{label}</p>
       {children}
     </div>
   );
@@ -49,7 +49,7 @@ function Row({ label, children }: { label: string; children: ReactNode }) {
 
 function ColorInput({ label, value, onChange, disabled }: { label: string; value: string; onChange: (v: string) => void; disabled?: boolean }) {
   return (
-    <label className={cn("flex items-center gap-2 rounded-xl bg-ink-950 p-1.5 pr-3 ring-1 ring-ink-800", disabled && "opacity-40")}>
+    <label className={cn("flex items-center gap-2 rounded-xl bg-canvas p-1.5 pr-3 ring-1 ring-line", disabled && "opacity-40")}>
       <input type="color" value={value} onChange={(e) => onChange(e.target.value)} disabled={disabled} className="h-8 w-9 cursor-pointer rounded-lg bg-transparent" />
       <span className="text-sm">{label}</span>
     </label>
@@ -130,7 +130,7 @@ export function QrDesigner({ event, url }: QrDesignerProps) {
     <Card className="grid gap-6 lg:grid-cols-[minmax(0,22rem)_1fr]">
       <div className="space-y-4">
         <div
-          className="grid place-items-center rounded-xl p-4 [background:repeating-conic-gradient(#2c2622_0_25%,#1f1b18_0_50%)_0_0/20px_20px]"
+          className="grid place-items-center rounded-xl p-4 [background:repeating-conic-gradient(var(--color-sunken-2)_0_25%,var(--color-sunken)_0_50%)_0_0/20px_20px]"
           aria-label={url}
           role="img"
         >
@@ -145,13 +145,13 @@ export function QrDesigner({ event, url }: QrDesignerProps) {
         )}
 
         <div className="space-y-2">
-          {dirty && <p className="text-xs text-ink-400">{t("admin.qr.unsaved")}</p>}
+          {dirty && <p className="text-xs text-ink-muted">{t("admin.qr.unsaved")}</p>}
           <div className="flex flex-wrap items-center gap-2">
             <select
               value={pngSize}
               onChange={(e) => setPngSize(Number(e.target.value))}
               aria-label={t("admin.qr.size")}
-              className="h-8 rounded-full bg-ink-800 px-3 text-sm ring-1 ring-ink-700"
+              className="h-8 rounded-full bg-sunken px-3 text-sm ring-1 ring-line-2"
             >
               {PNG_SIZES.map((size) => (
                 <option key={size} value={size}>
@@ -208,12 +208,12 @@ export function QrDesigner({ event, url }: QrDesignerProps) {
           </Row>
         </div>
 
-        <Row label={`${t("admin.qr.margin")} · ${style.margin}`}>
+        <Row label={`${t("admin.qr.margin")}: ${style.margin}`}>
           <input type="range" min={0} max={8} value={style.margin} onChange={(e) => set("margin", Number(e.target.value))} className="w-full accent-accent" />
         </Row>
 
         <Row label={t("admin.qr.logo")}>
-          <p className="text-xs text-ink-400">{t("admin.qr.logoHint")}</p>
+          <p className="text-xs text-ink-muted">{t("admin.qr.logoHint")}</p>
           <input
             ref={fileInput}
             type="file"
@@ -230,7 +230,7 @@ export function QrDesigner({ event, url }: QrDesignerProps) {
           <div className="flex flex-wrap items-center gap-2">
             {hasLogo && (
               // eslint-disable-next-line @next/next/no-img-element -- small admin preview
-              <img src={`/api/e/${event.slug}/logo?v=${logoVersion}`} alt="" className="size-10 rounded-lg bg-ink-950 object-contain p-1 ring-1 ring-ink-800" />
+              <img src={`/api/e/${event.slug}/logo?v=${logoVersion}`} alt="" className="size-10 rounded-lg bg-canvas object-contain p-1 ring-1 ring-line" />
             )}
             <Button size="sm" variant="secondary" onClick={() => fileInput.current?.click()} disabled={busy}>
               <ImagePlus className="size-4" aria-hidden />

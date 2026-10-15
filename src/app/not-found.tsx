@@ -3,11 +3,9 @@ import { getT } from "@/lib/i18n/server";
 export default async function NotFound() {
   const t = await getT();
   return (
-    <main className="grain grid min-h-dvh place-items-center px-4 text-center">
-      <div className="space-y-3">
-        <p className="kicker">404</p>
-        <h1 className="font-display text-4xl">{t("errors.not_found")}</h1>
-      </div>
+    <main className="mx-auto flex min-h-dvh max-w-xl flex-col justify-center gap-2 px-5">
+      <p className="text-6xl font-extrabold tabular-nums text-stamp">404</p>
+      <h1 className="text-2xl font-bold tracking-tight">{t("errors.not_found")}</h1>
     </main>
   );
 }

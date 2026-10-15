@@ -8,7 +8,7 @@ export default async function NewEventPage() {
   const t = await getT();
   return (
     <div className="mx-auto max-w-2xl">
-      <PageHeader kicker={t("admin.events")} title={t("admin.newEvent")} />
+      <PageHeader title={t("admin.newEvent")} />
       <EventForm />
     </div>
   );

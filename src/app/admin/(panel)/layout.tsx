@@ -1,6 +1,8 @@
 import { AdminNav } from "@/components/admin/AdminNav";
 import { requireAdminPage } from "@/lib/auth/guard";
 import { config } from "@/lib/config";
+import { getLocale } from "@/lib/i18n/server";
+import { getTheme } from "@/lib/theme/server";
 
 export const dynamic = "force-dynamic";
 
@@ -10,7 +12,7 @@ export default async function PanelLayout({ children }: { children: React.ReactN
   await requireAdminPage();
   return (
     <>
-      <AdminNav appName={config.appName} />
+      <AdminNav appName={config.appName} locale={await getLocale()} theme={await getTheme()} />
       <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
     </>
   );

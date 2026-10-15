@@ -2,7 +2,6 @@
 
 import { ImagePlus } from "lucide-react";
 import { useT } from "@/components/I18nProvider";
-import { Button } from "@/components/ui";
 import type { CaptureProps } from "./types";
 import { useFileInput } from "./useFileInput";
 
@@ -13,10 +12,15 @@ export function PickerCapture({ onFiles, disabled }: CaptureProps) {
   return (
     <div className="flex flex-col items-center">
       {picker.input}
-      <Button size="lg" onClick={picker.open} disabled={disabled}>
-        <ImagePlus className="size-5" aria-hidden />
+      <button
+        type="button"
+        onClick={picker.open}
+        disabled={disabled}
+        className="inline-flex h-16 items-center gap-3 rounded-2xl border-[3px] border-accent-ink px-7 text-lg font-semibold text-accent-ink transition hover:bg-accent-ink/10 disabled:opacity-35"
+      >
+        <ImagePlus className="size-6" aria-hidden />
         {t("guest.pickPhotos")}
-      </Button>
+      </button>
     </div>
   );
 }

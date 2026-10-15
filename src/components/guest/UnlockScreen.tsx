@@ -29,15 +29,15 @@ export function UnlockScreen({ slug }: { slug: string }) {
   }
 
   return (
-    <form onSubmit={submit} className="mx-auto w-full max-w-sm space-y-6 text-center">
-      <span className="mx-auto grid size-14 place-items-center rounded-full bg-ink-800 ring-1 ring-ink-700">
-        <Lock className="size-6 text-accent" aria-hidden />
-      </span>
+    <form onSubmit={submit} className="w-full space-y-6">
       <div className="space-y-2">
-        <h2 className="font-display text-3xl">{t("guest.unlockTitle")}</h2>
-        <p className="text-sm text-ink-300">{t("guest.unlockHint")}</p>
+        <h2 className="flex items-center gap-2.5 text-3xl font-bold tracking-tight">
+          <Lock className="size-6 shrink-0" aria-hidden />
+          {t("guest.unlockTitle")}
+        </h2>
+        <p className="text-[15px] text-ink-soft">{t("guest.unlockHint")}</p>
       </div>
-      <div className="text-left">
+      <div>
         <Field label={t("guest.unlockCode")} error={error}>
           {(id, describedBy) => (
             <Input
@@ -48,7 +48,7 @@ export function UnlockScreen({ slug }: { slug: string }) {
               autoComplete="off"
               autoCapitalize="none"
               required
-              className="text-center font-mono tracking-widest"
+              className="h-13 text-lg tracking-wider"
             />
           )}
         </Field>
