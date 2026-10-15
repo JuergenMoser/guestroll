@@ -4,6 +4,7 @@ import { I18nProvider } from "@/components/I18nProvider";
 import { config } from "@/lib/config";
 import { messages } from "@/lib/i18n/messages";
 import { getLocale } from "@/lib/i18n/server";
+import { baseUrl } from "@/lib/urls";
 import "./globals.css";
 
 // Locale and app name come from runtime env vars: nothing may be frozen at build time.
@@ -13,12 +14,19 @@ const sans = Geist({ subsets: ["latin"], variable: "--font-geist-sans" });
 const mono = Geist_Mono({ subsets: ["latin"], variable: "--font-geist-mono" });
 const display = Instrument_Serif({ subsets: ["latin"], weight: "400", style: ["normal", "italic"], variable: "--font-display-serif" });
 
-export const metadata: Metadata = {
-  title: { default: config.appName, template: `%s · ${config.appName}` },
-  description: "Self-hosted QR-code photo sharing for events.",
-  // Guest albums are private by nature: keep every page out of search engines.
-  robots: { index: false, follow: false },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  return {
+    // Absolute URLs for og:image: crawlers fetch them from outside.
+    metadataBase: new URL(await baseUrl()),
+    title: { default: config.appName, template: `%s · ${config.appName}` },
+    description: "Self-hosted QR-code photo sharing for events.",
+    applicationName: config.appName,
+    appleWebApp: { capable: true, title: config.appName, statusBarStyle: "black-translucent" },
+    twitter: { card: "summary_large_image" },
+    // Guest albums are private by nature: keep every page out of search engines.
+    robots: { index: false, follow: false },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#0c0a09",

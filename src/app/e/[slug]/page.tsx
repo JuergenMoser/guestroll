@@ -22,7 +22,8 @@ type Props = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const event = SLUG_PATTERN.test(slug) ? getEventBySlug(slug) : undefined;
-  return { title: event?.name ?? config.appName };
+  if (!event) return { title: config.appName };
+  return { title: event.name, description: event.description || undefined, openGraph: { title: event.name, description: event.description || undefined } };
 }
 
 export default async function GuestPage({ params }: Props) {
