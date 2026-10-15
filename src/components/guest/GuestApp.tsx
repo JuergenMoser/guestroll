@@ -4,7 +4,7 @@ import { EyeOff } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useT } from "@/components/I18nProvider";
 import { CaptureHost } from "@/components/upload/CaptureHost";
-import { Button } from "@/components/ui";
+import { Button, EmptyState } from "@/components/ui";
 import type { PublicEvent } from "@/lib/events";
 import type { PhotoDto } from "@/lib/photos";
 import { Lightbox } from "./Lightbox";
@@ -93,7 +93,7 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
         </div>
 
         {photos.length === 0 ? (
-          <p className="border-2 border-dashed border-line-2 px-4 py-8 text-center text-[15px] text-ink-muted">{t("guest.emptyMine")}</p>
+          <EmptyState>{t("guest.emptyMine")}</EmptyState>
         ) : (
           <PhotoGrid photos={photos} onOpen={setOpen} />
         )}

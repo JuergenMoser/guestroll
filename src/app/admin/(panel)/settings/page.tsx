@@ -3,7 +3,10 @@ import { PasswordForm } from "@/components/admin/PasswordForm";
 import { Card, CardTitle } from "@/components/ui";
 import { passwordManagedByEnv } from "@/lib/auth/admin";
 import { config } from "@/lib/config";
-import { getT } from "@/lib/i18n/server";
+import { LanguagePicker } from "@/components/LanguagePicker";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { getTheme } from "@/lib/theme/server";
+import { getLocale, getT } from "@/lib/i18n/server";
 import pkg from "../../../../../package.json";
 import { requireAdminPage } from "@/lib/auth/guard";
 
@@ -13,6 +16,13 @@ export default async function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-4">
       <PageHeader title={t("admin.settings")} />
+      <Card className="space-y-4">
+        <CardTitle>{t("admin.settingsPage.appearance")}</CardTitle>
+        <div className="flex flex-wrap gap-2">
+          <LanguagePicker current={await getLocale()} />
+          <ThemeToggle initial={await getTheme()} />
+        </div>
+      </Card>
       <Card className="space-y-4">
         <CardTitle>{t("admin.settingsPage.passwordTitle")}</CardTitle>
         {passwordManagedByEnv() ? <p className="text-sm text-ink-muted">{t("admin.settingsPage.managedByEnv")}</p> : <PasswordForm />}

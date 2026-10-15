@@ -8,7 +8,7 @@ import { Button, buttonClass, Card, CardTitle } from "@/components/ui";
 import { api } from "@/lib/client/api";
 import type { AdminEvent } from "@/lib/events";
 import { CopyField } from "./CopyField";
-import { QrDesigner } from "./QrDesigner";
+import { QrDesigner } from "./qr/QrDesigner";
 
 export function SharePanel({ event, url }: { event: AdminEvent; url: string }) {
   const t = useT();

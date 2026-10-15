@@ -1,4 +1,4 @@
-import { EventForm } from "@/components/admin/EventForm";
+import { EventForm } from "@/components/admin/event-form/EventForm";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { getT } from "@/lib/i18n/server";
 import { requireAdminPage } from "@/lib/auth/guard";

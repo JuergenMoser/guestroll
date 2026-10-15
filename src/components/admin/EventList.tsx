@@ -4,24 +4,24 @@ import { Lock } from "lucide-react";
 import Link from "next/link";
 import { accentStyle } from "@/components/EventTheme";
 import { useT } from "@/components/I18nProvider";
-import { Badge } from "@/components/ui";
+import { Badge, EmptyState } from "@/components/ui";
 import type { EventSummary } from "@/lib/events";
 import { formatBytes, formatNumber } from "@/lib/format";
 
 export function EventList({ events, locale }: { events: EventSummary[]; locale: string }) {
   const t = useT();
   if (events.length === 0) {
-    return <p className="border-2 border-dashed border-line-2 px-4 py-12 text-center text-ink-muted">{t("admin.noEvents")}</p>;
+    return <EmptyState className="py-12">{t("admin.noEvents")}</EmptyState>;
   }
   return (
     <div className="overflow-x-auto rounded-xl bg-surface ring-1 ring-line">
-      <table className="w-full min-w-[36rem] text-left text-[15px]">
+      <table className="w-full text-left text-[15px]">
         <thead className="border-b border-line text-sm text-ink-muted">
           <tr>
             <th scope="col" className="py-2.5 pr-3 pl-4 font-medium">{t("admin.form.name")}</th>
-            <th scope="col" className="px-3 py-2.5 font-medium">{t("admin.form.date")}</th>
+            <th scope="col" className="hidden px-3 py-2.5 font-medium sm:table-cell">{t("admin.form.date")}</th>
             <th scope="col" className="px-3 py-2.5 text-right font-medium">{t("admin.photos")}</th>
-            <th scope="col" className="px-3 py-2.5 text-right font-medium">{t("admin.storage")}</th>
+            <th scope="col" className="hidden px-3 py-2.5 text-right font-medium md:table-cell">{t("admin.storage")}</th>
             <th scope="col" className="py-2.5 pr-4 pl-3 font-medium"><span className="sr-only">Status</span></th>
           </tr>
         </thead>
@@ -35,11 +35,11 @@ export function EventList({ events, locale }: { events: EventSummary[]; locale: 
                     {event.hasAccessCode && <Lock className="size-3.5 text-ink-muted" aria-label={t("admin.form.accessCode")} />}
                   </Link>
                 </td>
-                <td className="px-3 py-3 tabular-nums text-ink-soft">{event.eventDate ?? ""}</td>
+                <td className="hidden px-3 py-3 tabular-nums text-ink-soft sm:table-cell">{event.eventDate ?? ""}</td>
                 <td className="px-3 py-3 text-right tabular-nums">{formatNumber(event.photoCount, locale)}</td>
-                <td className="px-3 py-3 text-right tabular-nums text-ink-soft">{formatBytes(event.bytes, locale)}</td>
+                <td className="hidden px-3 py-3 text-right tabular-nums text-ink-soft md:table-cell">{formatBytes(event.bytes, locale)}</td>
                 <td className="py-3 pr-4 pl-3">
-                  <span className="flex justify-end gap-1.5">
+                  <span className="flex flex-wrap justify-end gap-1.5">
                     {event.pendingCount > 0 && (
                       <Badge tone="accent">
                         {event.pendingCount} {t("admin.pending").toLowerCase()}

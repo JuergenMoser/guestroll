@@ -2,7 +2,7 @@
 
 import { CalendarDays, LayoutDashboard, LogOut, Settings } from "lucide-react";
 import { LanguagePicker } from "@/components/LanguagePicker";
-import { Logo } from "@/components/Logo";
+import { Brand } from "@/components/Brand";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import type { Locale } from "@/lib/constants";
 import type { Theme } from "@/lib/theme/theme";
@@ -32,9 +32,8 @@ export function AdminNav({ appName, locale, theme }: { appName: string; locale: 
   return (
     <header className="sticky top-0 z-30 border-b border-line bg-surface">
       <div className="mx-auto flex h-14 max-w-6xl items-center gap-2 px-4">
-        <Link href="/admin" className="mr-4 flex items-center gap-2 text-[17px] font-bold tracking-tight">
-          <Logo className="size-6" />
-          <span className="hidden sm:inline">{appName}</span>
+        <Link href="/admin" className="mr-2 sm:mr-4">
+          <Brand name={appName} compact />
         </Link>
         <nav className="flex flex-1 items-center gap-1 overflow-x-auto">
           {links.map(({ href, label, icon: Icon, active }) => (
@@ -52,8 +51,11 @@ export function AdminNav({ appName, locale, theme }: { appName: string; locale: 
             </Link>
           ))}
         </nav>
-        <LanguagePicker current={locale} className="hidden md:inline-flex" />
-        <ThemeToggle initial={theme} className="hidden md:inline-flex" />
+        {/* On phones these live in Settings: the bar keeps its room for navigation. */}
+        <div className="hidden items-center gap-2 md:flex">
+          <LanguagePicker current={locale} />
+          <ThemeToggle initial={theme} />
+        </div>
         <button
           type="button"
           onClick={signOut}

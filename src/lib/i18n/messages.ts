@@ -88,6 +88,7 @@ const en = {
     closed: "Closed",
     tabs: { photos: "Photos", stats: "Stats", share: "QR & sharing", settings: "Settings" },
     form: {
+      sections: { details: "Event", access: "Access", uploads: "Uploads", guests: "Guests" },
       name: "Event name",
       description: "Welcome message",
       descriptionHint: "Shown on the guest page.",
@@ -140,6 +141,7 @@ const en = {
       deleteConfirm: "Delete {n} photos permanently?",
     },
     settingsPage: {
+      appearance: "Language and theme",
       passwordTitle: "Admin password",
       current: "Current password",
       next: "New password (10+ characters)",
@@ -176,7 +178,7 @@ const en = {
       download: "Download",
       size: "Size",
     },
-    poster: { scan: "Scan to share your photos", noApp: "No app, no account: just your camera." },
+    poster: { print: "Print", scan: "Scan to share your photos", noApp: "No app, no account: just your camera." },
     wall: { waiting: "Waiting for the first photo…", by: "by {name}" },
   },
   home: {
@@ -280,6 +282,7 @@ const fr: DeepPartialStrings<Messages> = {
     closed: "Fermé",
     tabs: { photos: "Photos", stats: "Statistiques", share: "QR & partage", settings: "Réglages" },
     form: {
+      sections: { details: "Évènement", access: "Accès", uploads: "Envois", guests: "Invités" },
       name: "Nom de l'évènement",
       description: "Message d'accueil",
       descriptionHint: "Affiché sur la page des invités.",
@@ -332,6 +335,7 @@ const fr: DeepPartialStrings<Messages> = {
       deleteConfirm: "Supprimer définitivement {n} photos ?",
     },
     settingsPage: {
+      appearance: "Langue et thème",
       passwordTitle: "Mot de passe admin",
       current: "Mot de passe actuel",
       next: "Nouveau mot de passe (10 caractères min.)",
@@ -368,7 +372,7 @@ const fr: DeepPartialStrings<Messages> = {
       download: "Télécharger",
       size: "Taille",
     },
-    poster: { scan: "Scanne pour partager tes photos", noApp: "Sans appli, sans compte : juste ton appareil photo." },
+    poster: { print: "Imprimer", scan: "Scanne pour partager tes photos", noApp: "Sans appli, sans compte : juste ton appareil photo." },
     wall: { waiting: "En attente de la première photo…", by: "par {name}" },
   },
   home: {
@@ -468,6 +472,7 @@ const it: DeepPartialStrings<Messages> = {
     closed: "Chiuso",
     tabs: { photos: "Foto", stats: "Statistiche", share: "QR e condivisione", settings: "Impostazioni" },
     form: {
+      sections: { details: "Evento", access: "Accesso", uploads: "Caricamenti", guests: "Ospiti" },
       name: "Nome dell'evento",
       description: "Messaggio di benvenuto",
       descriptionHint: "Mostrato nella pagina degli ospiti.",
@@ -520,6 +525,7 @@ const it: DeepPartialStrings<Messages> = {
       deleteConfirm: "Eliminare definitivamente {n} foto?",
     },
     settingsPage: {
+      appearance: "Lingua e tema",
       passwordTitle: "Password di amministrazione",
       current: "Password attuale",
       next: "Nuova password (almeno 10 caratteri)",
@@ -556,7 +562,7 @@ const it: DeepPartialStrings<Messages> = {
       download: "Scarica",
       size: "Dimensione",
     },
-    poster: { scan: "Scansiona per condividere le tue foto", noApp: "Niente app, niente account: solo la tua fotocamera." },
+    poster: { print: "Stampa", scan: "Scansiona per condividere le tue foto", noApp: "Niente app, niente account: solo la tua fotocamera." },
     wall: { waiting: "In attesa della prima foto…", by: "di {name}" },
   },
   home: {
@@ -656,6 +662,7 @@ const es: DeepPartialStrings<Messages> = {
     closed: "Cerrado",
     tabs: { photos: "Fotos", stats: "Estadísticas", share: "QR y compartir", settings: "Ajustes" },
     form: {
+      sections: { details: "Evento", access: "Acceso", uploads: "Envíos", guests: "Invitados" },
       name: "Nombre del evento",
       description: "Mensaje de bienvenida",
       descriptionHint: "Se muestra en la página de los invitados.",
@@ -708,6 +715,7 @@ const es: DeepPartialStrings<Messages> = {
       deleteConfirm: "¿Eliminar definitivamente {n} fotos?",
     },
     settingsPage: {
+      appearance: "Idioma y tema",
       passwordTitle: "Contraseña de administración",
       current: "Contraseña actual",
       next: "Nueva contraseña (mínimo 10 caracteres)",
@@ -744,7 +752,7 @@ const es: DeepPartialStrings<Messages> = {
       download: "Descargar",
       size: "Tamaño",
     },
-    poster: { scan: "Escanea para compartir tus fotos", noApp: "Sin app, sin cuenta: solo tu cámara." },
+    poster: { print: "Imprimir", scan: "Escanea para compartir tus fotos", noApp: "Sin app, sin cuenta: solo tu cámara." },
     wall: { waiting: "Esperando la primera foto…", by: "de {name}" },
   },
   home: {

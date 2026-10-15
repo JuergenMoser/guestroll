@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { useT } from "@/components/I18nProvider";
-import { Button, Field, Input } from "@/components/ui";
+import { Button, Field, Input, StatusMessage } from "@/components/ui";
 import { ApiError, api } from "@/lib/client/api";
 import { errorText } from "@/lib/i18n/errors";
 
@@ -38,7 +38,7 @@ export function PasswordForm() {
         {(id) => <Input id={id} type="password" autoComplete="new-password" minLength={10} value={next} onChange={(e) => setNext(e.target.value)} required />}
       </Field>
       <div className="flex items-center justify-end gap-3">
-        {message && <p role="status" className={message.ok ? "text-sm text-ok" : "text-sm text-danger"}>{message.text}</p>}
+        <StatusMessage message={message} />
         <Button type="submit" loading={busy}>
           {t("admin.settingsPage.change")}
         </Button>

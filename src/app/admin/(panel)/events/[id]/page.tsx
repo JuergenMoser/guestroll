@@ -2,8 +2,8 @@ import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { DeleteEvent } from "@/components/admin/DeleteEvent";
-import { EventForm } from "@/components/admin/EventForm";
-import { ModerationPanel } from "@/components/admin/ModerationPanel";
+import { EventForm } from "@/components/admin/event-form/EventForm";
+import { ModerationPanel } from "@/components/admin/moderation/ModerationPanel";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { SharePanel } from "@/components/admin/SharePanel";
 import { StatsPanel } from "@/components/admin/StatsPanel";
@@ -38,9 +38,9 @@ export default async function EventPage({ params, searchParams }: Props) {
         context={event.eventDate ? <time dateTime={event.eventDate} className="font-medium tabular-nums text-stamp">{event.eventDate}</time> : undefined}
         title={event.name}
         actions={
-          <a href={url} target="_blank" rel="noreferrer" className={buttonClass("secondary")}>
-            <ExternalLink className="size-4" aria-hidden />
-            /e/{event.slug}
+          <a href={url} target="_blank" rel="noreferrer" className={buttonClass("secondary", "md", "max-w-full")}>
+            <ExternalLink className="size-4 shrink-0" aria-hidden />
+            <span className="truncate">/e/{event.slug}</span>
           </a>
         }
       />
