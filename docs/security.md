@@ -122,6 +122,13 @@ whatever the settings: this is a design decision, not an option.
   An event outside an organizer's scope answers `404`, exactly like a missing
   one, through the admin API and `/api/media` alike. The instance always keeps
   at least one owner.
+- **Two-step verification** (TOTP, RFC 6238) can be turned on per account
+  from Settings: after the password, a code from an authenticator app. The
+  secret is encrypted at rest, a code can't be used twice, codes are limited to
+  5 tries a minute per account, and the half-signed-in state expires after 5
+  minutes. Ten single-use recovery codes (stored hashed) cover a lost phone;
+  an owner can also reset another account's verification. Turning it off
+  takes the password and a code.
 - A wrong username takes as long to refuse as a wrong password (a bcrypt
   comparison runs either way), so usernames can't be probed by timing.
 - Sessions are encrypted, `HttpOnly`, `SameSite=Lax`, `Secure` in production

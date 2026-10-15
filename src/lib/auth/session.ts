@@ -9,6 +9,8 @@ export interface AdminSession {
   accountId?: string;
   /** Must match `accounts.session_version`: a password change signs out every older cookie. */
   version?: number;
+  /** Password checked, two-step code still to come: not signed in yet. */
+  pending?: { accountId: string; version: number; at: number };
 }
 
 export interface GuestSession {

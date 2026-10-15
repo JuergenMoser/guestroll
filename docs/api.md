@@ -77,12 +77,16 @@ deletion, accounts and email settings are for owners (`403` otherwise).
 | Route | Body | Response |
 |---|---|---|
 | `POST /api/admin/login` | `{ username, password }` | `{ ok }`. Without `username`, the first owner (`ADMIN_USERNAME`). |
+| `POST /api/admin/login/code` | `{ code }` (authenticator or recovery code) | `{ ok }`; required when login answered `{ codeRequired: true }` |
+| `GET /api/admin/me/two-factor` | | `{ enabled, recoveryCodesLeft }` |
+| `POST /api/admin/me/two-factor` | `{ action: "start" }`, `{ action: "confirm", code }`, `{ action: "recovery", code }` | `{ secret, uri, qr }` / `{ enabled, recoveryCodes }` / `{ recoveryCodes }` |
+| `DELETE /api/admin/me/two-factor` | `{ password, code }` | `{ enabled: false }` |
 | `POST /api/admin/logout` | | `{ ok }` |
 | `POST /api/admin/password` | `{ current, next }` | `{ ok }`, for the signed-in account |
 | `GET /api/admin/me` / `PATCH` | `{ name?, email? }` | `{ account }` |
 | `GET /api/admin/accounts` | | Owners: `{ accounts }` |
 | `POST /api/admin/accounts` | `{ username, role, name?, email?, eventIds?, password? }` | `201 { account, password }`; `password` is the generated one, else `null` |
-| `PATCH /api/admin/accounts/:id` | same fields, or `{ resetPassword: true }` | `{ account, password }` |
+| `PATCH /api/admin/accounts/:id` | same fields, or `{ resetPassword: true }`, `{ resetTwoFactor: true }` | `{ account, password }` |
 | `DELETE /api/admin/accounts/:id` | | `{ ok }` |
 | `GET /api/admin/events` | | `{ events: EventSummary[] }` |
 | `POST /api/admin/events` | event fields, `name` required | `201 { event }` |

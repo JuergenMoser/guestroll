@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { countOwners, deleteAccount, getAccount, getAccountByUsername, hashPassword, setAccountPassword, toAccountDto, updateAccount } from "@/lib/accounts";
 import { passwordManagedByEnv } from "@/lib/auth/admin";
+import { disableTwoFactor } from "@/lib/auth/twoFactor";
 import { apiError, readJson, requireAdmin } from "@/lib/http";
 import { randomToken } from "@/lib/security/ids";
 import { parseAccountInput } from "@/lib/validation";
@@ -31,6 +32,12 @@ export async function PATCH(request: Request, { params }: Context) {
     if (countOwners(account.id) === 0) return apiError("bad_request", { role: "last_owner" });
     if (passwordManagedByEnv(account)) return apiError("bad_request", { role: "managed_by_env" });
     if (account.id === admin.id) return apiError("bad_request", { role: "self" });
+  }
+
+  // A lost phone: an owner turns the account's two-step verification off; the person sets it up again.
+  if (body?.resetTwoFactor === true) {
+    if (account.id === admin.id) return apiError("bad_request", { twoFactor: "self" });
+    disableTwoFactor(account.id);
   }
 
   let generated: string | null = null;

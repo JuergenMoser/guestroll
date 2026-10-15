@@ -17,6 +17,9 @@ always run on their own at startup; take a backup first all the same
 - The documentation website: every release's docs with a version switcher and
   search, and the wiki generated from the same files.
 
+- Two-step verification (authenticator app codes) for admin accounts, with
+  recovery codes; owners can reset it for a lost phone.
+
 ### Security
 
 - Every page carries a nonce-based Content-Security-Policy.

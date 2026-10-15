@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { touchLogin } from "@/lib/accounts";
 import { track } from "@/lib/activity";
 import { verifyLogin } from "@/lib/auth/admin";
+import { hasTwoFactor } from "@/lib/auth/twoFactor";
 import { getAdminSession } from "@/lib/auth/session";
 import { config } from "@/lib/config";
 import { apiError, rateLimited, readJson } from "@/lib/http";
@@ -28,6 +29,14 @@ export async function POST(request: Request) {
 
   limiters.login.reset(ip);
   const session = await getAdminSession();
+  if (hasTwoFactor(account)) {
+    // The password was right; signing in waits for the code (POST /api/admin/login/code).
+    session.accountId = undefined;
+    session.pending = { accountId: account.id, version: account.sessionVersion, at: Date.now() };
+    await session.save();
+    return NextResponse.json({ ok: false, codeRequired: true });
+  }
+  session.pending = undefined;
   session.accountId = account.id;
   session.version = account.sessionVersion;
   await session.save();

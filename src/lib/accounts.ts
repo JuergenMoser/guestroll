@@ -13,6 +13,7 @@ export interface AccountDto {
   email: string | null;
   role: AccountRole;
   eventIds: string[];
+  twoFactor: boolean;
   lastLoginAt: number | null;
   createdAt: number;
 }
@@ -31,6 +32,7 @@ export function toAccountDto(account: AccountRow): AccountDto {
     email: account.email,
     role: account.role,
     eventIds: account.role === "owner" ? [] : accountEventIds(account.id),
+    twoFactor: Boolean(account.totpSecret),
     lastLoginAt: account.lastLoginAt,
     createdAt: account.createdAt,
   };

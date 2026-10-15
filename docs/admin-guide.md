@@ -151,6 +151,10 @@ event name to confirm.
   passwords within 15 minutes (at most hourly), disk 90% full (at most daily).
 - **Your account**: display name and the address where *your* events'
   summaries and alerts go.
+- **Two-step verification**: scan the QR code with an authenticator app,
+  type the code, and keep the ten recovery codes shown once. Every sign-in then
+  asks for a code after the password. Lost your phone? Sign in with a recovery
+  code, or ask an owner to reset it from **Accounts**.
 - **Password**: changing it signs out your other sessions. Not available for
   the account set by `ADMIN_PASSWORD`: change the variable and restart instead.
 - **Accounts** (owners): add people and pick their role.

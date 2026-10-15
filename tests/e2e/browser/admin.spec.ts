@@ -1,5 +1,5 @@
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN_PASSWORD, admin, client, createEvent, joinAndUpload } from "../helpers";
+import { ADMIN_PASSWORD, admin, client, createEvent, joinAndUpload, signIn as signInApi } from "../helpers";
 
 async function signIn(page: Page) {
   await page.goto("/admin");
@@ -118,5 +118,28 @@ test.describe("slideshow video", () => {
     expect(bytes.includes(Buffer.from("moov"))).toBe(true);
     expect(bytes.length).toBeGreaterThan(20_000);
     await expect(page.getByText("Done: the video was downloaded.")).toBeVisible();
+  });
+});
+
+test.describe("two-step sign-in", () => {
+  test("asks for the code after the password", async ({ page, baseURL }) => {
+    const { hotp, base32Decode } = await import("../../../src/lib/auth/totp");
+    const owner = await admin(baseURL!);
+    const username = `ui${Date.now()}`;
+    const { password } = await (await owner.post("/api/admin/accounts", { data: { username, role: "owner" } })).json();
+    const api = await signInApi(baseURL!, username, password);
+    const { secret } = await (await api.post("/api/admin/me/two-factor", { data: { action: "start" } })).json();
+    await api.post("/api/admin/me/two-factor", { data: { action: "confirm", code: hotp(base32Decode(secret), Math.floor(Date.now() / 30_000)) } });
+
+    await page.goto("/admin/login");
+    await page.getByLabel("Username").fill(username);
+    await page.getByLabel("Password").fill(password);
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.getByLabel("Code").fill("000000");
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page.getByText("Wrong or expired code.")).toBeVisible();
+    await page.getByLabel("Code").fill(hotp(base32Decode(secret), Math.floor(Date.now() / 30_000) + 1));
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(page.getByRole("heading", { name: "Dashboard" })).toBeVisible();
   });
 });

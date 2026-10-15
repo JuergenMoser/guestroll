@@ -197,6 +197,14 @@ export const accounts = sqliteTable("accounts", {
   /** Stored in the session cookie and bumped on password change: older cookies stop working. */
   sessionVersion: integer("session_version").notNull().default(1),
   lastLoginAt: integer("last_login_at"),
+  /** Two-step verification: the TOTP secret, sealed. Null when off. */
+  totpSecret: text("totp_secret"),
+  /** A secret being set up, sealed, until a first code confirms it. */
+  totpPending: text("totp_pending"),
+  /** The last step a code was accepted for: a code can't be used twice. */
+  totpLastStep: integer("totp_last_step"),
+  /** JSON array of hashed single-use recovery codes. */
+  recoveryCodes: text("recovery_codes"),
   createdAt: integer("created_at").notNull().default(now),
 });
 

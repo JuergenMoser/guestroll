@@ -82,6 +82,18 @@ export function AccountsPanel({ selfId, events, locale }: { selfId: string; even
     }
   }
 
+  async function resetTwoFactor(account: AccountDto) {
+    if (confirm !== `2fa:${account.id}`) return setConfirm(`2fa:${account.id}`);
+    setConfirm(null);
+    try {
+      await api(`/api/admin/accounts/${account.id}`, { method: "PATCH", body: { resetTwoFactor: true } });
+      setEditing(null);
+      await load();
+    } catch (err) {
+      setErrors(fieldErrors(t, err));
+    }
+  }
+
   async function remove(account: AccountDto) {
     if (confirm !== `delete:${account.id}`) return setConfirm(`delete:${account.id}`);
     setConfirm(null);
@@ -150,6 +162,11 @@ export function AccountsPanel({ selfId, events, locale }: { selfId: string; even
               <Button size="sm" variant={confirm === `reset:${current.id}` ? "danger" : "ghost"} onClick={() => resetPassword(current)} onBlur={() => setConfirm(null)}>
                 {confirm === `reset:${current.id}` ? t("admin.accounts.confirmReset") : t("admin.accounts.resetPassword")}
               </Button>
+              {current.twoFactor && current.id !== selfId && (
+                <Button size="sm" variant={confirm === `2fa:${current.id}` ? "danger" : "ghost"} onClick={() => resetTwoFactor(current)} onBlur={() => setConfirm(null)}>
+                  {confirm === `2fa:${current.id}` ? t("admin.twoFactor.confirmReset") : t("admin.twoFactor.reset")}
+                </Button>
+              )}
               {current.id !== selfId && (
                 <Button size="sm" variant={confirm === `delete:${current.id}` ? "danger" : "ghost"} onClick={() => remove(current)} onBlur={() => setConfirm(null)}>
                   {confirm === `delete:${current.id}` ? t("admin.accounts.confirmDelete") : t("admin.accounts.delete")}
@@ -218,6 +235,7 @@ export function AccountsPanel({ selfId, events, locale }: { selfId: string; even
                     {account.lastLoginAt ? t("admin.accounts.lastLogin", { date: date(account.lastLoginAt) }) : t("admin.accounts.neverLoggedIn")}
                   </p>
                 </div>
+                {account.twoFactor && <Badge tone="ok">{t("admin.twoFactor.badge")}</Badge>}
                 <Badge tone={account.role === "owner" ? "accent" : "neutral"}>{t(`admin.accounts.roles.${account.role}`)}</Badge>
                 <Button size="sm" variant="secondary" onClick={() => open(account)}>
                   {t("admin.accounts.edit")}

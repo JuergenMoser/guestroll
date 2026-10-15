@@ -5,6 +5,7 @@ import { BackupSettings } from "@/components/admin/BackupSettings";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { PasswordForm } from "@/components/admin/PasswordForm";
 import { ProfileForm } from "@/components/admin/ProfileForm";
+import { TwoFactorCard } from "@/components/admin/TwoFactorCard";
 import { LanguagePicker } from "@/components/LanguagePicker";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardTitle } from "@/components/ui";
@@ -41,6 +42,7 @@ export default async function SettingsPage() {
         <CardTitle>{t("admin.settingsPage.passwordTitle")}</CardTitle>
         {passwordManagedByEnv(account) ? <p className="text-sm text-ink-muted">{t("admin.settingsPage.managedByEnv")}</p> : <PasswordForm />}
       </Card>
+      <TwoFactorCard />
       {owner && (
         <>
           <AccountsPanel selfId={admin.id} events={listEvents(admin.scope).map((e) => ({ id: e.id, name: e.name }))} locale={locale} />

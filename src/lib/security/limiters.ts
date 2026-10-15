@@ -10,6 +10,11 @@ function create() {
   return {
     upload: new RateLimiter(config.rateLimit.uploadsPerMinute, MINUTE),
     login: new RateLimiter(config.rateLimit.loginPerMinute, MINUTE),
+    // Second step, per account: six digits are guessable without a ceiling.
+    twoFactor: new RateLimiter(5, MINUTE),
+    // Setting it up or off from the settings, per account: its own budget, so a
+    // fumbled setup doesn't lock the next sign-in.
+    twoFactorSettings: new RateLimiter(10, MINUTE),
     unlock: new RateLimiter(config.rateLimit.unlockPerMinute, MINUTE),
     /**
      * Wrong codes per event, across all clients, so rotating cookies or IPs

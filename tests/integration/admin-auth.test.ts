@@ -129,3 +129,24 @@ describe("session secret", () => {
     await expect(import("@/lib/auth/secret").then((m) => m.sessionSecret())).rejects.toThrow(/32/);
   });
 });
+
+describe("two-step verification at rest", () => {
+  it("keeps the secret sealed and recovery codes hashed", async () => {
+    env = await freshEnv();
+    const admin = await import("@/lib/auth/admin");
+    const accounts = await import("@/lib/accounts");
+    const tf = await import("@/lib/auth/twoFactor");
+    const { hotp, base32Decode } = await import("@/lib/auth/totp");
+    admin.bootstrapAdmin();
+    const account = accounts.getAccountByUsername("admin")!;
+    const { secret } = tf.startTwoFactor(account, "Guestroll");
+    const codes = tf.confirmTwoFactor(accounts.getAccount(account.id)!, hotp(base32Decode(secret), Math.floor(Date.now() / 30_000)))!;
+    const row = accounts.getAccount(account.id)!;
+    expect(row.totpSecret).not.toContain(secret);
+    expect(row.totpPending).toBeNull();
+    expect(row.recoveryCodes).not.toContain(codes[0]);
+    expect(row.sessionVersion).toBe(account.sessionVersion + 1);
+    expect(tf.checkSecondFactor(row, codes[0])).toBe("recovery");
+    expect(tf.checkSecondFactor(accounts.getAccount(account.id)!, codes[0])).toBeNull();
+  });
+});
