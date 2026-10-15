@@ -11,8 +11,6 @@ export interface PolicyEvent {
   accessCodeHash: string | null;
   uploadsOpen: boolean;
   uploadsCloseAt: number | null;
-  galleryVisibility: "private" | "guests";
-  guestDownload: boolean;
   maxPhotosPerGuest: number;
 }
 
@@ -53,29 +51,14 @@ export function uploadState(event: PolicyEvent, viewer: Viewer, uploadedByGuest:
   return { open: true };
 }
 
-export function canBrowseGallery(event: PolicyEvent, viewer: Viewer): boolean {
-  if (viewer.isAdmin) return true;
-  return canEnterEvent(event, viewer) && event.galleryVisibility === "guests";
-}
-
 /**
- * A guest always sees their own pictures (even pending moderation), sees other
- * people's only once they are visible and the gallery is shared, and gets the
- * full-resolution file only when the organiser allowed downloads — or when it
- * is a picture they took themselves.
+ * Guests only ever see the photos they took themselves (pending moderation
+ * included, hidden ones excluded). Nobody but the admin sees the rest of the
+ * event: the album is the hosts' alone.
  */
-export function canViewPhoto(event: PolicyEvent, photo: PolicyPhoto, viewer: Viewer, variant: PhotoVariant): boolean {
+export function canViewPhoto(event: PolicyEvent, photo: PolicyPhoto, viewer: Viewer, _variant: PhotoVariant): boolean {
   if (photo.eventId !== event.id) return false;
   if (viewer.isAdmin) return true;
   if (!canEnterEvent(event, viewer) || photo.status === "hidden") return false;
-
-  const own = viewer.guestId !== undefined && photo.guestId === viewer.guestId;
-  if (own) return true;
-
-  if (photo.status !== "visible" || event.galleryVisibility !== "guests") return false;
-  return variant !== "original" || event.guestDownload;
-}
-
-export function canDownloadArchive(event: PolicyEvent, viewer: Viewer): boolean {
-  return viewer.isAdmin || (canBrowseGallery(event, viewer) && event.guestDownload);
+  return viewer.guestId !== undefined && photo.guestId === viewer.guestId;
 }

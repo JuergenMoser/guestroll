@@ -17,8 +17,6 @@ type FormState = {
   removeCode: boolean;
   uploadsOpen: boolean;
   uploadsCloseAt: string;
-  galleryVisibility: "private" | "guests";
-  guestDownload: boolean;
   moderation: "post" | "pre";
   captureMode: "camera" | "picker" | "both";
   askGuestName: boolean;
@@ -42,8 +40,6 @@ function initialState(event?: AdminEvent): FormState {
     removeCode: false,
     uploadsOpen: event?.uploadsOpen ?? true,
     uploadsCloseAt: toLocalInput(event?.uploadsCloseAt ?? null),
-    galleryVisibility: event?.galleryVisibility ?? "private",
-    guestDownload: event?.guestDownload ?? false,
     moderation: event?.moderation ?? "post",
     captureMode: event?.captureMode ?? "camera",
     askGuestName: event?.askGuestName ?? true,
@@ -186,14 +182,6 @@ export function EventForm({ event }: { event?: AdminEvent }) {
       </Card>
 
       <Card className="space-y-5">
-        <Field label={t("admin.form.gallery")}>
-          {(id) => (
-            <Select id={id} value={form.galleryVisibility} onChange={(e) => set("galleryVisibility", e.target.value as FormState["galleryVisibility"])}>
-              <option value="private">{t("admin.form.galleryModes.private")}</option>
-              <option value="guests">{t("admin.form.galleryModes.guests")}</option>
-            </Select>
-          )}
-        </Field>
         <Field label={t("admin.form.moderation")}>
           {(id) => (
             <Select id={id} value={form.moderation} onChange={(e) => set("moderation", e.target.value as FormState["moderation"])}>
@@ -202,12 +190,6 @@ export function EventForm({ event }: { event?: AdminEvent }) {
             </Select>
           )}
         </Field>
-        <Switch
-          label={t("admin.form.guestDownload")}
-          checked={form.guestDownload}
-          onChange={(v) => set("guestDownload", v)}
-          disabled={form.galleryVisibility === "private"}
-        />
       </Card>
 
       <div className="flex items-center justify-end gap-3">

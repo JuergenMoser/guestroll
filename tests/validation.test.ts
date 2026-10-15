@@ -20,12 +20,12 @@ describe("parseEventInput", () => {
 
   it("validates enums, colors, dates and the quota", () => {
     const result = parseEventInput(
-      { galleryVisibility: "public", accentColor: "red", eventDate: "17/10/2026", maxPhotosPerGuest: -1, captureMode: "video" },
+      { moderation: "later", accentColor: "red", eventDate: "17/10/2026", maxPhotosPerGuest: -1, captureMode: "video" },
       true,
     );
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(Object.keys(result.errors).sort()).toEqual(["accentColor", "captureMode", "eventDate", "galleryVisibility", "maxPhotosPerGuest"]);
+      expect(Object.keys(result.errors).sort()).toEqual(["accentColor", "captureMode", "eventDate", "maxPhotosPerGuest", "moderation"]);
     }
   });
 

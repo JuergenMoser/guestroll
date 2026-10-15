@@ -10,8 +10,6 @@ export interface EventInput {
   accessCode?: string | null;
   uploadsOpen: boolean;
   uploadsCloseAt: number | null;
-  galleryVisibility: "private" | "guests";
-  guestDownload: boolean;
   moderation: "post" | "pre";
   captureMode: CaptureMode;
   askGuestName: boolean;
@@ -69,14 +67,13 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     else errors.uploadsCloseAt = "Expected a timestamp in milliseconds";
   }
 
-  for (const key of ["uploadsOpen", "guestDownload", "askGuestName"] as const) {
+  for (const key of ["uploadsOpen", "askGuestName"] as const) {
     if (!has(key)) continue;
     if (typeof src[key] === "boolean") out[key] = src[key] as boolean;
     else errors[key] = "Expected a boolean";
   }
 
   const enums = {
-    galleryVisibility: ["private", "guests"],
     moderation: ["post", "pre"],
     captureMode: CAPTURE_MODES,
   } as const;

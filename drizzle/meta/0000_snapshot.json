@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "662dcdaa-ed6c-4c0d-a590-700018aeaf6d",
+  "id": "926aa65f-63cb-4136-baec-9149e9984af3",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "activity": {
@@ -142,22 +142,6 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
-        },
-        "gallery_visibility": {
-          "name": "gallery_visibility",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "'private'"
-        },
-        "guest_download": {
-          "name": "guest_download",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": false
         },
         "moderation": {
           "name": "moderation",

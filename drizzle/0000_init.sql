@@ -18,8 +18,6 @@ CREATE TABLE `events` (
 	`access_code_hash` text,
 	`uploads_open` integer DEFAULT true NOT NULL,
 	`uploads_close_at` integer,
-	`gallery_visibility` text DEFAULT 'private' NOT NULL,
-	`guest_download` integer DEFAULT false NOT NULL,
 	`moderation` text DEFAULT 'post' NOT NULL,
 	`capture_mode` text DEFAULT 'camera' NOT NULL,
 	`ask_guest_name` integer DEFAULT true NOT NULL,

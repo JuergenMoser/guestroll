@@ -19,8 +19,6 @@ export interface PublicEvent {
   locked: boolean;
   captureMode: EventRow["captureMode"];
   askGuestName: boolean;
-  galleryShared: boolean;
-  guestDownload: boolean;
   moderation: EventRow["moderation"];
   maxPhotosPerGuest: number;
 }
@@ -36,8 +34,6 @@ export function toPublicEvent(event: EventRow): PublicEvent {
     locked: event.accessCodeHash !== null,
     captureMode: event.captureMode,
     askGuestName: event.askGuestName,
-    galleryShared: event.galleryVisibility === "guests",
-    guestDownload: event.guestDownload,
     moderation: event.moderation,
     maxPhotosPerGuest: event.maxPhotosPerGuest,
   };

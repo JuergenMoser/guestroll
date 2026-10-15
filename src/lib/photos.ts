@@ -1,8 +1,8 @@
 import "server-only";
-import { and, count, desc, eq, inArray, lt, ne, or, sql, type SQL } from "drizzle-orm";
+import { and, count, desc, eq, inArray, lt, ne, sql, type SQL } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { photos, type EventRow, type PhotoRow } from "@/lib/db/schema";
-import { canBrowseGallery, type Viewer } from "@/lib/policy";
+import type { Viewer } from "@/lib/policy";
 import { deletePhotoFiles } from "@/lib/storage/files";
 
 /** The client only ever receives ids and URLs that go back through `/api/media`. */
@@ -55,7 +55,7 @@ export interface ListOptions {
   status?: PhotoRow["status"];
 }
 
-/** Applies the same visibility rules as `canViewPhoto`, as a SQL filter. */
+/** Applies the same visibility rules as `canViewPhoto`, as a SQL filter: guests get their own photos only. */
 export function listPhotos(event: EventRow, viewer: Viewer, options: ListOptions = {}): PhotoRow[] {
   const limit = Math.min(Math.max(options.limit ?? 60, 1), 200);
   const filters: SQL[] = [eq(photos.eventId, event.id)];
@@ -63,13 +63,8 @@ export function listPhotos(event: EventRow, viewer: Viewer, options: ListOptions
   if (viewer.isAdmin) {
     if (options.status) filters.push(eq(photos.status, options.status));
   } else {
-    const own = viewer.guestId
-      ? and(eq(photos.guestId, viewer.guestId), ne(photos.status, "hidden"))
-      : undefined;
-    const shared = canBrowseGallery(event, viewer) ? eq(photos.status, "visible") : undefined;
-    const visibility = own && shared ? or(own, shared) : (own ?? shared);
-    if (!visibility) return [];
-    filters.push(visibility);
+    if (!viewer.guestId) return [];
+    filters.push(eq(photos.guestId, viewer.guestId), ne(photos.status, "hidden"));
   }
   if (options.before) filters.push(lt(photos.createdAt, options.before));
 
@@ -82,7 +77,7 @@ export function listPhotos(event: EventRow, viewer: Viewer, options: ListOptions
     .all();
 }
 
-export function listAllVisible(eventId: string, includeHidden: boolean): PhotoRow[] {
+export function listForArchive(eventId: string, includeHidden: boolean): PhotoRow[] {
   return getDb()
     .select()
     .from(photos)

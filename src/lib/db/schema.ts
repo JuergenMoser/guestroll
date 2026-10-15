@@ -16,10 +16,6 @@ export const events = sqliteTable("events", {
   uploadsOpen: integer("uploads_open", { mode: "boolean" }).notNull().default(true),
   /** Epoch ms after which uploads close automatically; null = never. */
   uploadsCloseAt: integer("uploads_close_at"),
-  galleryVisibility: text("gallery_visibility", { enum: ["private", "guests"] })
-    .notNull()
-    .default("private"),
-  guestDownload: integer("guest_download", { mode: "boolean" }).notNull().default(false),
   moderation: text("moderation", { enum: ["post", "pre"] }).notNull().default("post"),
   captureMode: text("capture_mode", { enum: ["camera", "picker", "both"] }).notNull().default("camera"),
   askGuestName: integer("ask_guest_name", { mode: "boolean" }).notNull().default(true),

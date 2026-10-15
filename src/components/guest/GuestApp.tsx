@@ -1,10 +1,10 @@
 "use client";
 
-import { Download, EyeOff } from "lucide-react";
+import { EyeOff } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useT } from "@/components/I18nProvider";
 import { CaptureHost } from "@/components/upload/CaptureHost";
-import { Button, buttonClass } from "@/components/ui";
+import { Button } from "@/components/ui";
 import type { PublicEvent } from "@/lib/events";
 import type { PhotoDto } from "@/lib/photos";
 import { Lightbox } from "./Lightbox";
@@ -90,27 +90,14 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
       )}
 
       <section className="space-y-3">
-        <div className="flex items-end justify-between gap-3">
-          <h2 className="kicker">{event.galleryShared ? t("guest.sharedGallery") : t("guest.yourPhotos")}</h2>
-          {event.galleryShared && event.guestDownload && photos.length > 0 && (
-            <a href={`/api/e/${event.slug}/archive`} className={buttonClass("ghost", "sm")}>
-              <Download className="size-4" aria-hidden />
-              {t("guest.downloadAll")}
-            </a>
-          )}
-        </div>
-
-        {!event.galleryShared && (
-          <p className="flex items-center gap-2 text-xs text-ink-400">
-            <EyeOff className="size-3.5" aria-hidden />
-            {t("guest.privateNotice")}
-          </p>
-        )}
+        <h2 className="kicker">{t("guest.yourPhotos")}</h2>
+        <p className="flex items-center gap-2 text-xs text-ink-400">
+          <EyeOff className="size-3.5" aria-hidden />
+          {t("guest.privateNotice")}
+        </p>
 
         {photos.length === 0 ? (
-          <p className="rounded-2xl border border-dashed border-ink-700 py-10 text-center text-sm text-ink-400">
-            {event.galleryShared ? t("guest.emptyShared") : t("guest.emptyMine")}
-          </p>
+          <p className="rounded-2xl border border-dashed border-ink-700 py-10 text-center text-sm text-ink-400">{t("guest.emptyMine")}</p>
         ) : (
           <PhotoGrid photos={photos} onOpen={setOpen} />
         )}
@@ -125,7 +112,7 @@ export function GuestApp({ event, guestName, initialPhotos, initialCursor, close
       </section>
 
       {open !== null && (
-        <Lightbox photos={photos} index={open} onIndex={setOpen} canDownload={(p) => p.mine || event.guestDownload} />
+        <Lightbox photos={photos} index={open} onIndex={setOpen} canDownload={(p) => p.mine} />
       )}
     </div>
   );

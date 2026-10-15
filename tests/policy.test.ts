@@ -1,7 +1,5 @@
 import { describe, expect, it } from "vitest";
 import {
-  canBrowseGallery,
-  canDownloadArchive,
   canEnterEvent,
   canJoinFreely,
   canViewPhoto,
@@ -16,8 +14,6 @@ const event = (overrides: Partial<PolicyEvent> = {}): PolicyEvent => ({
   accessCodeHash: null,
   uploadsOpen: true,
   uploadsCloseAt: null,
-  galleryVisibility: "private",
-  guestDownload: false,
   maxPhotosPerGuest: 0,
   ...overrides,
 });
@@ -66,47 +62,28 @@ describe("canViewPhoto", () => {
     expect(canViewPhoto(event(), photo({ eventId: "event-2" }), admin, "thumb")).toBe(false);
   });
 
-  it("hides other guests' photos while the gallery is private", () => {
-    expect(canViewPhoto(event(), photo(), guest(), "thumb")).toBe(false);
-    expect(canBrowseGallery(event(), guest())).toBe(false);
+  it("never shows a guest another guest's photo, in any size or status", () => {
+    for (const status of ["visible", "pending", "hidden"] as const) {
+      for (const variant of ["thumb", "display", "original"] as const) {
+        expect(canViewPhoto(event(), photo({ status }), guest(), variant)).toBe(false);
+      }
+    }
   });
 
-  it("always shows guests their own photos, pending included, in full size", () => {
+  it("shows guests their own photos, pending included, in full size", () => {
     expect(canViewPhoto(event(), photo({ guestId: "guest-1", status: "pending" }), guest(), "original")).toBe(true);
+    expect(canViewPhoto(event(), photo({ guestId: "guest-1" }), guest(), "thumb")).toBe(true);
   });
 
   it("hides a guest's own photo once the admin hid it", () => {
     expect(canViewPhoto(event(), photo({ guestId: "guest-1", status: "hidden" }), guest(), "thumb")).toBe(false);
   });
 
-  it("shows only visible photos of others in a shared gallery", () => {
-    const shared = event({ galleryVisibility: "guests" });
-    expect(canViewPhoto(shared, photo(), guest(), "display")).toBe(true);
-    expect(canViewPhoto(shared, photo({ status: "pending" }), guest(), "display")).toBe(false);
-    expect(canViewPhoto(shared, photo({ status: "hidden" }), guest(), "display")).toBe(false);
-  });
-
-  it("serves originals of others only when downloads are allowed", () => {
-    expect(canViewPhoto(event({ galleryVisibility: "guests" }), photo(), guest(), "original")).toBe(false);
-    expect(canViewPhoto(event({ galleryVisibility: "guests", guestDownload: true }), photo(), guest(), "original")).toBe(true);
-  });
-
-  it("gives nothing to someone who never joined, whatever the settings", () => {
-    const open = event({ galleryVisibility: "guests", guestDownload: true });
-    expect(canViewPhoto(open, photo(), stranger, "thumb")).toBe(false);
-    expect(canViewPhoto(open, photo({ guestId: "guest-1" }), { ...stranger, guestId: "guest-1" }, "thumb")).toBe(false);
+  it("gives nothing to a browser that never joined, even with a matching guest id", () => {
+    expect(canViewPhoto(event(), photo({ guestId: "guest-1" }), { ...stranger, guestId: "guest-1" }, "thumb")).toBe(false);
   });
 
   it("lets the admin see everything, hidden included", () => {
     expect(canViewPhoto(event(), photo({ status: "hidden" }), admin, "original")).toBe(true);
-  });
-});
-
-describe("canDownloadArchive", () => {
-  it("requires a shared gallery with downloads enabled", () => {
-    expect(canDownloadArchive(event({ guestDownload: true }), guest())).toBe(false);
-    expect(canDownloadArchive(event({ galleryVisibility: "guests" }), guest())).toBe(false);
-    expect(canDownloadArchive(event({ galleryVisibility: "guests", guestDownload: true }), guest())).toBe(true);
-    expect(canDownloadArchive(event(), admin)).toBe(true);
   });
 });
