@@ -7,6 +7,7 @@ import { config } from "@/lib/config";
 import { eventSlug, newId } from "@/lib/security/ids";
 import { deleteEventFiles } from "@/lib/storage/files";
 import type { EventInput } from "@/lib/validation";
+import { parseQrStyle, type QrStyle } from "@/lib/qr/style";
 
 /** What the guest page may know about an event: no hash, no internal settings. */
 export interface PublicEvent {
@@ -21,6 +22,7 @@ export interface PublicEvent {
   askGuestName: boolean;
   moderation: EventRow["moderation"];
   maxPhotosPerGuest: number;
+  logoVersion: number | null;
 }
 
 export function toPublicEvent(event: EventRow): PublicEvent {
@@ -36,13 +38,22 @@ export function toPublicEvent(event: EventRow): PublicEvent {
     askGuestName: event.askGuestName,
     moderation: event.moderation,
     maxPhotosPerGuest: event.maxPhotosPerGuest,
+    logoVersion: event.logoVersion,
   };
 }
 
-export type AdminEvent = Omit<EventRow, "accessCodeHash"> & { hasAccessCode: boolean };
+export type AdminEvent = Omit<EventRow, "accessCodeHash" | "qrStyle"> & { hasAccessCode: boolean; qrStyle: QrStyle };
 
-export function toAdminEvent({ accessCodeHash, ...event }: EventRow): AdminEvent {
-  return { ...event, hasAccessCode: accessCodeHash !== null };
+export function toAdminEvent({ accessCodeHash, qrStyle, ...event }: EventRow): AdminEvent {
+  return { ...event, hasAccessCode: accessCodeHash !== null, qrStyle: parseQrStyle(qrStyle ? JSON.parse(qrStyle) : null) };
+}
+
+export function eventQrStyle(event: EventRow): QrStyle {
+  return parseQrStyle(event.qrStyle ? JSON.parse(event.qrStyle) : null);
+}
+
+export function setLogoVersion(id: string, version: number | null): EventRow | undefined {
+  return getDb().update(events).set({ logoVersion: version }).where(eq(events.id, id)).returning().get();
 }
 
 export function getEventBySlug(slug: string): EventRow | undefined {

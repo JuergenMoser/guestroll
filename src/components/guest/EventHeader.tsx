@@ -6,6 +6,10 @@ export function EventHeader({ event, locale }: { event: PublicEvent; locale: str
     : null;
   return (
     <header className="space-y-3 text-center">
+      {event.logoVersion && (
+        // eslint-disable-next-line @next/next/no-img-element -- tiny branding image from our own route
+        <img src={`/api/e/${event.slug}/logo?v=${event.logoVersion}`} alt="" className="mx-auto mb-5 size-20 object-contain" />
+      )}
       {date && <p className="kicker">{date}</p>}
       <h1 className="font-display text-5xl leading-none tracking-tight text-balance sm:text-6xl">{event.name}</h1>
       {event.description && <p className="mx-auto max-w-md text-sm text-pretty text-ink-300">{event.description}</p>}

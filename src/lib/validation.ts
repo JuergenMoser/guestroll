@@ -1,4 +1,5 @@
 import { CAPTURE_MODES, type CaptureMode } from "@/lib/config";
+import { parseQrStyle } from "@/lib/qr/style";
 
 /** Admin-editable event fields, already validated and normalised. */
 export interface EventInput {
@@ -14,6 +15,8 @@ export interface EventInput {
   captureMode: CaptureMode;
   askGuestName: boolean;
   maxPhotosPerGuest: number;
+  /** Already normalised by `parseQrStyle` and serialised. */
+  qrStyle: string;
 }
 
 export type ValidationResult<T> = { ok: true; value: T } | { ok: false; errors: Record<string, string> };
@@ -88,6 +91,11 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     const n = src.maxPhotosPerGuest;
     if (typeof n === "number" && Number.isInteger(n) && n >= 0 && n <= 10_000) out.maxPhotosPerGuest = n;
     else errors.maxPhotosPerGuest = "Expected an integer between 0 and 10000";
+  }
+
+  if (has("qrStyle")) {
+    if (typeof src.qrStyle === "object" && src.qrStyle !== null) out.qrStyle = JSON.stringify(parseQrStyle(src.qrStyle));
+    else errors.qrStyle = "Expected an object";
   }
 
   return Object.keys(errors).length ? { ok: false, errors } : { ok: true, value: out };

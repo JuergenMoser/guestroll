@@ -66,7 +66,7 @@ export default async function EventPage({ params, searchParams }: Props) {
 
       {tab === "photos" && <ModerationPanel eventId={event.id} pendingCount={stats.totals.pending} />}
       {tab === "stats" && <StatsPanel stats={stats} locale={await getLocale()} />}
-      {tab === "share" && <SharePanel eventId={event.id} url={url} slug={event.slug} />}
+      {tab === "share" && <SharePanel event={event} url={url} />}
       {tab === "settings" && (
         <div className="mx-auto max-w-2xl space-y-8">
           <EventForm event={event} />

@@ -22,6 +22,24 @@ export function photoPath(eventId: string, photoId: string, variant: PhotoVarian
   return path.join(/*turbopackIgnore: true*/ config.uploadsDir, eventId, `${photoId}.${variant}.${EXT[variant]}`);
 }
 
+export function logoPath(eventId: string): string {
+  if (!SAFE_ID.test(eventId)) throw new Error("Invalid storage id");
+  return path.join(/*turbopackIgnore: true*/ config.uploadsDir, eventId, "logo.png");
+}
+
+export async function writeLogo(eventId: string, png: Buffer): Promise<void> {
+  await fsp.mkdir(path.dirname(logoPath(eventId)), { recursive: true });
+  await fsp.writeFile(logoPath(eventId), png, { mode: 0o640 });
+}
+
+export async function readLogo(eventId: string): Promise<Buffer | null> {
+  return fsp.readFile(/*turbopackIgnore: true*/ logoPath(eventId)).catch(() => null);
+}
+
+export async function deleteLogo(eventId: string): Promise<void> {
+  await fsp.rm(logoPath(eventId), { force: true });
+}
+
 export async function writePhotoFiles(eventId: string, photoId: string, files: Record<PhotoVariant, Buffer>): Promise<void> {
   await fsp.mkdir(path.join(config.uploadsDir, eventId), { recursive: true });
   await Promise.all(

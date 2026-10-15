@@ -20,6 +20,10 @@ export const events = sqliteTable("events", {
   captureMode: text("capture_mode", { enum: ["camera", "picker", "both"] }).notNull().default("camera"),
   askGuestName: integer("ask_guest_name", { mode: "boolean" }).notNull().default(true),
   maxPhotosPerGuest: integer("max_photos_per_guest").notNull().default(0),
+  /** JSON, read through `parseQrStyle`: null means the default style. */
+  qrStyle: text("qr_style"),
+  /** Epoch ms of the last logo upload, null without a logo. Doubles as a cache-buster in URLs. */
+  logoVersion: integer("logo_version"),
   createdAt: integer("created_at").notNull().default(now),
 });
 

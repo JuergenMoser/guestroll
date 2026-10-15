@@ -54,3 +54,24 @@ export async function processPhoto(input: Buffer): Promise<ProcessedPhoto> {
     height: original.info.height,
   };
 }
+
+/**
+ * Event logos: any raster image, trimmed of empty borders and fitted into a
+ * transparent 512 px square. SVG is refused on purpose: it can carry scripts
+ * and external references, and the logo ends up inside downloadable files.
+ */
+export async function processLogo(input: Buffer): Promise<Buffer> {
+  const type = await fileTypeFromBuffer(input);
+  if (!type || !ACCEPTED.has(type.mime)) throw new InvalidImageError("Unsupported file type");
+  const source = type.mime === "image/heic" || type.mime === "image/heif" ? await heicToJpeg(input) : input;
+  try {
+    return await sharp(source, { limitInputPixels: config.maxImagePixels, animated: false })
+      .rotate()
+      .trim()
+      .resize(512, 512, { fit: "contain", background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png()
+      .toBuffer();
+  } catch {
+    throw new InvalidImageError("Unreadable image");
+  }
+}
