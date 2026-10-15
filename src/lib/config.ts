@@ -50,6 +50,8 @@ export const config = {
   uploadsDir: path.join(/*turbopackIgnore: true*/ dataDir, "uploads"),
   secretFile: path.join(/*turbopackIgnore: true*/ dataDir, ".session-secret"),
 
+  /** The owner account created on first start, whose password ADMIN_PASSWORD controls. */
+  adminUsername: (process.env.ADMIN_USERNAME?.trim() || "admin").toLowerCase(),
   adminPassword: process.env.ADMIN_PASSWORD || "",
   sessionSecret: process.env.SESSION_SECRET || "",
   /** Only trust X-Forwarded-For when a reverse proxy we control sets it. */

@@ -10,6 +10,7 @@ import { errorText } from "@/lib/i18n/errors";
 export function LoginForm() {
   const t = useT();
   const router = useRouter();
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string>();
   const [busy, setBusy] = useState(false);
@@ -19,7 +20,7 @@ export function LoginForm() {
     setBusy(true);
     setError(undefined);
     try {
-      await api("/api/admin/login", { body: { password } });
+      await api("/api/admin/login", { body: { username, password } });
       router.replace("/admin");
       router.refresh();
     } catch (err) {
@@ -30,6 +31,20 @@ export function LoginForm() {
 
   return (
     <form onSubmit={submit} className="space-y-5">
+      <Field label={t("admin.username")}>
+        {(id) => (
+          <Input
+            id={id}
+            autoComplete="username"
+            autoCapitalize="none"
+            spellCheck={false}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            placeholder="admin"
+            autoFocus
+          />
+        )}
+      </Field>
       <Field label={t("admin.password")} error={error}>
         {(id, describedBy) => (
           <Input
@@ -40,7 +55,6 @@ export function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            autoFocus
           />
         )}
       </Field>

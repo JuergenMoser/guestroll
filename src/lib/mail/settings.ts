@@ -1,4 +1,5 @@
 import "server-only";
+import { accountsForEvent, listAccounts } from "@/lib/accounts";
 import { config } from "@/lib/config";
 import { open, seal } from "@/lib/crypto/secretBox";
 import { readJsonSetting, readSetting, writeSetting } from "@/lib/settings";
@@ -85,3 +86,15 @@ export function saveAdminEmail(email: string): void {
 
 /** Mail is usable when an SMTP server is configured; alerts also need an admin address. */
 export const mailEnabled = (): boolean => Boolean(getSmtpSettings()?.host);
+
+const unique = (emails: (string | null | undefined)[]) => [...new Set(emails.filter((e): e is string => Boolean(e)).map((e) => e.toLowerCase()))];
+
+/** Who hears about an event: the instance address, plus every account managing the event that set an email. */
+export function eventRecipients(eventId: string): string[] {
+  return unique([getAdminEmail(), ...accountsForEvent(eventId).map((a) => a.email)]);
+}
+
+/** Instance-wide alerts (sign-ins, disk): the instance address and the owners. */
+export function instanceRecipients(): string[] {
+  return unique([getAdminEmail(), ...listAccounts().filter((a) => a.role === "owner").map((a) => a.email)]);
+}

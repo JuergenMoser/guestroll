@@ -8,20 +8,22 @@ import { getLocale, getT } from "@/lib/i18n/server";
 import { requireAdminPage } from "@/lib/auth/guard";
 
 export default async function EventsPage() {
-  await requireAdminPage();
+  const admin = await requireAdminPage();
   const t = await getT();
   return (
     <>
       <PageHeader
         title={t("admin.events")}
         actions={
-          <Link href="/admin/events/new" className={buttonClass()}>
-            <Plus className="size-4" aria-hidden />
-            {t("admin.newEvent")}
-          </Link>
+          admin.role === "owner" && (
+            <Link href="/admin/events/new" className={buttonClass()}>
+              <Plus className="size-4" aria-hidden />
+              {t("admin.newEvent")}
+            </Link>
+          )
         }
       />
-      <EventList events={listEvents()} locale={await getLocale()} />
+      <EventList events={listEvents(admin.scope)} locale={await getLocale()} emptyHint={admin.role === "owner" ? undefined : t("admin.accounts.organizerEmpty")} />
     </>
   );
 }

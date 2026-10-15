@@ -4,7 +4,7 @@ import { getT } from "@/lib/i18n/server";
 import { requireAdminPage } from "@/lib/auth/guard";
 
 export default async function NewEventPage() {
-  await requireAdminPage();
+  await requireAdminPage({ owner: true });
   const t = await getT();
   return (
     <div className="mx-auto max-w-2xl">

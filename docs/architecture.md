@@ -79,7 +79,9 @@ Two rules keep this maintainable:
 | `events` | Settings, access-code hash, QR style (JSON), logo version |
 | `photos` | One row per photo: event, guest id, optional name, size, status, download count |
 | `activity` | Append-only log behind every stat (view, upload, download, failed code…) |
-| `settings` | Key/value: admin password hash and its version, SMTP (password sealed), alert choices |
+| `accounts` | Admin accounts: username, password hash, role (`owner` / `organizer`), session version |
+| `account_events` | Which events each organizer manages |
+| `settings` | Key/value: SMTP (password sealed), alert choices, instance email |
 | `share_links` | Gallery links: token, password hash, expiry, downloads switch, views, revocation |
 | `guest_contacts` | Opt-in guest emails, one per guest and event, deleted with the event |
 | `outbox` | Email queue: rendered message, state, attempts, next retry, dedupe key |

@@ -1,5 +1,4 @@
-import { getEventById } from "@/lib/events";
-import { apiError, requireAdmin } from "@/lib/http";
+import { apiError, requireEventAdmin } from "@/lib/http";
 import { eventQrPng, eventQrSvg } from "@/lib/qr/server";
 import { slugify } from "@/lib/security/ids";
 
@@ -7,10 +6,8 @@ const SIZES = new Set([512, 1024, 2048, 4096]);
 
 /** `?format=svg` for print shops; PNG otherwise, `?size=` 512 to 4096 px wide. */
 export async function GET(request: Request, { params }: RouteContext<"/api/admin/events/[id]/qr">) {
-  const denied = await requireAdmin(request);
+  const { event, denied } = await requireEventAdmin(request, (await params).id);
   if (denied) return denied;
-  const event = getEventById((await params).id);
-  if (!event) return apiError("not_found");
 
   const search = new URL(request.url).searchParams;
   const format = search.get("format") === "svg" ? "svg" : "png";

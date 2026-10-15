@@ -1,6 +1,9 @@
 import "server-only";
 import { NextResponse } from "next/server";
-import { isAdmin } from "@/lib/auth/admin";
+import { getAdmin, type AdminIdentity } from "@/lib/auth/admin";
+import type { EventRow } from "@/lib/db/schema";
+import { getEventById } from "@/lib/events";
+import { isEventAdmin } from "@/lib/policy";
 import { isSameOrigin } from "@/lib/security/request";
 
 export type ErrorCode =
@@ -37,15 +40,32 @@ export function rateLimited(retryAfterMs: number) {
   return apiError("rate_limited", undefined, { "Retry-After": String(Math.ceil(retryAfterMs / 1000)) });
 }
 
+type Guarded<T> = ({ denied: null } & T) | ({ denied: NextResponse } & { [K in keyof T]: null });
+
 /**
  * Gate for every admin route. Mutations additionally require a same-origin
  * request: the admin cookie is `SameSite=Lax`, which still lets a top-level
- * cross-site form POST through in some browsers.
+ * cross-site form POST through in some browsers. `owner` restricts the route
+ * to owners (instance settings, accounts, backups).
  */
-export async function requireAdmin(request: Request): Promise<NextResponse | null> {
-  if (request.method !== "GET" && request.method !== "HEAD" && !isSameOrigin(request)) return apiError("forbidden");
-  if (!(await isAdmin())) return apiError("unauthorized");
-  return null;
+export async function requireAdmin(request: Request, options: { owner?: boolean } = {}): Promise<Guarded<{ admin: AdminIdentity }>> {
+  if (request.method !== "GET" && request.method !== "HEAD" && !isSameOrigin(request)) return { denied: apiError("forbidden"), admin: null };
+  const admin = await getAdmin();
+  if (!admin) return { denied: apiError("unauthorized"), admin: null };
+  if (options.owner && admin.role !== "owner") return { denied: apiError("forbidden"), admin: null };
+  return { denied: null, admin };
+}
+
+/**
+ * Gate for routes about one event. An event outside the admin's scope answers
+ * 404, like a missing one: organizers can't probe other events' ids.
+ */
+export async function requireEventAdmin(request: Request, eventId: string): Promise<Guarded<{ admin: AdminIdentity; event: EventRow }>> {
+  const { admin, denied } = await requireAdmin(request);
+  if (denied) return { denied, admin: null, event: null };
+  const event = getEventById(eventId);
+  if (!event || !isEventAdmin(event.id, { admin: admin.scope })) return { denied: apiError("not_found"), admin: null, event: null };
+  return { denied: null, admin, event };
 }
 
 export async function readJson(request: Request): Promise<unknown> {

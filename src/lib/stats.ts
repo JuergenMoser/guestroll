@@ -1,7 +1,8 @@
 import "server-only";
-import { and, count, countDistinct, desc, eq, gte, sql, sum, type SQL } from "drizzle-orm";
+import { and, count, countDistinct, desc, eq, gte, inArray, sql, sum, type SQL } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { activity, events, photos } from "@/lib/db/schema";
+import type { AdminScope } from "@/lib/policy";
 
 export interface Totals {
   events: number;
@@ -28,18 +29,20 @@ export interface Stats {
   topGuests: { name: string; photos: number }[];
 }
 
-function activityCount(type: (typeof activity.$inferSelect)["type"], eventId?: string): number {
-  const where = eventId ? and(eq(activity.type, type), eq(activity.eventId, eventId)) : eq(activity.type, type);
-  return getDb().select({ n: count() }).from(activity).where(where).get()?.n ?? 0;
-}
-
 /**
- * With an `eventId`, buckets are hours (a party lasts one night); across all
- * events they are days over the last 30 days.
+ * One event (an id): buckets are hours, a party lasts one night. Several events
+ * (an admin's scope): days over the last 30 days. An organizer's dashboard only
+ * ever counts their own events.
  */
-export function getStats(eventId?: string): Stats {
+export function getStats(target: string | AdminScope = { all: true }): Stats {
   const db = getDb();
-  const byEvent: SQL | undefined = eventId ? eq(photos.eventId, eventId) : undefined;
+  const eventId = typeof target === "string" ? target : undefined;
+  const ids = typeof target === "string" ? [target] : target.all ? null : [...target.eventIds];
+  // An organizer without events: `inArray` with an empty list matches nothing, which is right.
+  const byEvent: SQL | undefined = ids ? inArray(photos.eventId, ids) : undefined;
+  const activityScope: SQL | undefined = ids ? inArray(activity.eventId, ids) : undefined;
+  const activityCount = (type: (typeof activity.$inferSelect)["type"]) =>
+    db.select({ n: count() }).from(activity).where(and(eq(activity.type, type), activityScope)).get()?.n ?? 0;
 
   const photoTotals = db
     .select({
@@ -53,15 +56,15 @@ export function getStats(eventId?: string): Stats {
     .get();
 
   const totals: Totals = {
-    events: eventId ? 1 : (db.select({ n: count() }).from(events).get()?.n ?? 0),
+    events: ids ? ids.length : (db.select({ n: count() }).from(events).get()?.n ?? 0),
     photos: photoTotals?.photos ?? 0,
     pending: Number(photoTotals?.pending ?? 0),
     bytes: Number(photoTotals?.bytes ?? 0),
     guests: photoTotals?.guests ?? 0,
-    views: activityCount("view", eventId),
-    downloads: activityCount("download", eventId),
-    zips: activityCount("zip", eventId),
-    failedUnlocks: activityCount("unlock_failed", eventId),
+    views: activityCount("view"),
+    downloads: activityCount("download"),
+    zips: activityCount("zip"),
+    failedUnlocks: activityCount("unlock_failed"),
   };
 
   const format = eventId ? "%Y-%m-%d %H:00" : "%Y-%m-%d";
@@ -75,7 +78,7 @@ export function getStats(eventId?: string): Stats {
       downloads: sql<number>`sum(case when ${activity.type} in ('download', 'zip') then 1 else 0 end)`,
     })
     .from(activity)
-    .where(and(gte(activity.createdAt, since), eventId ? eq(activity.eventId, eventId) : undefined))
+    .where(and(gte(activity.createdAt, since), activityScope))
     .groupBy(bucket)
     .orderBy(bucket)
     .all();

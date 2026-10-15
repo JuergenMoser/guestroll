@@ -98,7 +98,7 @@ Everything is an environment variable; all are optional.
 | Variable | Default | |
 |---|---|---|
 | `PUBLIC_URL` | request host | Address encoded in QR codes, e.g. `https://photos.example.com` |
-| `ADMIN_PASSWORD` | generated | Admin password (printed once in the logs when generated) |
+| `ADMIN_PASSWORD` | generated | Password of the `admin` owner account (printed once in the logs when generated) |
 | `PORT` | `3000` | Listening port inside the container; the health check follows it |
 | `PUID` / `PGID` | `1001` | Owner of `/data`: match your host user for bind mounts |
 | `TZ` | `UTC` | Time zone of the stats, e.g. `Europe/Paris` |

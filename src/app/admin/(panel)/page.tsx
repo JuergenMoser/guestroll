@@ -10,7 +10,7 @@ import { getStats } from "@/lib/stats";
 import { requireAdminPage } from "@/lib/auth/guard";
 
 export default async function DashboardPage() {
-  await requireAdminPage();
+  const admin = await requireAdminPage();
   const t = await getT();
   const locale = await getLocale();
   return (
@@ -18,17 +18,19 @@ export default async function DashboardPage() {
       <PageHeader
         title={t("admin.dashboard")}
         actions={
-          <Link href="/admin/events/new" className={buttonClass()}>
-            <Plus className="size-4" aria-hidden />
-            {t("admin.newEvent")}
-          </Link>
+          admin.role === "owner" && (
+            <Link href="/admin/events/new" className={buttonClass()}>
+              <Plus className="size-4" aria-hidden />
+              {t("admin.newEvent")}
+            </Link>
+          )
         }
       />
       <div className="space-y-10">
-        <StatsPanel stats={getStats()} locale={locale} />
+        <StatsPanel stats={getStats(admin.scope)} locale={locale} />
         <section className="space-y-4">
           <h2 className="text-xl font-bold tracking-tight">{t("admin.events")}</h2>
-          <EventList events={listEvents().slice(0, 5)} locale={locale} />
+          <EventList events={listEvents(admin.scope).slice(0, 5)} locale={locale} emptyHint={admin.role === "owner" ? undefined : t("admin.accounts.organizerEmpty")} />
         </section>
       </div>
     </>

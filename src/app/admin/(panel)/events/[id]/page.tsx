@@ -1,6 +1,5 @@
 import { ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { notFound } from "next/navigation";
 import { DeleteEvent } from "@/components/admin/DeleteEvent";
 import { EventForm } from "@/components/admin/event-form/EventForm";
 import { ModerationPanel } from "@/components/admin/moderation/ModerationPanel";
@@ -9,11 +8,11 @@ import { SharePanel } from "@/components/admin/SharePanel";
 import { StatsPanel } from "@/components/admin/StatsPanel";
 import { EventTheme } from "@/components/EventTheme";
 import { buttonClass, cn } from "@/components/ui";
-import { getEventById, toAdminEvent } from "@/lib/events";
+import { toAdminEvent } from "@/lib/events";
 import { getLocale, getT } from "@/lib/i18n/server";
 import { getStats } from "@/lib/stats";
 import { eventUrl } from "@/lib/urls";
-import { requireAdminPage } from "@/lib/auth/guard";
+import { requireEventAdminPage } from "@/lib/auth/guard";
 
 const TABS = ["photos", "stats", "share", "settings"] as const;
 type Tab = (typeof TABS)[number];
@@ -21,10 +20,8 @@ type Tab = (typeof TABS)[number];
 type Props = { params: Promise<{ id: string }>; searchParams: Promise<{ tab?: string }> };
 
 export default async function EventPage({ params, searchParams }: Props) {
-  await requireAdminPage();
   const [{ id }, { tab: rawTab }] = await Promise.all([params, searchParams]);
-  const row = getEventById(id);
-  if (!row) notFound();
+  const { admin, event: row } = await requireEventAdminPage(id);
 
   const t = await getT();
   const event = toAdminEvent(row);
@@ -70,7 +67,7 @@ export default async function EventPage({ params, searchParams }: Props) {
       {tab === "settings" && (
         <div className="mx-auto max-w-2xl space-y-8">
           <EventForm event={event} />
-          <DeleteEvent eventId={event.id} name={event.name} />
+          {admin.role === "owner" && <DeleteEvent eventId={event.id} name={event.name} />}
         </div>
       )}
     </EventTheme>

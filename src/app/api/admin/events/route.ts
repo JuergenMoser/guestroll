@@ -4,15 +4,15 @@ import { apiError, readJson, requireAdmin } from "@/lib/http";
 import { parseEventInput } from "@/lib/validation";
 
 export async function GET(request: Request) {
-  const denied = await requireAdmin(request);
+  const { admin, denied } = await requireAdmin(request);
   if (denied) return denied;
-  return NextResponse.json({ events: listEvents() });
+  return NextResponse.json({ events: listEvents(admin.scope) });
 }
 
+/** Owners create events; organizers work on the ones they're given. */
 export async function POST(request: Request) {
-  const denied = await requireAdmin(request);
+  const { denied } = await requireAdmin(request, { owner: true });
   if (denied) return denied;
-
   const parsed = parseEventInput(await readJson(request), false);
   if (!parsed.ok) return apiError("bad_request", parsed.errors);
   const event = createEvent(parsed.value as Parameters<typeof createEvent>[0]);

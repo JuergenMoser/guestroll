@@ -26,11 +26,19 @@ export interface ShareGrant {
   allowDownload: boolean;
 }
 
+/** Which events a signed-in admin manages: owners all of them, organizers their own. */
+export type AdminScope = { all: true } | { all: false; eventIds: readonly string[] };
+
 export interface Viewer {
-  isAdmin: boolean;
+  admin?: AdminScope;
   guestId?: string;
   unlocked: readonly string[];
   shares?: readonly ShareGrant[];
+}
+
+export function isEventAdmin(eventId: string, viewer: Pick<Viewer, "admin">): boolean {
+  const scope = viewer.admin;
+  return Boolean(scope && (scope.all || scope.eventIds.includes(eventId)));
 }
 
 const shareFor = (event: PolicyEvent, viewer: Viewer) => viewer.shares?.find((s) => s.eventId === event.id);
@@ -41,7 +49,7 @@ const shareFor = (event: PolicyEvent, viewer: Viewer) => viewer.shares?.find((s)
  * is therefore useless in a browser that never opened the event page itself.
  */
 export function canEnterEvent(event: PolicyEvent, viewer: Viewer): boolean {
-  return viewer.isAdmin || viewer.unlocked.includes(event.id);
+  return isEventAdmin(event.id, viewer) || viewer.unlocked.includes(event.id);
 }
 
 /** Events without an access code are joined just by opening their page. */
@@ -63,12 +71,12 @@ export function uploadState(event: PolicyEvent, viewer: Viewer, uploadedByGuest:
 /**
  * Guests only ever see the photos they took themselves (pending moderation
  * included, hidden ones excluded). The rest of the album is the hosts': the
- * admin sees everything, and a gallery link the admin created (unlocked with
+ * event's admins see everything, and a gallery link the admin created (unlocked with
  * its password) shows the visible photos, originals only if it allows downloads.
  */
 export function canViewPhoto(event: PolicyEvent, photo: PolicyPhoto, viewer: Viewer, variant: PhotoVariant): boolean {
   if (photo.eventId !== event.id) return false;
-  if (viewer.isAdmin) return true;
+  if (isEventAdmin(event.id, viewer)) return true;
   const share = shareFor(event, viewer);
   if (share && photo.status === "visible" && (variant !== "original" || share.allowDownload)) return true;
   if (!canEnterEvent(event, viewer) || photo.status === "hidden") return false;
@@ -77,5 +85,5 @@ export function canViewPhoto(event: PolicyEvent, photo: PolicyPhoto, viewer: Vie
 
 /** Whole-album ZIP: the admin, or a gallery link that allows downloads. */
 export function canDownloadAlbum(event: PolicyEvent, viewer: Viewer): boolean {
-  return viewer.isAdmin || Boolean(shareFor(event, viewer)?.allowDownload);
+  return isEventAdmin(event.id, viewer) || Boolean(shareFor(event, viewer)?.allowDownload);
 }

@@ -12,7 +12,7 @@ import { useT } from "@/components/I18nProvider";
 import { cn } from "@/components/ui";
 import { api } from "@/lib/client/api";
 
-export function AdminNav({ appName, locale, theme }: { appName: string; locale: Locale; theme: Theme }) {
+export function AdminNav({ appName, locale, theme, account }: { appName: string; locale: Locale; theme: Theme; account: { name: string; role: "owner" | "organizer" } }) {
   const t = useT();
   const pathname = usePathname();
   const router = useRouter();
@@ -56,6 +56,9 @@ export function AdminNav({ appName, locale, theme }: { appName: string; locale: 
           <LanguagePicker current={locale} />
           <ThemeToggle initial={theme} />
         </div>
+        <span className="hidden max-w-40 truncate text-sm text-ink-muted lg:inline" title={t(`admin.accounts.roles.${account.role}`)}>
+          {account.name}
+        </span>
         <button
           type="button"
           onClick={signOut}

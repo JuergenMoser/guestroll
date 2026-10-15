@@ -1,14 +1,14 @@
 import { redirect } from "next/navigation";
 import { LoginForm } from "@/components/admin/LoginForm";
 import { Brand } from "@/components/Brand";
-import { isAdmin } from "@/lib/auth/admin";
+import { getAdmin } from "@/lib/auth/admin";
 import { config } from "@/lib/config";
 import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function LoginPage() {
-  if (await isAdmin()) redirect("/admin");
+  if (await getAdmin()) redirect("/admin");
   const t = await getT();
   return (
     <main className="grid min-h-dvh place-items-center px-5">

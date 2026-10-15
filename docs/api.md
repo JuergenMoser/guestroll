@@ -61,13 +61,20 @@ interface PhotoDto {
 
 ## Admin routes
 
-Authenticated by the `gr_admin` cookie.
+Authenticated by the `gr_admin` cookie. Routes under `/api/admin/events/:id`
+answer `404` for events outside an organizer's scope; event creation and
+deletion, accounts and email settings are for owners (`403` otherwise).
 
 | Route | Body | Response |
 |---|---|---|
-| `POST /api/admin/login` | `{ password }` | `{ ok }` |
+| `POST /api/admin/login` | `{ username, password }` | `{ ok }`. Without `username`, the first owner (`ADMIN_USERNAME`). |
 | `POST /api/admin/logout` | | `{ ok }` |
-| `POST /api/admin/password` | `{ current, next }` | `{ ok }` |
+| `POST /api/admin/password` | `{ current, next }` | `{ ok }`, for the signed-in account |
+| `GET /api/admin/me` / `PATCH` | `{ name?, email? }` | `{ account }` |
+| `GET /api/admin/accounts` | | Owners: `{ accounts }` |
+| `POST /api/admin/accounts` | `{ username, role, name?, email?, eventIds?, password? }` | `201 { account, password }`; `password` is the generated one, else `null` |
+| `PATCH /api/admin/accounts/:id` | same fields, or `{ resetPassword: true }` | `{ account, password }` |
+| `DELETE /api/admin/accounts/:id` | | `{ ok }` |
 | `GET /api/admin/events` | | `{ events: EventSummary[] }` |
 | `POST /api/admin/events` | event fields, `name` required | `201 { event }` |
 | `GET /api/admin/events/:id` | | `{ event }` |

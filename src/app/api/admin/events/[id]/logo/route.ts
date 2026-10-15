@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { getEventById, setLogoVersion, toAdminEvent } from "@/lib/events";
-import { apiError, requireAdmin } from "@/lib/http";
+import { setLogoVersion, toAdminEvent } from "@/lib/events";
+import { apiError, requireEventAdmin } from "@/lib/http";
 import { InvalidImageError, processLogo } from "@/lib/images/process";
 import { BodyTooLargeError, readBodyCapped } from "@/lib/security/request";
 import { deleteLogo, writeLogo } from "@/lib/storage/files";
@@ -9,10 +9,8 @@ type Context = RouteContext<"/api/admin/events/[id]/logo">;
 const MAX_LOGO_BYTES = 5 * 1024 * 1024;
 
 export async function POST(request: Request, { params }: Context) {
-  const denied = await requireAdmin(request);
+  const { event, denied } = await requireEventAdmin(request, (await params).id);
   if (denied) return denied;
-  const event = getEventById((await params).id);
-  if (!event) return apiError("not_found");
 
   let file: File | null;
   try {
@@ -35,10 +33,8 @@ export async function POST(request: Request, { params }: Context) {
 }
 
 export async function DELETE(request: Request, { params }: Context) {
-  const denied = await requireAdmin(request);
+  const { event, denied } = await requireEventAdmin(request, (await params).id);
   if (denied) return denied;
-  const event = getEventById((await params).id);
-  if (!event) return apiError("not_found");
   await deleteLogo(event.id);
   return NextResponse.json({ event: toAdminEvent(setLogoVersion(event.id, null)!) });
 }

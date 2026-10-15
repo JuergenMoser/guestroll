@@ -1,9 +1,7 @@
 /* eslint-disable @next/next/no-img-element -- the QR code is served behind admin auth */
-import { notFound } from "next/navigation";
 import { PrintButton } from "@/components/admin/PrintButton";
 import { EventTheme } from "@/components/EventTheme";
-import { requireAdminPage } from "@/lib/auth/guard";
-import { getEventById } from "@/lib/events";
+import { requireEventAdminPage } from "@/lib/auth/guard";
 import { getT } from "@/lib/i18n/server";
 import { eventUrl } from "@/lib/urls";
 
@@ -11,9 +9,7 @@ export const dynamic = "force-dynamic";
 
 /** A4 table card. Printed from the browser; the screen chrome is hidden in print. */
 export default async function PosterPage({ params }: { params: Promise<{ id: string }> }) {
-  await requireAdminPage();
-  const event = getEventById((await params).id);
-  if (!event) notFound();
+  const { event } = await requireEventAdminPage((await params).id);
   const t = await getT();
   const url = await eventUrl(event.slug);
 

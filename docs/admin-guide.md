@@ -95,5 +95,21 @@ event name to confirm.
 - **Alerts**, each switchable: photos waiting for approval (at most every 30
   minutes, only when the count grows), an event's end summary, 10+ wrong admin
   passwords within 15 minutes (at most hourly), disk 90% full (at most daily).
-- **Admin password**: changing it signs out every other session. Not available
-  when `ADMIN_PASSWORD` is set: change the variable and restart instead.
+- **Your account**: display name and the address where *your* events'
+  summaries and alerts go.
+- **Password**: changing it signs out your other sessions. Not available for
+  the account set by `ADMIN_PASSWORD`: change the variable and restart instead.
+- **Accounts** (owners): add people and pick their role.
+
+  | Role | Can |
+  |---|---|
+  | Owner | Everything: every event, creating and deleting events, accounts, email, alerts |
+  | Organizer | Only the events assigned to them: photos and moderation, settings, QR code, gallery links, live wall, ending the event. Not deleting it. |
+
+  A new account gets a generated password, shown once for you to pass on.
+  *New password* generates another one and signs the person out; *Delete*
+  ends their access at once. The last owner can't be demoted or deleted.
+
+Event emails (summaries, photos waiting for approval) go to the instance
+address in **Email** and to every account managing the event that set an
+address. Instance alerts (failed sign-ins, disk) go to the owners.

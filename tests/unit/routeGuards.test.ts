@@ -23,7 +23,7 @@ describe("admin guards", () => {
   it("every admin page except login checks the session itself", () => {
     const pages = files(path.join(root, "admin"), "page.tsx").filter((f) => !f.includes(`${path.sep}login${path.sep}`));
     expect(pages.length).toBeGreaterThan(5);
-    for (const page of pages) expect(fs.readFileSync(page, "utf8"), rel(page)).toContain("requireAdminPage()");
+    for (const page of pages) expect(fs.readFileSync(page, "utf8"), rel(page)).toMatch(/await require(Event)?AdminPage\(/);
   });
 
   it("every admin API route except login/logout calls requireAdmin", () => {
@@ -32,8 +32,30 @@ describe("admin guards", () => {
     for (const route of routes) {
       const source = fs.readFileSync(route, "utf8");
       const handlers = source.match(/export async function (GET|POST|PATCH|DELETE|PUT)/g) ?? [];
-      const guards = source.match(/await requireAdmin\(request\)/g) ?? [];
+      const guards = source.match(/await require(Event)?Admin\(request[,)]/g) ?? [];
       expect(guards.length, rel(route)).toBe(handlers.length);
+    }
+  });
+
+  it("routes under an event id check the admin's scope, not just the session", () => {
+    const routes = files(path.join(root, "api/admin/events/[id]"), "route.ts");
+    expect(routes.length).toBeGreaterThan(5);
+    for (const route of routes) {
+      const source = fs.readFileSync(route, "utf8");
+      expect(source, rel(route)).not.toMatch(/await requireAdmin\(request/);
+      // Loading the event from the URL is requireEventAdmin's job: doing it again means bypassing it.
+      expect(source, rel(route)).not.toContain("getEventById((await params)");
+    }
+  });
+
+  it("instance-wide routes are for owners only", () => {
+    for (const dir of ["api/admin/mail", "api/admin/accounts"]) {
+      for (const route of files(path.join(root, dir), "route.ts")) {
+        const source = fs.readFileSync(route, "utf8");
+        const handlers = source.match(/export async function (GET|POST|PATCH|DELETE|PUT)/g) ?? [];
+        const owner = source.match(/requireAdmin\(request, \{ owner: true \}\)/g) ?? [];
+        expect(owner.length, rel(route)).toBe(handlers.length);
+      }
     }
   });
 

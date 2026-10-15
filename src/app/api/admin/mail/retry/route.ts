@@ -5,7 +5,7 @@ import { mailEnabled } from "@/lib/mail/settings";
 
 /** Puts failed emails back in the queue and sends what's due now. */
 export async function POST(request: Request) {
-  const denied = await requireAdmin(request);
+  const { denied } = await requireAdmin(request, { owner: true });
   if (denied) return denied;
   const requeued = retryFailedMails();
   const result = mailEnabled() ? await processOutbox() : { sent: 0, failed: 0 };

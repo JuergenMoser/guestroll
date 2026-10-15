@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { index, integer, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
+import { index, integer, primaryKey, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 const now = sql`(unixepoch() * 1000)`;
 
@@ -136,6 +136,38 @@ export const outbox = sqliteTable(
   (t) => [index("outbox_status_idx").on(t.status, t.nextAttemptAt)],
 );
 
+/**
+ * People who sign in to the admin. Owners see and run everything; organizers
+ * only the events assigned to them in `account_events`.
+ */
+export const accounts = sqliteTable("accounts", {
+  id: text("id").primaryKey(),
+  /** Lowercase, what people type to sign in. */
+  username: text("username").notNull().unique(),
+  name: text("name").notNull().default(""),
+  /** Where this person's alerts and event summaries go (optional). */
+  email: text("email"),
+  passwordHash: text("password_hash").notNull(),
+  role: text("role", { enum: ["owner", "organizer"] }).notNull(),
+  /** Stored in the session cookie and bumped on password change: older cookies stop working. */
+  sessionVersion: integer("session_version").notNull().default(1),
+  lastLoginAt: integer("last_login_at"),
+  createdAt: integer("created_at").notNull().default(now),
+});
+
+export const accountEvents = sqliteTable(
+  "account_events",
+  {
+    accountId: text("account_id")
+      .notNull()
+      .references(() => accounts.id, { onDelete: "cascade" }),
+    eventId: text("event_id")
+      .notNull()
+      .references(() => events.id, { onDelete: "cascade" }),
+  },
+  (t) => [primaryKey({ columns: [t.accountId, t.eventId] }), index("account_events_event_idx").on(t.eventId)],
+);
+
 export const settings = sqliteTable("settings", {
   key: text("key").primaryKey(),
   value: text("value").notNull(),
@@ -147,3 +179,5 @@ export type ActivityType = (typeof activity.$inferInsert)["type"];
 export type ShareLinkRow = typeof shareLinks.$inferSelect;
 export type GuestContactRow = typeof guestContacts.$inferSelect;
 export type OutboxRow = typeof outbox.$inferSelect;
+export type AccountRow = typeof accounts.$inferSelect;
+export type AccountRole = AccountRow["role"];

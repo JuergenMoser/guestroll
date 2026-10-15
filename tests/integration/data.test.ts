@@ -18,8 +18,8 @@ const mods = async () => ({
   ids: await import("@/lib/security/ids"),
 });
 
-const guest = (id: string, eventId: string) => ({ isAdmin: false, guestId: id, unlocked: [eventId] });
-const ADMIN = { isAdmin: true, unlocked: [] };
+const guest = (id: string, _eventId?: string) => ({ guestId: id });
+const ADMIN = "album" as const;
 
 describe("events", () => {
   it("creates an event with an unguessable slug and hashes the access code", async () => {
@@ -87,7 +87,7 @@ describe("photos", () => {
     const rows = photos.listPhotos(event, guest("alice", event.id));
     expect(rows).toHaveLength(2);
     expect(rows.every((p) => p.guestId === "alice" && p.status !== "hidden")).toBe(true);
-    expect(photos.listPhotos(event, { isAdmin: false, unlocked: [event.id] })).toEqual([]);
+    expect(photos.listPhotos(event, {})).toEqual([]);
   });
 
   it("lists everything for the admin, filterable by status", async () => {

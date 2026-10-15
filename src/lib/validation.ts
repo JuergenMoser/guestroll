@@ -160,3 +160,51 @@ export function parseGuestName(value: unknown): string | null {
   const name = value.replace(/[\u0000-\u001f\u007f]/g, "").trim().slice(0, 40);
   return name || null;
 }
+
+export interface AccountFields {
+  username?: string;
+  name?: string;
+  email?: string | null;
+  role?: "owner" | "organizer";
+  eventIds?: string[];
+  password?: string | null;
+}
+
+/**
+ * Account form. `password` is optional on creation (null = generate one, shown
+ * once) and on update (absent = unchanged).
+ */
+export function parseAccountInput(input: unknown, partial: boolean): ValidationResult<AccountFields> {
+  const body = (input ?? {}) as Record<string, unknown>;
+  const errors: Record<string, string> = {};
+  const value: AccountFields = {};
+
+  if (body.username !== undefined || !partial) {
+    const username = typeof body.username === "string" ? body.username.trim().toLowerCase() : "";
+    if (!/^[a-z0-9][a-z0-9._-]{1,31}$/.test(username)) errors.username = "invalid";
+    else value.username = username;
+  }
+  if (body.name !== undefined) {
+    if (typeof body.name !== "string" || body.name.trim().length > 80) errors.name = "too_long";
+    else value.name = body.name.trim();
+  }
+  if (body.email !== undefined) {
+    if (body.email === null || body.email === "") value.email = null;
+    else if (typeof body.email !== "string" || !/^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(body.email.trim()) || body.email.length > 254) errors.email = "invalid";
+    else value.email = body.email.trim().toLowerCase();
+  }
+  if (body.role !== undefined || !partial) {
+    if (body.role !== "owner" && body.role !== "organizer") errors.role = "invalid";
+    else value.role = body.role;
+  }
+  if (body.eventIds !== undefined) {
+    if (!Array.isArray(body.eventIds) || body.eventIds.length > 500 || !body.eventIds.every((id) => typeof id === "string" && /^[0-9a-f-]{36}$/.test(id))) {
+      errors.eventIds = "invalid";
+    } else value.eventIds = body.eventIds as string[];
+  }
+  if (body.password !== undefined && body.password !== null && body.password !== "") {
+    if (typeof body.password !== "string" || body.password.length < 10 || body.password.length > 200) errors.password = "min_length";
+    else value.password = body.password;
+  }
+  return Object.keys(errors).length ? { ok: false, errors } : { ok: true, value };
+}

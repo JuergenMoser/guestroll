@@ -1,12 +1,13 @@
 import "server-only";
 import bcrypt from "bcryptjs";
-import { desc, eq, sql } from "drizzle-orm";
+import { desc, eq, inArray, sql } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { events, photos, type EventRow } from "@/lib/db/schema";
 import { config } from "@/lib/config";
 import { eventSlug, newId } from "@/lib/security/ids";
 import { deleteEventFiles } from "@/lib/storage/files";
 import type { EventInput } from "@/lib/validation";
+import type { AdminScope } from "@/lib/policy";
 import { parseQrStyle, type QrStyle } from "@/lib/qr/style";
 
 /** What the guest page may know about an event: no hash, no internal settings. */
@@ -75,7 +76,8 @@ export interface EventSummary extends AdminEvent {
   acceptingUploads: boolean;
 }
 
-export function listEvents(): EventSummary[] {
+export function listEvents(scope: AdminScope): EventSummary[] {
+  if (!scope.all && scope.eventIds.length === 0) return [];
   const rows = getDb()
     .select({
       event: events,
@@ -85,6 +87,7 @@ export function listEvents(): EventSummary[] {
     })
     .from(events)
     .leftJoin(photos, eq(photos.eventId, events.id))
+    .where(scope.all ? undefined : inArray(events.id, [...scope.eventIds]))
     .groupBy(events.id)
     .orderBy(desc(events.createdAt))
     .all();

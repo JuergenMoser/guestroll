@@ -12,7 +12,7 @@ import { storage } from "@/lib/storage";
 import { backgroundBaseUrl } from "@/lib/urls";
 import { mailMessages } from "./messages";
 import { enqueueMail } from "./outbox";
-import { getAdminEmail, getAlertSettings } from "./settings";
+import { eventRecipients, getAlertSettings, instanceRecipients } from "./settings";
 import { failedLoginsMail, galleryMail, pendingMail, storageMail, summaryMail } from "./templates";
 
 const DAY = 86_400_000;
@@ -79,11 +79,11 @@ export function endEvent(event: EventRow, now = Date.now()): EndResult | null {
     }
   }
 
-  const adminEmail = getAdminEmail();
+  const hosts = eventRecipients(event.id);
   // Guests were told to ask the hosts for the password: the summary carrying it
   // goes out even if the host turned summaries off.
   const summaryWanted = event.notifyAdminSummary && getAlertSettings().eventEnded;
-  if (adminEmail && (summaryWanted || (gallery && result.galleryRecipients > 0))) {
+  if (hosts.length && (summaryWanted || (gallery && result.galleryRecipients > 0))) {
     const stats = getStats(event.id);
     const mail = summaryMail({
       ...common(),
@@ -98,7 +98,9 @@ export function endEvent(event: EventRow, now = Date.now()): EndResult | null {
       galleryRecipients: result.galleryRecipients,
       gallery,
     });
-    result.summaryQueued = enqueueMail({ to: adminEmail, mail, kind: "summary", eventId: event.id, dedupeKey: `summary:${event.id}` });
+    for (const to of hosts) {
+      if (enqueueMail({ to, mail, kind: "summary", eventId: event.id, dedupeKey: `summary:${event.id}:${to}` })) result.summaryQueued = true;
+    }
   }
   return result;
 }
@@ -117,8 +119,7 @@ export function eventsToEnd(now = Date.now()): EventRow[] {
  * minutes, and only when the count went up since the last one.
  */
 export function pendingPhotoAlerts(now = Date.now()): number {
-  const adminEmail = getAdminEmail();
-  if (!adminEmail || !getAlertSettings().pendingPhotos) return 0;
+  if (!getAlertSettings().pendingPhotos) return 0;
   const rows = getDb()
     .select({ event: events, pending: count(photos.id) })
     .from(events)
@@ -132,7 +133,9 @@ export function pendingPhotoAlerts(now = Date.now()): number {
     const last = JSON.parse(readSetting(key) ?? '{"count":0,"at":0}') as { count: number; at: number };
     if (pending <= last.count || now - last.at < 30 * 60_000) continue;
     const mail = pendingMail({ ...common(), event: event.name, accent: event.accentColor, url: `${backgroundBaseUrl()}/admin/events/${event.id}`, count: pending });
-    if (enqueueMail({ to: adminEmail, mail, kind: "alert:pending", eventId: event.id, dedupeKey: `pending:${event.id}:${pending}` })) queued++;
+    for (const to of eventRecipients(event.id)) {
+      if (enqueueMail({ to, mail, kind: "alert:pending", eventId: event.id, dedupeKey: `pending:${event.id}:${pending}:${to}` })) queued++;
+    }
     writeSetting(key, JSON.stringify({ count: pending, at: now }));
   }
   return queued;
@@ -140,8 +143,8 @@ export function pendingPhotoAlerts(now = Date.now()): number {
 
 /** 10+ wrong admin passwords in 15 minutes: one alert per hour at most. */
 export function failedLoginAlert(now = Date.now()): boolean {
-  const adminEmail = getAdminEmail();
-  if (!adminEmail || !getAlertSettings().failedLogins) return false;
+  const recipients = instanceRecipients();
+  if (!recipients.length || !getAlertSettings().failedLogins) return false;
   const failures =
     getDb()
       .select({ n: count() })
@@ -150,17 +153,17 @@ export function failedLoginAlert(now = Date.now()): boolean {
       .get()?.n ?? 0;
   if (failures < 10) return false;
   const mail = failedLoginsMail({ ...common(), url: `${backgroundBaseUrl()}/admin`, count: failures });
-  return enqueueMail({ to: adminEmail, mail, kind: "alert:logins", dedupeKey: `logins:${Math.floor(now / 3_600_000)}` });
+  return recipients.map((to) => enqueueMail({ to, mail, kind: "alert:logins", dedupeKey: `logins:${Math.floor(now / 3_600_000)}:${to}` })).some(Boolean);
 }
 
 /** The data disk is 90%+ full: one alert per day at most. */
 export async function storageAlert(now = Date.now()): Promise<boolean> {
-  const adminEmail = getAdminEmail();
-  if (!adminEmail || !getAlertSettings().storage) return false;
+  const recipients = instanceRecipients();
+  if (!recipients.length || !getAlertSettings().storage) return false;
   const disk = await storage().capacity();
   if (!disk) return false;
   const percent = Math.round(100 - (disk.free / disk.total) * 100);
   if (percent < 90) return false;
   const mail = storageMail({ ...common(), url: `${backgroundBaseUrl()}/admin`, percent, free: formatBytes(disk.free, config.locale) });
-  return enqueueMail({ to: adminEmail, mail, kind: "alert:storage", dedupeKey: `storage:${Math.floor(now / DAY)}` });
+  return recipients.map((to) => enqueueMail({ to, mail, kind: "alert:storage", dedupeKey: `storage:${Math.floor(now / DAY)}:${to}` })).some(Boolean);
 }

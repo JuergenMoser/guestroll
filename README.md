@@ -55,6 +55,7 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 
 **For hosts**
 - 🗂️ As many events as you want, each with its own link, QR code and accent color.
+- 👥 **Several admin accounts**: owners run everything, organizers only the events you give them.
 - 🔐 Optional access code per event, so a QR code shared on social media isn't enough.
 - ✅ Moderation: publish right away and hide later, or approve each photo first.
 - 📺 **Live wall**: a full-screen slideshow of new photos for a projector or TV.
@@ -95,8 +96,8 @@ Open `http://localhost:3000/admin`, sign in, create an event and print its QR co
 > and nginx.
 
 Prefer Compose? A ready-to-use [`docker-compose.yml`](docker-compose.yml) is in the repository.
-Forgot to set `ADMIN_PASSWORD`? A password is generated on first start and
-printed once in `docker logs guestroll`.
+Sign in at `/admin` as `admin`. Forgot to set `ADMIN_PASSWORD`? A password is
+generated on first start and printed once in `docker logs guestroll`.
 
 ## Screenshots
 

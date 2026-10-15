@@ -51,7 +51,7 @@ export default async function GuestPage({ params }: Props) {
   } else {
     // The guest page always shows the guest's view, even to a signed-in admin
     // testing it: their own photos only, never the whole album.
-    const asGuest = { ...viewer, isAdmin: false };
+    const asGuest = { ...viewer, admin: undefined };
     const uploaded = viewer.guestId ? countGuestPhotos(event.id, viewer.guestId) : 0;
     const state = uploadState(event, viewer, uploaded);
     const rows = listPhotos(event, asGuest, { limit: 48 });

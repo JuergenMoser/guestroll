@@ -35,7 +35,7 @@ export default async function SharedAlbumPage({ params }: Props) {
   if (access.status === "locked") {
     body = <ShareUnlock token={token} />;
   } else {
-    const rows = listPhotos(event, { isAdmin: true, unlocked: [] }, { status: "visible", limit: 60 });
+    const rows = listPhotos(event, "album", { status: "visible", limit: 60 });
     const viewer = { ...access.viewer, guestId: undefined };
     body = (
       <SharedGallery

@@ -24,7 +24,7 @@ export async function GET(request: Request, { params }: RouteContext<"/api/e/[sl
   if (!canEnterEvent(event, viewer)) return apiError("forbidden");
 
   // Guest endpoint: own photos only, admin or not (admins list through /api/admin).
-  const asGuest = { ...viewer, isAdmin: false };
+  const asGuest = { ...viewer, admin: undefined };
   const before = Number(new URL(request.url).searchParams.get("before")) || undefined;
   const rows = listPhotos(event, asGuest, { before, limit: 48 });
   return NextResponse.json(

@@ -50,7 +50,8 @@ Each visitor gets, in this order:
 
 | Variable | Default | Description |
 |---|---|---|
-| `ADMIN_PASSWORD` | *(generated)* | Admin password. When set, it wins on every start and can't be changed from the UI. When empty, a password is generated on first start and printed once in the logs; change it in **Admin → Settings**. |
+| `ADMIN_USERNAME` | `admin` | Username of the owner account created on first start. |
+| `ADMIN_PASSWORD` | *(generated)* | Password of that owner account. When set, it wins on every start (and the account stays an owner): it is the way back in if every other password is lost. When empty, a password is generated on first start and printed once in the logs; change it in **Admin → Settings**. Other accounts are created from the admin. |
 | `SESSION_SECRET` | *(generated)* | Key that signs and encrypts cookies, 32+ characters. When empty, one is generated and stored in `DATA_DIR/.session-secret`. Changing it signs everyone out. |
 | `TRUST_PROXY` | `false` | Read the client IP from `X-Forwarded-For` and the host from `X-Forwarded-Host`. Turn it on **only** behind a reverse proxy you control, or rate limits can be dodged with a forged header. |
 | `SECURE_COOKIES` | `true` in production | Cookies only travel over HTTPS. Set to `false` only to test over plain HTTP on a local network. |

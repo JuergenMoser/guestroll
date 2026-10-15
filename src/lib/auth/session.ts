@@ -6,9 +6,9 @@ import { newId } from "@/lib/security/ids";
 import { sessionSecret } from "./secret";
 
 export interface AdminSession {
-  isAdmin?: boolean;
-  /** Bumped on password change so every older admin cookie stops working. */
-  passwordVersion?: number;
+  accountId?: string;
+  /** Must match `accounts.session_version`: a password change signs out every older cookie. */
+  version?: number;
 }
 
 export interface GuestSession {

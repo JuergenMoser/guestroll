@@ -9,8 +9,12 @@ export async function client(baseURL: string): Promise<APIRequestContext> {
 }
 
 export async function admin(baseURL: string): Promise<APIRequestContext> {
+  return signIn(baseURL, "admin", ADMIN_PASSWORD);
+}
+
+export async function signIn(baseURL: string, username: string, password: string): Promise<APIRequestContext> {
   const api = await client(baseURL);
-  const res = await api.post("/api/admin/login", { data: { password: ADMIN_PASSWORD } });
+  const res = await api.post("/api/admin/login", { data: { username, password } });
   if (!res.ok()) throw new Error(`admin login failed: ${res.status()}`);
   return api;
 }

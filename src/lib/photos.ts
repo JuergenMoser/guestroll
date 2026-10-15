@@ -2,7 +2,7 @@ import "server-only";
 import { and, count, desc, eq, inArray, lt, ne, sql, type SQL } from "drizzle-orm";
 import { getDb } from "@/lib/db/client";
 import { photos, type EventRow, type PhotoRow } from "@/lib/db/schema";
-import type { Viewer } from "@/lib/policy";
+import { isEventAdmin, type Viewer } from "@/lib/policy";
 import { deletePhotoFiles } from "@/lib/storage/files";
 
 /** The client only ever receives ids and URLs that go back through `/api/media`. */
@@ -17,7 +17,7 @@ export interface PhotoDto {
   createdAt: number;
 }
 
-export function toPhotoDto(photo: PhotoRow, viewer: Viewer): PhotoDto {
+export function toPhotoDto(photo: PhotoRow, viewer: Pick<Viewer, "admin" | "guestId">): PhotoDto {
   return {
     id: photo.id,
     width: photo.width,
@@ -25,7 +25,7 @@ export function toPhotoDto(photo: PhotoRow, viewer: Viewer): PhotoDto {
     guestName: photo.guestName,
     status: photo.status,
     mine: viewer.guestId !== undefined && photo.guestId === viewer.guestId,
-    ...(viewer.isAdmin ? { downloads: photo.downloads } : {}),
+    ...(isEventAdmin(photo.eventId, viewer) ? { downloads: photo.downloads } : {}),
     createdAt: photo.createdAt,
   };
 }
@@ -55,16 +55,20 @@ export interface ListOptions {
   status?: PhotoRow["status"];
 }
 
-/** Applies the same visibility rules as `canViewPhoto`, as a SQL filter: guests get their own photos only. */
-export function listPhotos(event: EventRow, viewer: Viewer, options: ListOptions = {}): PhotoRow[] {
+/**
+ * `"album"` lists the whole album (the caller already checked it may: an admin
+ * of the event, or a gallery link with `status: "visible"`). A guest id lists
+ * that guest's own photos, with the same rule as `canViewPhoto`.
+ */
+export function listPhotos(event: EventRow, who: "album" | { guestId?: string }, options: ListOptions = {}): PhotoRow[] {
   const limit = Math.min(Math.max(options.limit ?? 60, 1), 200);
   const filters: SQL[] = [eq(photos.eventId, event.id)];
 
-  if (viewer.isAdmin) {
+  if (who === "album") {
     if (options.status) filters.push(eq(photos.status, options.status));
   } else {
-    if (!viewer.guestId) return [];
-    filters.push(eq(photos.guestId, viewer.guestId), ne(photos.status, "hidden"));
+    if (!who.guestId) return [];
+    filters.push(eq(photos.guestId, who.guestId), ne(photos.status, "hidden"));
   }
   if (options.before) filters.push(lt(photos.createdAt, options.before));
 

@@ -74,12 +74,24 @@ whatever the settings: this is a design decision, not an option.
 
 ## Authentication
 
-- One admin account, password from `ADMIN_PASSWORD` or generated on first
-  start and printed once. There is no public "create the admin" page that a
-  stranger could reach first.
+- The first owner account (`admin`, or `ADMIN_USERNAME`) gets its password
+  from `ADMIN_PASSWORD`, or one generated on first start and printed once.
+  There is no public sign-up page that a stranger could reach first: other
+  accounts are created by an owner, with a generated password shown once.
+- **Owners** manage every event, the accounts, email and instance settings.
+  **Organizers** only reach the events assigned to them, and can't delete them.
+  An event outside an organizer's scope answers `404`, exactly like a missing
+  one, through the admin API and `/api/media` alike. The instance always keeps
+  at least one owner.
+- A wrong username takes as long to refuse as a wrong password (a bcrypt
+  comparison runs either way), so usernames can't be probed by timing.
 - Sessions are encrypted, `HttpOnly`, `SameSite=Lax`, `Secure` in production
-  cookies (iron-session). Changing the password signs out every other session.
-- Every admin page and API route checks the session itself.
+  cookies (iron-session) that carry the account and its session version.
+  Changing or resetting a password signs that account out everywhere;
+  deleting an account ends its sessions at once.
+- Every admin page and API route checks the session itself, and every route
+  under an event id checks the event is in the admin's scope.
+  `tests/unit/routeGuards.test.ts` fails if one is added without the check.
   `tests/routeGuards.test.ts` fails if one is added without the check.
 
 ## Abuse

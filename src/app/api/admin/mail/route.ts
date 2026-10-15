@@ -16,7 +16,7 @@ import {
 } from "@/lib/mail/settings";
 
 export async function GET(request: Request) {
-  const denied = await requireAdmin(request);
+  const { denied } = await requireAdmin(request, { owner: true });
   if (denied) return denied;
   return NextResponse.json({
     smtp: smtpSettingsForForm(),
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
 
 /** Saves SMTP (unless the environment provides it), the admin address and alert choices. */
 export async function PUT(request: Request) {
-  const denied = await requireAdmin(request);
+  const { denied } = await requireAdmin(request, { owner: true });
   if (denied) return denied;
   const body = (await readJson(request)) as Record<string, unknown> | undefined;
   if (!body) return apiError("bad_request");

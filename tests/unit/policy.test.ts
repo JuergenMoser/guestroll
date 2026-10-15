@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  isEventAdmin,
   canDownloadAlbum,
   canEnterEvent,
   canJoinFreely,
@@ -19,9 +20,9 @@ const event = (overrides: Partial<PolicyEvent> = {}): PolicyEvent => ({
   ...overrides,
 });
 
-const admin: Viewer = { isAdmin: true, unlocked: [] };
-const stranger: Viewer = { isAdmin: false, unlocked: [] };
-const guest = (id = "guest-1"): Viewer => ({ isAdmin: false, guestId: id, unlocked: ["event-1"] });
+const admin: Viewer = { admin: { all: true }, unlocked: [] };
+const stranger: Viewer = { unlocked: [] };
+const guest = (id = "guest-1"): Viewer => ({ guestId: id, unlocked: ["event-1"] });
 const photo = (overrides: Partial<PolicyPhoto> = {}): PolicyPhoto => ({ eventId: "event-1", guestId: "guest-2", status: "visible", ...overrides });
 
 describe("canEnterEvent", () => {
@@ -90,7 +91,7 @@ describe("canViewPhoto", () => {
 });
 
 describe("gallery links", () => {
-  const link = (allowDownload: boolean): Viewer => ({ isAdmin: false, unlocked: [], shares: [{ eventId: "event-1", allowDownload }] });
+  const link = (allowDownload: boolean): Viewer => ({ unlocked: [], shares: [{ eventId: "event-1", allowDownload }] });
 
   it("show the visible photos of their event only", () => {
     expect(canViewPhoto(event(), photo(), link(false), "display")).toBe(true);
@@ -109,5 +110,30 @@ describe("gallery links", () => {
 
   it("don't let a guest join or upload", () => {
     expect(canEnterEvent(event(), link(true))).toBe(false);
+  });
+});
+
+describe("organizers", () => {
+  const organizer = (eventIds: string[]): Viewer => ({ admin: { all: false, eventIds }, unlocked: [] });
+
+  it("manage their own events like an owner", () => {
+    expect(isEventAdmin("event-1", organizer(["event-1"]))).toBe(true);
+    expect(canEnterEvent(event(), organizer(["event-1"]))).toBe(true);
+    expect(canViewPhoto(event(), photo({ status: "hidden", guestId: "someone" }), organizer(["event-1"]), "original")).toBe(true);
+    expect(canDownloadAlbum(event(), organizer(["event-1"]))).toBe(true);
+  });
+
+  it("are strangers to every other event", () => {
+    const other = organizer(["event-2"]);
+    expect(isEventAdmin("event-1", other)).toBe(false);
+    expect(canEnterEvent(event(), other)).toBe(false);
+    expect(canViewPhoto(event(), photo(), other, "thumb")).toBe(false);
+    expect(canDownloadAlbum(event(), other)).toBe(false);
+    expect(isEventAdmin("event-1", organizer([]))).toBe(false);
+  });
+
+  it("owners manage every event", () => {
+    expect(isEventAdmin("anything", admin)).toBe(true);
+    expect(isEventAdmin("event-1", stranger)).toBe(false);
   });
 });

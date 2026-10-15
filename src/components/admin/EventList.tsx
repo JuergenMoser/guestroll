@@ -8,10 +8,10 @@ import { Badge, EmptyState } from "@/components/ui";
 import type { EventSummary } from "@/lib/events";
 import { formatBytes, formatNumber } from "@/lib/format";
 
-export function EventList({ events, locale }: { events: EventSummary[]; locale: string }) {
+export function EventList({ events, locale, emptyHint }: { events: EventSummary[]; locale: string; emptyHint?: string }) {
   const t = useT();
   if (events.length === 0) {
-    return <EmptyState className="py-12">{t("admin.noEvents")}</EmptyState>;
+    return <EmptyState className="py-12">{emptyHint ?? t("admin.noEvents")}</EmptyState>;
   }
   return (
     <div className="overflow-x-auto rounded-xl bg-surface ring-1 ring-line">
