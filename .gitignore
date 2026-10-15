@@ -11,3 +11,6 @@ next-env.d.ts
 /media/*.mp4
 /media/work/
 .idea
+
+# Launch video output
+brag-output*/
