@@ -12,6 +12,10 @@ Self-hosted. No app to install, no account to create.
 [![Quality](https://github.com/achedon12/guestroll/actions/workflows/quality.yml/badge.svg?branch=main)](https://github.com/achedon12/guestroll/actions/workflows/quality.yml)
 [![Security](https://github.com/achedon12/guestroll/actions/workflows/security.yml/badge.svg?branch=main)](https://github.com/achedon12/guestroll/actions/workflows/security.yml)
 [![Release](https://img.shields.io/github/v/release/achedon12/guestroll)](https://github.com/achedon12/guestroll/releases)
+[![GitHub downloads](https://img.shields.io/github/downloads/achedon12/guestroll/total?label=GitHub%20downloads)](https://github.com/achedon12/guestroll/releases)
+[![Docker Hub pulls](https://img.shields.io/docker/pulls/achedon12/guestroll?label=Docker%20Hub%20pulls)](https://hub.docker.com/r/achedon12/guestroll)
+[![Image size](https://img.shields.io/docker/image-size/achedon12/guestroll/latest?label=image)](https://hub.docker.com/r/achedon12/guestroll)
+[![Stars](https://img.shields.io/github/stars/achedon12/guestroll?style=flat)](https://github.com/achedon12/guestroll/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
 [Website](https://achedon12.github.io/guestroll/) | [Quick start](#quick-start) | [Features](#features) | [Documentation](https://github.com/achedon12/guestroll/wiki) | [Français](README.fr.md)

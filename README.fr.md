@@ -10,6 +10,10 @@ Auto-hébergé. Sans appli à installer, sans compte à créer.
 
 [English](README.md) | [Documentation](docs/README.md) (en anglais)
 
+[![Téléchargements GitHub](https://img.shields.io/github/downloads/achedon12/guestroll/total?label=t%C3%A9l%C3%A9chargements%20GitHub)](https://github.com/achedon12/guestroll/releases)
+[![Téléchargements Docker Hub](https://img.shields.io/docker/pulls/achedon12/guestroll?label=Docker%20Hub)](https://hub.docker.com/r/achedon12/guestroll)
+[![Licence MIT](https://img.shields.io/badge/licence-MIT-yellow.svg)](LICENSE)
+
 <img src="docs/assets/screenshots/hero.png" alt="La page invité sur un téléphone, à côté du tableau de bord admin" width="900" />
 
 </div>

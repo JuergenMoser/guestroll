@@ -93,10 +93,31 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Create the release with generated notes
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # The install kit is the release's downloadable asset: it is what the
+      # README's download badge counts (source archives aren't counted).
+      - name: Build the install kit
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          kit="guestroll-${TAG}-compose"
+          mkdir "$kit"
+          sed "s#ghcr.io/achedon12/guestroll:latest#ghcr.io/achedon12/guestroll:${TAG#v}#" docker-compose.yml > "$kit/docker-compose.yml"
+          cp .env.example "$kit/.env.example"
+          cp release/INSTALL.md "$kit/INSTALL.md"
+          zip -qr "$kit.zip" "$kit"
+
+      - name: Create the release with generated notes and the kit
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.ref_name }}
           REPO: ${{ github.repository }}
         run: |
-          gh release create "$TAG" --repo "$REPO" --verify-tag --generate-notes --title "$TAG"
+          if gh release view "$TAG" --repo "$REPO" > /dev/null 2>&1; then
+            gh release upload "$TAG" --repo "$REPO" --clobber "guestroll-${TAG}-compose.zip"
+          else
+            gh release create "$TAG" --repo "$REPO" --verify-tag --generate-notes --title "$TAG" "guestroll-${TAG}-compose.zip"
+          fi
