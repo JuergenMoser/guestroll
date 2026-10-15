@@ -202,3 +202,8 @@ html:not(.dark) .only-dark {
   gap: 12px;
   margin-top: 24px;
 }
+
+/* Lucide icons inline in the features (docs/index.md): drawn in the brand color, theme-aware through currentColor. */
+.VPFeature .icon {
+  color: var(--vp-c-brand-1);
+}

@@ -78,9 +78,9 @@ class Version:
     def notice(self, file: str) -> str:
         """The line at the top of each page, saying which version it documents."""
         if self.latest:
-            return f'> 📚 Documentation of Guestroll **{self.tag}**, the latest release · [Other versions](Versions)\n\n'
+            return f'> Documentation of Guestroll **{self.tag}**, the latest release · [Other versions](Versions)\n\n'
         latest_page = PAGES[file][0]
-        return (f'> ⚠️ Documentation of Guestroll **{self.tag}**. The latest release is {self.latest_tag}: '
+        return (f'> **Note:** Documentation of Guestroll **{self.tag}**. The latest release is {self.latest_tag}: '
                 f'[this page in {self.latest_tag}]({latest_page}) · '
                 f'[what changed]({REPO}/compare/{self.tag}...{self.latest_tag}) · [other versions](Versions)\n\n')
 
@@ -96,7 +96,7 @@ class Version:
         def items(files):
             return '\n'.join(f'- **[{PAGES[f][1]}]({self.page(f)})**' for f in files if f in self.files)
 
-        return f"""> ⚠️ Documentation of Guestroll **{self.tag}**. The latest release is [{self.latest_tag}](Home) · [what changed]({REPO}/compare/{self.tag}...{self.latest_tag}) · [other versions](Versions)
+        return f"""> **Note:** Documentation of Guestroll **{self.tag}**. The latest release is [{self.latest_tag}](Home) · [what changed]({REPO}/compare/{self.tag}...{self.latest_tag}) · [other versions](Versions)
 
 ## Guide
 
@@ -154,7 +154,7 @@ docker run -d --name guestroll -p 3000:3000 -v guestroll-data:/data \\
   ghcr.io/achedon12/guestroll:latest
 ```
 
-> 📚 This wiki documents Guestroll **{version.tag}**, the latest release. [Older versions](Versions)
+> This wiki documents Guestroll **{version.tag}**, the latest release. [Older versions](Versions)
 
 ## Guide
 
@@ -166,10 +166,10 @@ docker run -d --name guestroll -p 3000:3000 -v guestroll-data:/data \\
 
 ## Elsewhere
 
-- 🌐 [Website]({SITE}/), the same documentation with search
-- 🐳 [Docker Hub](https://hub.docker.com/r/achedon12/guestroll)
-- 🎬 [The tour on YouTube](https://youtu.be/MEuvBB-wVI8)
-- 📝 [Changelog]({REPO}/blob/develop/CHANGELOG.md)
+- [Website]({SITE}/), the same documentation with search
+- [Docker Hub](https://hub.docker.com/r/achedon12/guestroll)
+- [The tour on YouTube](https://youtu.be/MEuvBB-wVI8)
+- [Changelog]({REPO}/blob/develop/CHANGELOG.md)
 """
 
 
@@ -195,7 +195,7 @@ def sidebar() -> str:
     def items(files):
         return '\n'.join(f'- [{PAGES[f][1]}]({PAGES[f][0]})' for f in files)
 
-    return f"""**[🏠 Home](Home)**
+    return f"""**[Home](Home)**
 
 **Guide**
 
@@ -211,7 +211,7 @@ def sidebar() -> str:
 - [Repository]({REPO})
 - [Changelog]({REPO}/blob/develop/CHANGELOG.md)
 
-**[📚 Other versions](Versions)**
+**[Other versions](Versions)**
 """
 
 
