@@ -10,14 +10,16 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node scripts/start.mjs",
     "lint": "eslint .",
     "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "db:generate": "drizzle-kit generate",
     "seed:demo": "node scripts/seed-demo.mjs",
-    "screenshots": "node scripts/brand/compose-screenshots.mjs"
+    "screenshots": "node scripts/brand/compose-screenshots.mjs",
+    "test:e2e": "playwright test",
+    "test:coverage": "vitest run --coverage"
   },
   "dependencies": {
     "archiver": "^7.0.1",
@@ -39,6 +41,7 @@
     "sharp": "^0.35.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.64.1",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/archiver": "^6.0.4",
     "@types/better-sqlite3": "^9.6.0",
@@ -46,6 +49,7 @@
     "@types/qrcode": "^1.5.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@vitest/coverage-v8": "^5.0.4",
     "@zxing/library": "^0.21.3",
     "drizzle-kit": "^0.31.11",
     "eslint": "^9.39.5",

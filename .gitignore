@@ -14,3 +14,7 @@ next-env.d.ts
 
 # Launch video output
 brag-output*/
+
+# Playwright
+playwright-report/
+test-results/
