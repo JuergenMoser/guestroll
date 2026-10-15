@@ -167,8 +167,8 @@ describe("stats", () => {
 describe("storage", () => {
   it("refuses ids that could escape the uploads folder", async () => {
     const { storage } = await mods();
-    expect(() => storage.photoPath("../../etc", "00000000-0000-0000-0000-000000000000", "original")).toThrow();
-    expect(() => storage.photoPath("00000000-0000-0000-0000-000000000000", "../passwd", "thumb")).toThrow();
-    expect(() => storage.logoPath("..")).toThrow();
+    expect(() => storage.photoKey("../../etc", "00000000-0000-0000-0000-000000000000", "original")).toThrow();
+    expect(() => storage.photoKey("00000000-0000-0000-0000-000000000000", "../passwd", "thumb")).toThrow();
+    expect(() => storage.logoKey("..")).toThrow();
   });
 });

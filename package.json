@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "archiver": "^7.0.1",
+    "aws4fetch": "^1.0.20",
     "bcryptjs": "^3.0.3",
     "better-sqlite3": "^13.0.3",
     "browser-image-compression": "^2.0.2",

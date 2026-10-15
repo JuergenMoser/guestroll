@@ -73,6 +73,29 @@ Per minute. Upload limits apply per guest, login limits per client IP.
 | `RATE_LIMIT_LOGIN_PER_MINUTE` | `5` | Admin login attempts per IP. |
 | `RATE_LIMIT_UNLOCK_PER_MINUTE` | `10` | Access-code attempts per guest; three times this value is the ceiling for wrong codes on one event, across all guests. |
 
+## Storage
+
+Photos, logos and voice messages go to a folder under `DATA_DIR` by default.
+Set `STORAGE_DRIVER=s3` to keep them in any S3-compatible bucket instead (AWS
+S3, Backblaze B2, Cloudflare R2, Wasabi, Garage, RustFS, SeaweedFS…). The
+SQLite database always stays in `DATA_DIR`, so keep the volume either way.
+
+| Variable | Default | Description |
+|---|---|---|
+| `STORAGE_DRIVER` | `local` | `local` or `s3`. |
+| `S3_ENDPOINT` | *(none)* | e.g. `https://s3.eu-west-3.amazonaws.com`, `https://<account>.r2.cloudflarestorage.com`, `http://garage:3900`. |
+| `S3_REGION` | `us-east-1` | Region used to sign requests. Most self-hosted servers accept the default. |
+| `S3_BUCKET` | *(none)* | The bucket must exist. Keep it **private**: Guestroll serves every file itself, after checking access. |
+| `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | *(none)* | Credentials allowed to read, write, list and delete in the bucket. |
+| `S3_PREFIX` | *(none)* | Folder inside the bucket, to share one bucket between instances. |
+| `S3_FORCE_PATH_STYLE` | `true` | `true` sends `endpoint/bucket/key`; `false` sends `bucket.endpoint/key` (AWS virtual-hosted style). |
+
+At startup Guestroll writes, reads back and deletes a small probe file, and
+logs `[storage] S3 bucket NOT usable` with the reason if that fails. Files are
+never served from the bucket directly, so photos stay private even with a
+bucket on a public endpoint. To move existing photos to a bucket, make a backup
+(Admin → Settings → Backup), switch the driver, then restore it.
+
 ## Email
 
 Optional. Without SMTP, everything else works and no email is ever sent.

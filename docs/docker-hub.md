@@ -110,6 +110,7 @@ Everything is an environment variable; all are optional.
 | `SMTP_HOST` / `SMTP_PORT` | none / `587` | Your SMTP server; turns email on (also settable in the admin) |
 | `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM` | none | Credentials and sender |
 | `ADMIN_EMAIL` | none | Where alerts and event summaries go |
+| `STORAGE_DRIVER` | `local` | `s3` to keep photos in an S3-compatible bucket (`S3_ENDPOINT`, `S3_BUCKET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`) |
 
 Full reference: [Configuration](https://github.com/achedon12/guestroll/wiki/Configuration).
 

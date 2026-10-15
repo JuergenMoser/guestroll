@@ -4,6 +4,16 @@ export async function register() {
   if (process.env.NEXT_RUNTIME === "nodejs") {
     const { bootstrapAdmin } = await import("@/lib/auth/admin");
     bootstrapAdmin();
+    const { storage } = await import("@/lib/storage");
+    const { checkBucket } = await import("@/lib/storage/s3");
+    const driver = storage();
+    if (driver.name === "s3") {
+      // A wrong key or bucket would otherwise only show up on the first guest's upload.
+      await checkBucket(driver).then(
+        () => console.log("[storage] S3 bucket reachable"),
+        (error: Error) => console.error(`[storage] S3 bucket NOT usable: ${error.message}. Uploads will fail until this is fixed.`),
+      );
+    }
     const { startScheduler } = await import("@/lib/scheduler");
     startScheduler();
   }

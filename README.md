@@ -18,7 +18,7 @@ Self-hosted. No app to install, no account to create.
 [![Stars](https://img.shields.io/github/stars/achedon12/guestroll?style=flat)](https://github.com/achedon12/guestroll/stargazers)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
-[Website](https://achedon12.github.io/guestroll/) | [Quick start](#quick-start) | [Features](#features) | [Documentation](https://github.com/achedon12/guestroll/wiki) | [Français](README.fr.md)
+[Website](https://achedon12.github.io/guestroll/) | [Quick start](#quick-start) | [Features](#features) | [Documentation](https://github.com/achedon12/guestroll/wiki)
 
 <img src="docs/assets/screenshots/hero.png" alt="Guest page on a phone next to the admin dashboard" width="900" />
 
@@ -70,7 +70,7 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 
 **For whoever runs the server**
 - 🐳 A single container, multi-arch (`amd64`, `arm64`, so a Raspberry Pi works too).
-- 🗃️ No external database: SQLite plus a folder of files in one volume.
+- 🗃️ No external database: SQLite plus a folder of files in one volume, or photos in any **S3-compatible bucket** (AWS, R2, B2, Garage…).
 - 🛡️ Private by design: photos are never public files, and every request is checked. See [Security](docs/security.md).
 - 🧩 **Swappable capture component**: ship your own camera UI without touching the upload code. See [Customization](docs/customization.md).
 - ⚙️ Configured with environment variables only: port, data path, `PUID`/`PGID`, time zone, limits.

@@ -78,6 +78,26 @@ export const config = {
   /** How often time-based work runs (event endings, alerts, the mail queue). 0 disables it. */
   schedulerIntervalMs: int("SCHEDULER_INTERVAL_SECONDS", 60, 0) * 1000,
 
+  /**
+   * Where photos, logos and voice messages live. `local` is a folder under
+   * DATA_DIR; `s3` is any S3-compatible bucket (AWS, MinIO, Backblaze B2,
+   * Cloudflare R2…). The database always stays in DATA_DIR.
+   */
+  storage: {
+    driver: oneOf("STORAGE_DRIVER", ["local", "s3"] as const, "local"),
+    s3: {
+      endpoint: process.env.S3_ENDPOINT?.replace(/\/+$/, "") || "",
+      region: process.env.S3_REGION?.trim() || "us-east-1",
+      bucket: process.env.S3_BUCKET?.trim() || "",
+      accessKeyId: process.env.S3_ACCESS_KEY_ID || "",
+      secretAccessKey: process.env.S3_SECRET_ACCESS_KEY || "",
+      /** Folder inside the bucket, so one bucket can hold several instances. */
+      prefix: (process.env.S3_PREFIX?.trim() || "").replace(/^\/+|\/+$/g, ""),
+      /** `bucket.host/key` (virtual-hosted) needs DNS per bucket: MinIO and most self-hosted servers want path style. */
+      forcePathStyle: bool("S3_FORCE_PATH_STYLE", true),
+    },
+  },
+
   rateLimit: {
     uploadsPerMinute: int("RATE_LIMIT_UPLOADS_PER_MINUTE", 30, 1),
     loginPerMinute: int("RATE_LIMIT_LOGIN_PER_MINUTE", 5, 1),

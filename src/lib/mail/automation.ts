@@ -1,5 +1,4 @@
 import "server-only";
-import fs from "node:fs/promises";
 import { and, count, eq, gte, isNotNull, isNull, lte } from "drizzle-orm";
 import { config } from "@/lib/config";
 import { listGuestContacts, uniqueRecipients } from "@/lib/contacts";
@@ -9,6 +8,7 @@ import { formatBytes } from "@/lib/format";
 import { createShareLink, generateSharePassword } from "@/lib/shares";
 import { readSetting, writeSetting } from "@/lib/settings";
 import { getStats } from "@/lib/stats";
+import { storage } from "@/lib/storage";
 import { backgroundBaseUrl } from "@/lib/urls";
 import { mailMessages } from "./messages";
 import { enqueueMail } from "./outbox";
@@ -157,10 +157,10 @@ export function failedLoginAlert(now = Date.now()): boolean {
 export async function storageAlert(now = Date.now()): Promise<boolean> {
   const adminEmail = getAdminEmail();
   if (!adminEmail || !getAlertSettings().storage) return false;
-  const disk = await fs.statfs(/*turbopackIgnore: true*/ config.dataDir).catch(() => null);
-  if (!disk || disk.blocks === 0) return false;
-  const percent = Math.round(100 - (disk.bavail / disk.blocks) * 100);
+  const disk = await storage().capacity();
+  if (!disk) return false;
+  const percent = Math.round(100 - (disk.free / disk.total) * 100);
   if (percent < 90) return false;
-  const mail = storageMail({ ...common(), url: `${backgroundBaseUrl()}/admin`, percent, free: formatBytes(disk.bavail * disk.bsize, config.locale) });
+  const mail = storageMail({ ...common(), url: `${backgroundBaseUrl()}/admin`, percent, free: formatBytes(disk.free, config.locale) });
   return enqueueMail({ to: adminEmail, mail, kind: "alert:storage", dedupeKey: `storage:${Math.floor(now / DAY)}` });
 }

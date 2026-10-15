@@ -20,6 +20,16 @@ jobs:
   unit:
     name: Unit and functional tests
     runs-on: ubuntu-latest
+    # An S3-compatible server, so the S3 storage driver is tested for real.
+    services:
+      s3:
+        image: rustfs/rustfs:1.0.1@sha256:1803faef57627e2d9c2e7d89d655d712ddded5389040054987163043fecb6a3c
+        ports: ["9000:9000"]
+        env:
+          RUSTFS_ACCESS_KEY: minioadmin
+          RUSTFS_SECRET_KEY: minioadmin
+    env:
+      S3_TEST_ENDPOINT: http://127.0.0.1:9000
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

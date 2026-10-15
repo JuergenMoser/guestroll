@@ -28,7 +28,7 @@ export async function GET(request: Request, { params }: RouteContext<"/api/media
   const viewer = await getViewer();
   if (!canViewPhoto(event, photo, viewer, variant)) return apiError("not_found");
 
-  const opened = openPhotoStream(event.id, photo.id, variant);
+  const opened = await openPhotoStream(event.id, photo.id, variant);
   if (!opened) return apiError("not_found");
 
   const download = variant === "original" && url.searchParams.get("download") === "1";

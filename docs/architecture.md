@@ -87,8 +87,11 @@ Two rules keep this maintainable:
 Guests have no table: a guest is a random id in their cookie. Their name is
 copied onto each photo they send.
 
-Files: `uploads/<event-id>/<photo-id>.{original.jpg,display.webp,thumb.webp}`
-and `uploads/<event-id>/logo.png`.
+Files: `<event-id>/<photo-id>.{original.jpg,display.webp,thumb.webp}` and
+`<event-id>/logo.png`, in `DATA_DIR/uploads` or in an S3 bucket. Both drivers
+implement `StorageDriver` (`src/lib/storage/driver.ts`) and pass the same
+contract test (`tests/integration/storage.test.ts`); the S3 one signs plain
+`fetch` calls (aws4fetch) instead of pulling in the AWS SDK.
 
 ## Choices worth knowing
 

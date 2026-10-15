@@ -14,7 +14,6 @@ const globalForDb = globalThis as unknown as { guestrollDb?: Db };
 
 function open(): Db {
   fs.mkdirSync(config.dataDir, { recursive: true });
-  fs.mkdirSync(config.uploadsDir, { recursive: true });
 
   const sqlite = new Database(config.dbFile);
   // WAL lets the gallery keep reading while a burst of uploads writes.
