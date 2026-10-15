@@ -1,7 +1,10 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { Filter, Frame } from "@/lib/effects";
+import type { PublicEvent } from "@/lib/events";
 import type { PhotoDto } from "@/lib/photos";
+import { applyEffects } from "./applyEffects";
 
 export type UploadStatus = "queued" | "compressing" | "uploading" | "done" | "error";
 
@@ -10,6 +13,8 @@ export interface UploadItem {
   file: File;
   /** Challenge picked when the photo was taken; sent with it. */
   challengeId: string | null;
+  /** Applied in the browser before compression (see applyEffects). */
+  filter: Filter;
   preview: string;
   status: UploadStatus;
   progress: number;
@@ -74,14 +79,16 @@ function waitOnline(): Promise<void> {
  * Sequential upload queue. One file at a time matches the server's one-upload-
  * per-guest lock, keeps the phone responsive, and gives honest progress.
  */
-export function useUploadQueue(endpoint: string, onUploaded: (photo: PhotoDto) => void) {
+export function useUploadQueue(endpoint: string, onUploaded: (photo: PhotoDto) => void, effects?: { frame: Frame; event: PublicEvent }) {
   const [items, setItems] = useState<UploadItem[]>([]);
   const queue = useRef<UploadItem[]>([]);
   const running = useRef(false);
   const onUploadedRef = useRef(onUploaded);
+  const effectsRef = useRef(effects);
   useEffect(() => {
     onUploadedRef.current = onUploaded;
-  }, [onUploaded]);
+    effectsRef.current = effects;
+  }, [onUploaded, effects]);
 
   const patch = useCallback((id: string, change: Partial<UploadItem>) => {
     setItems((list) => list.map((item) => (item.id === id ? { ...item, ...change } : item)));
@@ -93,7 +100,9 @@ export function useUploadQueue(endpoint: string, onUploaded: (photo: PhotoDto) =
     while (queue.current.length) {
       const item = queue.current.shift()!;
       patch(item.id, { status: "compressing", error: undefined });
-      const file = await compress(item.file);
+      const fx = effectsRef.current;
+      const withEffects = fx ? await applyEffects(item.file, { filter: item.filter, frame: fx.frame, event: fx.event }).catch(() => item.file) : item.file;
+      const file = await compress(withEffects);
 
       for (let attempt = 1; ; attempt++) {
         await waitOnline();
@@ -117,11 +126,12 @@ export function useUploadQueue(endpoint: string, onUploaded: (photo: PhotoDto) =
   }, [endpoint, patch]);
 
   const add = useCallback(
-    (files: File[], challengeId: string | null = null) => {
+    (files: File[], challengeId: string | null = null, filter: Filter = "none") => {
       const added = files.map<UploadItem>((file) => ({
         id: crypto.randomUUID(),
         file,
         challengeId,
+        filter,
         preview: URL.createObjectURL(file),
         status: "queued",
         progress: 0,

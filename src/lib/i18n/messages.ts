@@ -70,6 +70,14 @@ const en = {
     freePhoto: "Free photo",
     challengeDone: "Done",
     challengeActive: "Challenge: {label}",
+    filters: "Filters",
+    filterNames: {
+      none: "Natural",
+      bw: "Black & white",
+      warm: "Warm",
+      vintage: "Vintage",
+      vivid: "Vivid",
+    },
   },
   admin: {
     title: "Admin",
@@ -444,6 +452,24 @@ const en = {
       retentionHint: "0 keeps them forever. Otherwise 14 or more: the hosts get an email a week before.",
       retentionInvalid: "0, or between 14 and 3650 days.",
     },
+    look: {
+      title: "Look",
+      frame: "Frame",
+      frames: {
+        none: "None",
+        print: "Instant print",
+        border: "Event color",
+        stamp: "Logo stamp",
+      },
+      frameHints: {
+        none: "Photos are kept as taken.",
+        print: "A white border, deeper at the bottom with the event name and date, and the logo if there is one.",
+        border: "A border in the event's color, with its name along the bottom.",
+        stamp: "The event logo in the bottom corner. Upload a logo in QR & sharing first.",
+      },
+      filters: "Let guests pick a filter",
+      filtersHint: "Black & white, warm, vintage or vivid, applied on the phone before sending. Frames and filters are part of the photo: the original isn't kept.",
+    },
   },
   shared: {
     title: "Private album",
@@ -557,6 +583,14 @@ const fr: DeepPartialStrings<Messages> = {
     freePhoto: "Photo libre",
     challengeDone: "Relevé",
     challengeActive: "Défi : {label}",
+    filters: "Filtres",
+    filterNames: {
+      none: "Naturel",
+      bw: "Noir et blanc",
+      warm: "Chaud",
+      vintage: "Vintage",
+      vivid: "Éclatant",
+    },
   },
   admin: {
     title: "Admin",
@@ -931,6 +965,24 @@ const fr: DeepPartialStrings<Messages> = {
       retentionHint: "0 les garde pour toujours. Sinon 14 ou plus : les organisateurs reçoivent un e-mail une semaine avant.",
       retentionInvalid: "0, ou entre 14 et 3650 jours.",
     },
+    look: {
+      title: "Rendu",
+      frame: "Cadre",
+      frames: {
+        none: "Aucun",
+        print: "Tirage instantané",
+        border: "Couleur de l'évènement",
+        stamp: "Tampon logo",
+      },
+      frameHints: {
+        none: "Les photos restent telles quelles.",
+        print: "Un bord blanc, plus large en bas avec le nom et la date de l'évènement, et le logo s'il y en a un.",
+        border: "Une bordure à la couleur de l'évènement, avec son nom en bas.",
+        stamp: "Le logo de l'évènement dans le coin inférieur. Ajoutez d'abord un logo dans QR & partage.",
+      },
+      filters: "Laisser les invités choisir un filtre",
+      filtersHint: "Noir et blanc, chaud, vintage ou éclatant, appliqué sur le téléphone avant l'envoi. Cadres et filtres font partie de la photo : l'original n'est pas conservé.",
+    },
   },
   shared: {
     title: "Album privé",
@@ -1040,6 +1092,14 @@ const it: DeepPartialStrings<Messages> = {
     freePhoto: "Foto libera",
     challengeDone: "Completata",
     challengeActive: "Sfida: {label}",
+    filters: "Filtri",
+    filterNames: {
+      none: "Naturale",
+      bw: "Bianco e nero",
+      warm: "Caldo",
+      vintage: "Vintage",
+      vivid: "Vivace",
+    },
   },
   admin: {
     title: "Admin",
@@ -1414,6 +1474,24 @@ const it: DeepPartialStrings<Messages> = {
       retentionHint: "0 li conserva per sempre. Altrimenti 14 o più: gli organizzatori ricevono un'e-mail una settimana prima.",
       retentionInvalid: "0, oppure tra 14 e 3650 giorni.",
     },
+    look: {
+      title: "Aspetto",
+      frame: "Cornice",
+      frames: {
+        none: "Nessuna",
+        print: "Stampa istantanea",
+        border: "Colore dell'evento",
+        stamp: "Timbro logo",
+      },
+      frameHints: {
+        none: "Le foto restano come scattate.",
+        print: "Un bordo bianco, più alto in basso con nome e data dell'evento, e il logo se c'è.",
+        border: "Un bordo del colore dell'evento, con il nome in basso.",
+        stamp: "Il logo dell'evento nell'angolo in basso. Carica prima un logo in QR e condivisione.",
+      },
+      filters: "Lascia scegliere un filtro agli ospiti",
+      filtersHint: "Bianco e nero, caldo, vintage o vivace, applicato sul telefono prima dell'invio. Cornici e filtri fanno parte della foto: l'originale non viene conservato.",
+    },
   },
   shared: {
     title: "Album privato",
@@ -1523,6 +1601,14 @@ const es: DeepPartialStrings<Messages> = {
     freePhoto: "Foto libre",
     challengeDone: "Hecho",
     challengeActive: "Reto: {label}",
+    filters: "Filtros",
+    filterNames: {
+      none: "Natural",
+      bw: "Blanco y negro",
+      warm: "Cálido",
+      vintage: "Vintage",
+      vivid: "Vivo",
+    },
   },
   admin: {
     title: "Admin",
@@ -1896,6 +1982,24 @@ const es: DeepPartialStrings<Messages> = {
       retentionDays: "Días después del final",
       retentionHint: "0 los conserva para siempre. Si no, 14 o más: los anfitriones reciben un correo una semana antes.",
       retentionInvalid: "0, o entre 14 y 3650 días.",
+    },
+    look: {
+      title: "Aspecto",
+      frame: "Marco",
+      frames: {
+        none: "Ninguno",
+        print: "Foto instantánea",
+        border: "Color del evento",
+        stamp: "Sello con logo",
+      },
+      frameHints: {
+        none: "Las fotos se quedan tal cual.",
+        print: "Un borde blanco, más ancho abajo con el nombre y la fecha del evento, y el logo si lo hay.",
+        border: "Un borde del color del evento, con su nombre abajo.",
+        stamp: "El logo del evento en la esquina inferior. Sube primero un logo en QR y compartir.",
+      },
+      filters: "Dejar que los invitados elijan un filtro",
+      filtersHint: "Blanco y negro, cálido, vintage o vivo, aplicado en el móvil antes de enviar. Marcos y filtros forman parte de la foto: no se guarda el original.",
     },
   },
   shared: {

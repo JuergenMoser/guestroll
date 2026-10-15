@@ -31,6 +31,8 @@ export interface PublicEvent {
   challenges: Challenge[];
   guestbookEnabled: boolean;
   guestbookVoice: boolean;
+  captureFilters: boolean;
+  frame: EventRow["frame"];
 }
 
 export function toPublicEvent(event: EventRow): PublicEvent {
@@ -52,6 +54,8 @@ export function toPublicEvent(event: EventRow): PublicEvent {
     challenges: readChallenges(event.challenges),
     guestbookEnabled: event.guestbookEnabled,
     guestbookVoice: event.guestbookVoice,
+    captureFilters: event.captureFilters,
+    frame: event.frame,
   };
 }
 

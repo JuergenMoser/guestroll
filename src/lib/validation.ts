@@ -1,5 +1,6 @@
 import { CAPTURE_MODES, LOCALES, type CaptureMode, type Locale } from "@/lib/constants";
 import { parseChallenges } from "@/lib/challenges";
+import { FRAMES, type Frame } from "@/lib/effects";
 import { parseQrStyle } from "@/lib/qr/style";
 import { parseWallStyle } from "@/lib/wall";
 
@@ -28,6 +29,8 @@ export interface EventInput {
   guestbookEnabled: boolean;
   guestbookVoice: boolean;
   guestbookInGallery: boolean;
+  captureFilters: boolean;
+  frame: Frame;
   /** JSON, already normalised by `parseChallenges`. */
   challenges: string;
   /** Already normalised by `parseQrStyle` and serialised. */
@@ -99,6 +102,7 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     "guestbookEnabled",
     "guestbookVoice",
     "guestbookInGallery",
+    "captureFilters",
   ] as const) {
     if (!has(key)) continue;
     if (typeof src[key] === "boolean") out[key] = src[key] as boolean;
@@ -108,6 +112,7 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
   const enums = {
     moderation: ["post", "pre"],
     captureMode: CAPTURE_MODES,
+    frame: FRAMES,
   } as const;
   for (const [key, allowed] of Object.entries(enums) as [keyof typeof enums, readonly string[]][]) {
     if (!has(key)) continue;

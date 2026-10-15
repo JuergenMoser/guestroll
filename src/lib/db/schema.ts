@@ -19,6 +19,10 @@ export const events = sqliteTable("events", {
   moderation: text("moderation", { enum: ["post", "pre"] }).notNull().default("post"),
   captureMode: text("capture_mode", { enum: ["camera", "picker", "both"] }).notNull().default("camera"),
   askGuestName: integer("ask_guest_name", { mode: "boolean" }).notNull().default(true),
+  /** Guests may pick a filter before shooting; applied in the browser, before the upload. */
+  captureFilters: integer("capture_filters", { mode: "boolean" }).notNull().default(false),
+  /** Drawn around every guest photo in the browser: `none`, `print` (instant-print border), `border` (event color), `stamp` (the logo in a corner). */
+  frame: text("frame", { enum: ["none", "print", "border", "stamp"] }).notNull().default("none"),
   maxPhotosPerGuest: integer("max_photos_per_guest").notNull().default(0),
   /** Language guests see unless they pick one; null follows each guest's browser. */
   defaultLocale: text("default_locale", { enum: ["en", "fr", "it", "es"] }),

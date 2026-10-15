@@ -1,5 +1,6 @@
 import type { AdminEvent } from "@/lib/events";
 import type { Challenge } from "@/lib/challenges";
+import type { Frame } from "@/lib/effects";
 import type { CaptureMode, Locale } from "@/lib/constants";
 
 /** Form values as the inputs hold them (strings for dates), converted by `toRequestBody`. */
@@ -27,6 +28,8 @@ export interface EventFormState {
   guestbookEnabled: boolean;
   guestbookVoice: boolean;
   guestbookInGallery: boolean;
+  captureFilters: boolean;
+  frame: Frame;
   /** New rows have an empty id: the server assigns one. */
   challenges: Challenge[];
 }
@@ -72,6 +75,8 @@ export function initialState(event?: AdminEvent): EventFormState {
     guestbookEnabled: event?.guestbookEnabled ?? false,
     guestbookVoice: event?.guestbookVoice ?? true,
     guestbookInGallery: event?.guestbookInGallery ?? false,
+    captureFilters: event?.captureFilters ?? false,
+    frame: event?.frame ?? "none",
   };
 }
 

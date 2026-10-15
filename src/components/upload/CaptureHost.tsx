@@ -4,7 +4,9 @@ import { captureComponents } from "@/components/capture/registry";
 import { useT } from "@/components/I18nProvider";
 import type { PublicEvent } from "@/lib/events";
 import type { PhotoDto } from "@/lib/photos";
-import { useState } from "react";
+import { useMemo, useState } from "react";
+import type { Filter } from "@/lib/effects";
+import { FilterPicker } from "./FilterPicker";
 import { ChallengePicker } from "./ChallengePicker";
 import { ExposureCounter } from "./ExposureCounter";
 import { UploadTray } from "./UploadTray";
@@ -29,7 +31,9 @@ export function CaptureHost({ event, doneChallenges, closedReason, remaining, se
   const t = useT();
   const [challengeId, setChallengeId] = useState<string | null>(null);
   const challenge = event.challenges.find((c) => c.id === challengeId);
-  const queue = useUploadQueue(`/api/e/${event.slug}/photos`, onUploaded);
+  const [filter, setFilter] = useState<Filter>("none");
+  const effects = useMemo(() => ({ frame: event.frame, event }), [event]);
+  const queue = useUploadQueue(`/api/e/${event.slug}/photos`, onUploaded, effects);
   const Capture = captureComponents[event.captureMode];
 
   // Don't let a guest queue more files than their quota allows: the extra ones would only fail.
@@ -38,7 +42,7 @@ export function CaptureHost({ event, doneChallenges, closedReason, remaining, se
   const disabled = closedReason !== null || left === 0;
 
   // The challenge is read when the files are queued, so switching it later doesn't retag photos still uploading.
-  const onFiles = (files: File[]) => queue.add(left === null ? files : files.slice(0, left), challenge?.id ?? null);
+  const onFiles = (files: File[]) => queue.add(left === null ? files : files.slice(0, left), challenge?.id ?? null, event.captureFilters ? filter : "none");
 
   return (
     <div className="space-y-5">
@@ -57,6 +61,7 @@ export function CaptureHost({ event, doneChallenges, closedReason, remaining, se
           <p className="mt-5 text-center text-[15px] font-medium text-pretty">{t(closedReason === "quota" ? "guest.quota" : "guest.closed")}</p>
         )}
       </section>
+      {event.captureFilters && !closedReason && <FilterPicker value={filter} onChange={setFilter} />}
       <UploadTray items={queue.items} onRetry={queue.retry} onDismiss={queue.dismiss} />
     </div>
   );

@@ -3,6 +3,13 @@
 Most things are configurable from the admin: colors, logo, QR code design,
 capture mode, language. This page is about changing the code itself.
 
+## Filters and frames
+
+Filters and frames are applied by the upload queue (`components/upload/applyEffects.ts`),
+not by the capture component: a custom capture component gets them for free.
+The pixel math is in `src/lib/effects.ts`; add a filter there and to `FILTERS`,
+then give it a name in the translations.
+
 ## Replace the capture component
 
 The capture component is the part of the guest page that decides **how** guests

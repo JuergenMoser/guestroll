@@ -13,6 +13,7 @@ import { ChallengesSection } from "./ChallengesSection";
 import { DetailsSection } from "./DetailsSection";
 import { GuestbookSection } from "./GuestbookSection";
 import { GuestsSection } from "./GuestsSection";
+import { LookSection } from "./LookSection";
 import { initialState, toRequestBody, type SetField } from "./state";
 import { UploadsSection } from "./UploadsSection";
 
@@ -56,6 +57,7 @@ export function EventForm({ event }: { event?: AdminEvent }) {
       <DetailsSection {...sectionProps} />
       <AccessSection {...sectionProps} hasCode={Boolean(event?.hasAccessCode) && !form.removeCode} />
       <UploadsSection {...sectionProps} />
+      <LookSection {...sectionProps} />
       <GuestsSection {...sectionProps} />
       <ChallengesSection {...sectionProps} />
       <GuestbookSection {...sectionProps} />

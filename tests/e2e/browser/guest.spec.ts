@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import sharp from "sharp";
 import { admin, client, createEvent, joinAndUpload, photo } from "../helpers";
 
 test.describe("guest page on a phone", () => {
@@ -141,5 +142,32 @@ test.describe("guestbook on a phone", () => {
 
     await page.getByRole("button", { name: "Delete" }).click();
     await expect(page.getByText("What a night!")).toHaveCount(0);
+  });
+});
+
+test.describe("filters and frames on a phone", () => {
+  test("the photo is framed and filtered before it's sent", async ({ page, baseURL }) => {
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { name: "Framed", askGuestName: false, frame: "print", captureFilters: true });
+    await page.goto(`/e/${event.slug}`);
+    await page.getByRole("radio", { name: "Black & white" }).click();
+    const chooser = page.waitForEvent("filechooser");
+    await page.getByRole("button", { name: "Take a photo" }).click();
+    const red = await sharp({ create: { width: 800, height: 600, channels: 3, background: { r: 220, g: 30, b: 30 } } }).jpeg().toBuffer();
+    await (await chooser).setFiles({ name: "red.jpg", mimeType: "image/jpeg", buffer: red });
+    await expect(page.getByText("01", { exact: true })).toBeVisible();
+
+    const { photos } = await (await host.get(`/api/admin/events/${event.id}/photos`)).json();
+    const stored = await host.get(`/api/media/${photos[0].id}?v=original`);
+    const image = sharp(await stored.body());
+    const meta = await image.metadata();
+    // 800×600 plus the print border: wider, and taller still at the bottom.
+    expect(meta.width).toBeGreaterThan(800);
+    expect(meta.height! - 600).toBeGreaterThan(meta.width! - 800);
+    const { data, info } = await image.raw().toBuffer({ resolveWithObject: true });
+    const at = (x: number, y: number) => [...data.subarray((y * info.width + x) * info.channels, (y * info.width + x) * info.channels + 3)];
+    const [r, g, b] = at(Math.round(info.width / 2), Math.round(info.height * 0.4));
+    expect(Math.abs(r - g) + Math.abs(g - b)).toBeLessThan(12);
+    expect(at(2, 2).every((v) => v > 240)).toBe(true);
   });
 });

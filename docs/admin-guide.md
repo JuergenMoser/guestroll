@@ -94,6 +94,8 @@ and photos per challenge.
 | | Moderation | Publish immediately and hide later, or approve each photo first. |
 | Guests | Album language | Automatic (each guest's phone) or one fixed language. Guests can still switch. |
 | | Ask guests for their name | Shown next to their photos in the admin and on the live wall. |
+| Look | Frame | **Instant print** (white border, event name and date below, logo), **Event color** (a border in the accent color with the name), or **Logo stamp** in a corner. Drawn on the phone before sending. |
+| | Let guests pick a filter | Black & white, warm, vintage or vivid, chosen above the shutter. Frames and filters are part of the photo sent: the original isn't kept. Phones that can't decode a format in the browser (rare) send it plain. |
 | Challenges | List of prompts | Up to 30 photo ideas ("The dance floor", "The couple with a stranger"). Guests pick one above the shutter and see which ones they already did. Renaming a challenge keeps its photos; removing it keeps them too, untagged in the filter. |
 
 | After the event | Let guests leave their email to get the album | Adds a card on the guest page. Opt-in; addresses are deleted with the event. |
