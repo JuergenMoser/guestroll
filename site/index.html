@@ -54,7 +54,7 @@
   .btn.primary:hover { filter: brightness(0.95); }
   .btn.secondary { background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--line); }
   .btn.secondary:hover { background: var(--sunken); }
-  .hero-shot { justify-self: center; width: min(360px, 100%); }
+  .hero-shot { justify-self: center; width: auto; max-height: min(640px, 78vh); filter: drop-shadow(0 30px 40px rgb(0 0 0 / .25)); }
 
   section { padding: 72px 0; border-top: 1px solid var(--line); }
   h2 { font-size: clamp(32px, 4.4vw, 48px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
@@ -119,7 +119,7 @@
           <a class="btn secondary" href="https://github.com/achedon12/guestroll">Star on GitHub</a>
         </div>
       </div>
-      <img class="hero-shot" src="assets/screenshots/guest.png" alt="The guest page on a phone: the camera in the event's color, a counter of photos sent, and the guest's own prints." width="840" height="1907" />
+      <img class="hero-shot" src="assets/screenshots/guest-phone.png" alt="The guest page on a phone: the camera in the event's color, a counter of photos sent, and the guest's own prints." width="642" height="1342" />
     </div>
 
     <section id="how" aria-labelledby="how-title">

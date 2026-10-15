@@ -62,6 +62,10 @@ await onPaper(
   "hero.png",
 );
 
+// The phone alone on a transparent background, for pages with their own theme.
+const bare = await phone("guest.png", 600);
+await sharp(bare.buffer).png({ compressionLevel: 9 }).toFile(path.join(out, "guest-phone.png"));
+
 const g1 = await phone("guest.png", 600);
 await onPaper([{ ...g1, left: 120, top: 100 }], g1.width + 240, g1.height + 220, "guest.png");
 const gd = await phone("guest-dark.png", 600);
