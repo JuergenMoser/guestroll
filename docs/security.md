@@ -42,6 +42,18 @@ links unchanged.
   deleting one removes its files, from the album, the gallery links and the
   wall. Only the browser that sent it can (same guest cookie).
 
+## Single sign-on
+
+- Authorization code flow with PKCE (S256), a `state` and a `nonce` kept in an
+  encrypted cookie for ten minutes and used once. The ID token's signature is
+  checked against the provider's published keys, with its issuer, audience,
+  expiry and nonce.
+- An identity is linked to one account and stays so. The first link goes by
+  email only when the provider marks the address verified, and never moves an
+  account already linked to another identity.
+- Accounts created by single sign-on get a random password nobody knows.
+  Guestroll's own two-step verification still applies after the provider.
+
 ## Cloud export
 
 - The WebDAV password is encrypted at rest, never sent back to the browser,

@@ -33,6 +33,8 @@ always run on their own at startup; take a backup first all the same
 - Cloud export over WebDAV (Nextcloud, ownCloud, Synology, kDrive…): one
   folder per event, sent in the background with its progress, by hand or
   automatically when the event ends.
+- Single sign-on with any OpenID Connect provider (Authentik, Authelia,
+  Keycloak…): `OIDC_ISSUER`, `OIDC_CLIENT_ID`, `OIDC_CLIENT_SECRET`.
 
 ## [0.4.0] - 2026-10-15
 

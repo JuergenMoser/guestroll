@@ -167,6 +167,9 @@ event name to confirm.
 
 ## Settings
 
+With single sign-on set up (see [Configuration](configuration.md#single-sign-on)),
+the sign-in page also offers *Sign in with …*.
+
 Settings are split into five areas, listed on the left (a row of tabs on a
 phone). An area that needs your attention says so in the list: two-step
 verification off, no automatic backups, no email server, an update waiting.

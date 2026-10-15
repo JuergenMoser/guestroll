@@ -31,7 +31,9 @@ describe("admin guards", () => {
   });
 
   it("every admin API route except login/logout and invitation acceptance calls requireAdmin", () => {
-    const routes = files(path.join(root, "api/admin"), "route.ts").filter((f) => !/login|logout/.test(f) && !f.includes(`${path.sep}invite${path.sep}`));
+    const routes = files(path.join(root, "api/admin"), "route.ts").filter(
+      (f) => !/login|logout/.test(f) && !f.includes(`${path.sep}invite${path.sep}`) && !f.includes(`${path.sep}oidc${path.sep}`),
+    );
     expect(routes.length).toBeGreaterThan(5);
     for (const route of routes) {
       const source = fs.readFileSync(route, "utf8");
@@ -39,6 +41,13 @@ describe("admin guards", () => {
       const guards = source.match(/await require(Event)?Admin\(request[,)]/g) ?? [];
       expect(guards.length, rel(route)).toBe(handlers.length);
     }
+  });
+
+  it("single sign-on only signs in with the state this browser holds", () => {
+    const callback = fs.readFileSync(path.join(root, "api/admin/oidc/callback/route.ts"), "utf8");
+    expect(callback).toContain("same(state, expected.state)");
+    expect(callback).toContain("oidc.destroy()");
+    expect(callback).toContain("hasTwoFactor(account)");
   });
 
   it("invitation acceptance checks the origin, its token and the demo mode", () => {

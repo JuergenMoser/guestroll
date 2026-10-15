@@ -52,6 +52,18 @@ export async function getGuestSession() {
   return getIronSession<GuestSession>(await cookies(), options("gr_guest", GUEST_TTL_SECONDS));
 }
 
+/** The few minutes between leaving for the identity provider and coming back. */
+export interface OidcSession {
+  state?: string;
+  nonce?: string;
+  verifier?: string;
+  at?: number;
+}
+
+export async function getOidcSession() {
+  return getIronSession<OidcSession>(await cookies(), options("gr_oidc", 10 * 60));
+}
+
 export async function getShareSession() {
   return getIronSession<ShareSession>(await cookies(), options("gr_share", GUEST_TTL_SECONDS));
 }

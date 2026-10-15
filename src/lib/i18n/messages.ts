@@ -724,6 +724,16 @@ const en = {
         failed: "Failed",
       },
     },
+    sso: {
+      signIn: "Sign in with {name}",
+      or: "or with a password",
+      errors: {
+        unknown: "No account here matches this identity. Ask an owner to invite you, with the same email address.",
+        failed: "The identity provider's answer couldn't be checked. Try again; if it persists, the server's logs say why.",
+        expired: "The sign-in took too long or was started elsewhere. Try again.",
+        unavailable: "The identity provider can't be reached right now. Sign in with your password, or try again later.",
+      },
+    },
   },
   shared: {
     title: "Private album",
@@ -1512,6 +1522,16 @@ const fr: DeepPartialStrings<Messages> = {
         failed: "Échec",
       },
     },
+    sso: {
+      signIn: "Se connecter avec {name}",
+      or: "ou avec un mot de passe",
+      errors: {
+        unknown: "Aucun compte ici ne correspond à cette identité. Demandez à un propriétaire de vous inviter, avec la même adresse e-mail.",
+        failed: "La réponse du fournisseur d'identité n'a pas pu être vérifiée. Réessayez ; si ça persiste, les journaux du serveur disent pourquoi.",
+        expired: "La connexion a pris trop de temps ou a été lancée ailleurs. Réessayez.",
+        unavailable: "Le fournisseur d'identité est injoignable pour le moment. Connectez-vous avec votre mot de passe, ou réessayez plus tard.",
+      },
+    },
   },
   shared: {
     title: "Album privé",
@@ -2296,6 +2316,16 @@ const it: DeepPartialStrings<Messages> = {
         failed: "Non riuscito",
       },
     },
+    sso: {
+      signIn: "Accedi con {name}",
+      or: "o con una password",
+      errors: {
+        unknown: "Nessun account qui corrisponde a questa identità. Chiedi a un proprietario di invitarti, con lo stesso indirizzo e-mail.",
+        failed: "Non è stato possibile verificare la risposta del provider di identità. Riprova; se persiste, i log del server dicono perché.",
+        expired: "L'accesso ha richiesto troppo tempo o è stato avviato altrove. Riprova.",
+        unavailable: "Il provider di identità non è raggiungibile al momento. Accedi con la password, o riprova più tardi.",
+      },
+    },
   },
   shared: {
     title: "Album privato",
@@ -3078,6 +3108,16 @@ const es: DeepPartialStrings<Messages> = {
         running: "Enviando",
         done: "Enviado",
         failed: "Error",
+      },
+    },
+    sso: {
+      signIn: "Iniciar sesión con {name}",
+      or: "o con una contraseña",
+      errors: {
+        unknown: "Ninguna cuenta de aquí corresponde a esta identidad. Pide a un propietario que te invite, con la misma dirección de correo.",
+        failed: "No se ha podido verificar la respuesta del proveedor de identidad. Vuelve a intentarlo; si persiste, los registros del servidor dicen por qué.",
+        expired: "El inicio de sesión ha tardado demasiado o se ha iniciado en otro lugar. Vuelve a intentarlo.",
+        unavailable: "El proveedor de identidad no está disponible en este momento. Inicia sesión con tu contraseña o vuelve a intentarlo más tarde.",
       },
     },
   },

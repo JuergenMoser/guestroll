@@ -227,6 +227,8 @@ export const accounts = sqliteTable("accounts", {
   /** Where this person's alerts and event summaries go (optional). */
   email: text("email"),
   passwordHash: text("password_hash").notNull(),
+  /** `issuer|subject` of the single sign-on identity linked to this account; null without one. */
+  oidcSubject: text("oidc_subject").unique(),
   role: text("role", { enum: ["owner", "organizer"] }).notNull(),
   /** Stored in the session cookie and bumped on password change: older cookies stop working. */
   sessionVersion: integer("session_version").notNull().default(1),

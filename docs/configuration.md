@@ -58,6 +58,26 @@ Each visitor gets, in this order:
 | `WEBHOOK_ALLOW_PRIVATE` | `false` | Let webhooks reach private, loopback and link-local addresses (a self-hosted ntfy or Home Assistant on your network). Off, a webhook to such an address fails with a message saying so: an owner's webhook can't probe the server's own network or cloud metadata. |
 | `CLOUD_ALLOW_PRIVATE` | `false` | Let the cloud export reach a WebDAV server on your own network (a Nextcloud at home). Off, such an address is refused, like for webhooks. |
 
+## Single sign-on
+
+Sign in with Authentik, Authelia, Keycloak, Google Workspace or any OpenID
+Connect provider. In the provider, create a confidential client with the
+redirect URL `https://<your PUBLIC_URL>/api/admin/oidc/callback` and the
+scopes `openid email profile`.
+
+| Variable | Default | Description |
+|---|---|---|
+| `OIDC_ISSUER` | | The provider's issuer URL, e.g. `https://auth.example.com/application/o/guestroll`. Single sign-on is on when the three first variables are set. |
+| `OIDC_CLIENT_ID` | | |
+| `OIDC_CLIENT_SECRET` | | |
+| `OIDC_NAME` | `SSO` | What the button says: *Sign in with Authentik*. |
+| `OIDC_AUTO_CREATE` | `false` | Someone the provider knows but Guestroll doesn't gets an organizer account without events (an owner then gives them some). Off, they're refused until an owner invites them. |
+
+An identity signs in as the account it was linked to the first time; the
+first time, as the account with the same email address, if the provider says
+it verified that address. Password sign-in stays available. An account with
+two-step verification still asks for its code after the provider.
+
 ## Uploads
 
 | Variable | Default | Description |

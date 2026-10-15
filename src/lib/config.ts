@@ -85,6 +85,20 @@ export const config = {
   /** Lets a relay without TLS receive the SMTP login (same machine or trusted network only). */
   smtpAllowPlain: bool("SMTP_ALLOW_PLAIN", false),
 
+  /**
+   * Single sign-on (OpenID Connect): Authentik, Authelia, Keycloak, Google…
+   * On when issuer, client id and secret are all set.
+   */
+  oidc: {
+    issuer: process.env.OIDC_ISSUER?.trim().replace(/\/+$/, "") || "",
+    clientId: process.env.OIDC_CLIENT_ID?.trim() || "",
+    clientSecret: process.env.OIDC_CLIENT_SECRET || "",
+    /** What the sign-in button says: "Sign in with {name}". */
+    name: process.env.OIDC_NAME?.trim() || "SSO",
+    /** Unknown people get an organizer account without events instead of a refusal. */
+    autoCreate: bool("OIDC_AUTO_CREATE", false),
+  },
+
   /** Recipient of admin alerts and summaries; Admin → Settings when unset. */
   adminEmail: process.env.ADMIN_EMAIL?.trim() || "",
 

@@ -8,10 +8,11 @@ import { ApiError, api } from "@/lib/client/api";
 import { errorText } from "@/lib/i18n/errors";
 
 /** Username and password, then a code from the authenticator app when the account has one. */
-export function LoginForm({ demo }: { demo?: { username: string; password: string } }) {
+export function LoginForm({ demo, initialStep = "password" }: { demo?: { username: string; password: string }; initialStep?: "password" | "code" }) {
   const t = useT();
   const router = useRouter();
-  const [step, setStep] = useState<"password" | "code">("password");
+  // "code" when coming back from the identity provider with an account that has two-step verification.
+  const [step, setStep] = useState<"password" | "code">(initialStep);
   const [username, setUsername] = useState(demo?.username ?? "");
   const [password, setPassword] = useState(demo?.password ?? "");
   const [code, setCode] = useState("");
