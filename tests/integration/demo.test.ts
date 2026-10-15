@@ -26,7 +26,8 @@ describe("demo mode", () => {
     const { verifyLogin } = await import("@/lib/auth/admin");
     expect(await verifyLogin("demo", DEMO_PASSWORD)).toMatchObject({ role: "owner" });
     expect(await verifyLogin("admin", "test-admin-password")).not.toBeNull();
-  });
+    // Two seeds of 42 photos through sharp: over 30 s on CI runners with coverage on.
+  }, 120_000);
 
   it("sends nothing out and never checks for updates", async () => {
     const { config } = await import("@/lib/config");

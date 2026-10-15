@@ -56,5 +56,5 @@ describe("paging the event list", () => {
     const counts = (list: typeof all) => Object.fromEntries(list.map((e) => [e.id, [e.photoCount, e.pendingCount, e.bytes]]));
     expect(counts(paged)).toEqual(counts(all));
     expect(paged.reduce((n, e) => n + e.photoCount, 0)).toBe(42);
-  });
+  }, 120_000);
 });

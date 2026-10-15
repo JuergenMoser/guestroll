@@ -38,8 +38,8 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: docs/package-lock.json
+          # No cache in a job that publishes the site: a poisoned cache would ship with it.
+          package-manager-cache: false
 
       - name: Install
         working-directory: docs
