@@ -149,8 +149,16 @@ code of 6+ characters (enforced) in any useful time.
 Every state-changing request (admin and guest) must carry a matching `Origin`
 header, on top of `SameSite` cookies. The app sets `X-Frame-Options: DENY`,
 `X-Content-Type-Options: nosniff`, a strict `Referrer-Policy`, and a
-`Permissions-Policy` that allows the camera only for the app itself. Served
-images and SVG files carry a sandboxing Content-Security-Policy.
+`Permissions-Policy` that allows the camera and microphone only for the app
+itself.
+
+Every page carries a **Content-Security-Policy** with a fresh nonce
+(`src/proxy.ts`): only scripts Next.js marked with it run, so injected markup
+can't execute anything, and the page can only talk to its own origin. Styles
+stay `unsafe-inline` (React writes `style` attributes; a style can't run code).
+Served images, voice notes and SVG files carry their own sandboxing policy. The
+app loads nothing from third parties: no CDN, no fonts or analytics from
+elsewhere.
 
 ## Your part
 

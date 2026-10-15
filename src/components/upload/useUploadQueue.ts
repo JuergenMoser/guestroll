@@ -36,7 +36,9 @@ async function compress(file: File): Promise<File> {
       maxWidthOrHeight: MAX_DIMENSION,
       maxSizeMB: 6,
       initialQuality: 0.88,
-      useWebWorker: true,
+      // Its worker loads the library from a CDN: blocked by the page's CSP, and a
+      // request to a third party from every guest. Compression runs in the page.
+      useWebWorker: false,
       fileType: "image/jpeg",
       preserveExif: false,
     });

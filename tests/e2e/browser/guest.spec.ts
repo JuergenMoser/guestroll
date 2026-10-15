@@ -171,3 +171,26 @@ test.describe("filters and frames on a phone", () => {
     expect(at(2, 2).every((v) => v > 240)).toBe(true);
   });
 });
+
+test.describe("content security policy", () => {
+  test("pages carry a nonce-based CSP and nothing on them breaks it", async ({ page, baseURL }) => {
+    const violations: string[] = [];
+    page.on("console", (m) => /Content Security Policy|Refused to/i.test(m.text()) && violations.push(m.text()));
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { askGuestName: false, guestbookEnabled: true, captureFilters: true, frame: "print" });
+
+    const res = await page.goto(`/e/${event.slug}`);
+    const csp = res!.headers()["content-security-policy"];
+    expect(csp).toMatch(/script-src 'self' 'nonce-[^']+' 'strict-dynamic'/);
+    expect(csp).toContain("frame-ancestors 'none'");
+    expect(csp).not.toContain("unsafe-eval");
+
+    // A photo through the whole pipeline: filter, frame, compression, upload.
+    await page.getByRole("radio", { name: "Vintage" }).click();
+    const chooser = page.waitForEvent("filechooser");
+    await page.getByRole("button", { name: "Take a photo" }).click();
+    await (await chooser).setFiles({ name: "p.jpg", mimeType: "image/jpeg", buffer: await photo() });
+    await expect(page.getByText("01", { exact: true })).toBeVisible();
+    expect(violations).toEqual([]);
+  });
+});
