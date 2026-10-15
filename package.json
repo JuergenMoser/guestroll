@@ -52,7 +52,7 @@
     "@vitest/coverage-v8": "^5.0.4",
     "@zxing/library": "^0.23.0",
     "drizzle-kit": "^0.31.11",
-    "eslint": "^9.39.5",
+    "eslint": "^10.12.0",
     "eslint-config-next": "^16.4.1",
     "puppeteer-core": "^25.14.0",
     "tailwindcss": "^4.3.3",
