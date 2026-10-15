@@ -20,8 +20,7 @@ export function ChallengesSection({ form, set, errors }: SectionProps) {
   };
 
   return (
-    <FormSection title={t("admin.challenges.title")}>
-      <p className="text-sm text-ink-muted">{t("admin.challenges.hint")}</p>
+    <FormSection id="challenges" title={t("admin.challenges.title")} description={t("admin.challenges.hint")}>
       {list.length > 0 && (
         <ol className="space-y-2">
           {list.map((challenge, i) => (

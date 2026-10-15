@@ -8,7 +8,7 @@ import type { SectionProps } from "./state";
 export function AccessSection({ form, set, errors, hasCode }: SectionProps & { hasCode: boolean }) {
   const t = useT();
   return (
-    <FormSection title={t("admin.form.sections.access")}>
+    <FormSection id="access" title={t("admin.form.sections.access")} description={t("admin.form.sectionHints.access")}>
       <Field label={t("admin.form.accessCode")} hint={hasCode ? t("admin.form.accessCodeSet") : t("admin.form.accessCodeHint")} error={errors.accessCode}>
         {(id, describedBy) => (
           <div className="flex flex-wrap gap-2">

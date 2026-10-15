@@ -8,7 +8,7 @@ import type { SectionProps } from "./state";
 export function GuestbookSection({ form, set }: SectionProps) {
   const t = useT();
   return (
-    <FormSection title={t("guestbook.title")}>
+    <FormSection id="guestbook" title={t("guestbook.title")} description={t("admin.form.sectionHints.guestbook")}>
       <Switch label={t("admin.form.guestbookEnabled")} hint={t("admin.form.guestbookEnabledHint")} checked={form.guestbookEnabled} onChange={(v) => set("guestbookEnabled", v)} />
       {form.guestbookEnabled && (
         <div className="space-y-5 border-l-2 border-line pl-4">

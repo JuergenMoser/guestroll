@@ -11,7 +11,7 @@ export function GuestsSection({ form, set }: SectionProps) {
   const t = useT();
   const uiLocale = useLocale();
   return (
-    <FormSection title={t("admin.form.sections.guests")}>
+    <FormSection id="guests" title={t("admin.form.sections.guests")} description={t("admin.form.sectionHints.guests")}>
       <Field label={t("admin.form.defaultLocale")} hint={t("admin.form.defaultLocaleHint")}>
         {(id, describedBy) => (
           <Select id={id} aria-describedby={describedBy} value={form.defaultLocale} onChange={(e) => set("defaultLocale", e.target.value as EventFormState["defaultLocale"])}>

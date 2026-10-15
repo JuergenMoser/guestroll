@@ -12,7 +12,7 @@ const MODE_ORDER: CaptureMode[] = ["camera", "both", "picker"];
 export function UploadsSection({ form, set, errors }: SectionProps) {
   const t = useT();
   return (
-    <FormSection title={t("admin.form.sections.uploads")}>
+    <FormSection id="uploads" title={t("admin.form.sections.uploads")} description={t("admin.form.sectionHints.uploads")}>
       <Switch label={t("admin.form.uploadsOpen")} checked={form.uploadsOpen} onChange={(v) => set("uploadsOpen", v)} />
       <Field label={t("admin.form.uploadsCloseAt")} error={errors.uploadsCloseAt}>
         {(id) => <Input id={id} type="datetime-local" value={form.uploadsCloseAt} onChange={(e) => set("uploadsCloseAt", e.target.value)} />}

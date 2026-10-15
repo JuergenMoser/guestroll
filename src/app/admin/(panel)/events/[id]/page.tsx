@@ -3,6 +3,8 @@ import Link from "next/link";
 import { DeleteEvent } from "@/components/admin/DeleteEvent";
 import { DuplicateEvent } from "@/components/admin/DuplicateEvent";
 import { EventForm } from "@/components/admin/event-form/EventForm";
+import { SettingsOutline } from "@/components/admin/event-form/SettingsOutline";
+import { SettingsSection } from "@/components/admin/settings/SettingsSection";
 import { ModerationPanel } from "@/components/admin/moderation/ModerationPanel";
 import { PageHeader } from "@/components/admin/PageHeader";
 import { SharePanel } from "@/components/admin/SharePanel";
@@ -75,10 +77,38 @@ export default async function EventPage({ params, searchParams }: Props) {
       {tab === "stats" && <StatsPanel stats={stats} locale={await getLocale()} challenges={event.challenges} spots={listSpots(event.id)} />}
       {tab === "share" && <SharePanel event={event} url={url} locale={await getLocale()} purgeAt={purgeDate(event)} favoriteCount={countFavorites(event.id)} spots={listSpots(event.id)} owner={admin.role === "owner"} />}
       {tab === "settings" && (
-        <div className="mx-auto max-w-2xl space-y-8">
-          <EventForm event={event} />
-          {admin.role === "owner" && <DuplicateEvent eventId={event.id} name={event.name} />}
-          {admin.role === "owner" && <DeleteEvent eventId={event.id} name={event.name} />}
+        <div className="grid gap-x-10 md:grid-cols-[11rem_minmax(0,1fr)]">
+          <SettingsOutline
+            sections={[
+              { id: "details", label: t("admin.form.sections.details") },
+              { id: "access", label: t("admin.form.sections.access") },
+              { id: "uploads", label: t("admin.form.sections.uploads") },
+              { id: "look", label: t("admin.look.title") },
+              { id: "guests", label: t("admin.form.sections.guests") },
+              { id: "challenges", label: t("admin.challenges.title") },
+              { id: "guestbook", label: t("guestbook.title") },
+              { id: "after", label: t("admin.form.sectionAfter") },
+              ...(admin.role === "owner"
+                ? [
+                    { id: "duplicate", label: t("admin.duplicate.title") },
+                    { id: "danger", label: t("admin.form.dangerZone"), danger: true },
+                  ]
+                : []),
+            ]}
+          />
+          <div className="min-w-0">
+            <EventForm event={event} />
+            {admin.role === "owner" && (
+              <>
+                <SettingsSection id="duplicate" title={t("admin.duplicate.title")} description={t("admin.duplicate.sectionHint")}>
+                  <DuplicateEvent eventId={event.id} name={event.name} />
+                </SettingsSection>
+                <SettingsSection id="danger" title={t("admin.form.dangerZone")} description={t("admin.form.dangerHint")} danger>
+                  <DeleteEvent eventId={event.id} name={event.name} />
+                </SettingsSection>
+              </>
+            )}
+          </div>
         </div>
       )}
     </EventTheme>

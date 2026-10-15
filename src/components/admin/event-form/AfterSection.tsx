@@ -9,8 +9,7 @@ import type { SectionProps } from "./state";
 export function AfterSection({ form, set, errors }: SectionProps) {
   const t = useT();
   return (
-    <FormSection title={t("admin.form.sectionAfter")}>
-      <p className="text-sm text-ink-muted">{t("admin.form.afterHint")}</p>
+    <FormSection id="after" title={t("admin.form.sectionAfter")} description={t("admin.form.afterHint")}>
       <Switch label={t("admin.form.notifyAdminSummary")} checked={form.notifyAdminSummary} onChange={(v) => set("notifyAdminSummary", v)} />
       <Switch label={t("admin.form.collectGuestEmails")} checked={form.collectGuestEmails} onChange={(v) => set("collectGuestEmails", v)} />
       <Switch

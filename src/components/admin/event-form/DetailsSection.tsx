@@ -8,7 +8,7 @@ import type { SectionProps } from "./state";
 export function DetailsSection({ form, set, errors }: SectionProps) {
   const t = useT();
   return (
-    <FormSection title={t("admin.form.sections.details")}>
+    <FormSection id="details" title={t("admin.form.sections.details")} description={t("admin.form.sectionHints.details")}>
       <Field label={t("admin.form.name")} error={errors.name}>
         {(id) => <Input id={id} value={form.name} onChange={(e) => set("name", e.target.value)} required maxLength={80} />}
       </Field>

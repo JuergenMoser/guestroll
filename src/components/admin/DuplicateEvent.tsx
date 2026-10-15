@@ -4,7 +4,7 @@ import { Copy } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { useT } from "@/components/I18nProvider";
-import { Button, Card, CardTitle, Field, Input } from "@/components/ui";
+import { Button, Field, Input } from "@/components/ui";
 import { ApiError, api } from "@/lib/client/api";
 import type { AdminEvent } from "@/lib/events";
 import { errorText } from "@/lib/i18n/errors";
@@ -31,12 +31,7 @@ export function DuplicateEvent({ eventId, name }: { eventId: string; name: strin
   }
 
   return (
-    <Card className="space-y-4">
-      <div className="space-y-1">
-        <CardTitle>{t("admin.duplicate.title")}</CardTitle>
-        <p className="text-sm text-ink-muted">{t("admin.duplicate.hint")}</p>
-      </div>
-      <form onSubmit={submit} className="flex flex-wrap items-end gap-3">
+    <form onSubmit={submit} className="flex flex-wrap items-end gap-3">
         <div className="min-w-56 flex-1">
           <Field label={t("admin.duplicate.name")} error={error}>
             {(id, describedBy) => <Input id={id} aria-describedby={describedBy} value={copyName} onChange={(e) => setCopyName(e.target.value)} minLength={2} maxLength={80} required />}
@@ -46,7 +41,6 @@ export function DuplicateEvent({ eventId, name }: { eventId: string; name: strin
           <Copy className="size-4" aria-hidden />
           {t("admin.duplicate.button")}
         </Button>
-      </form>
-    </Card>
+    </form>
   );
 }

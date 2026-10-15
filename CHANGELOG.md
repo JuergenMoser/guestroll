@@ -75,6 +75,11 @@ always run on their own at startup; take a backup first all the same
 
 ### Changed
 
+- An event's settings tab: an outline that follows the page, what each section
+  is for, the frame picked from previews, the save bar only when something
+  changed (with *Discard*, and a warning before leaving), and duplicating and
+  deleting laid out like the rest.
+
 - Settings are split into five areas (account, team, notifications, data,
   system), each a page of its own; the list says which area needs attention:
   two-step verification off, no automatic backups, no email server, an update
