@@ -7,7 +7,8 @@ on:
     branches: [main]
     paths:
       - site/**
-      - docs/assets/**
+      - docs/assets/logo.svg
+      - docs/assets/social.png
       - assets/fonts/**
       - .github/workflows/pages.yml
   workflow_dispatch:
@@ -30,10 +31,9 @@ jobs:
 
       - name: Assemble the site
         run: |
-          mkdir -p _site/assets/fonts _site/assets/screenshots
+          mkdir -p _site/assets/fonts
           cp -r site/. _site/
           cp docs/assets/logo.svg _site/assets/logo.svg
-          cp docs/assets/screenshots/*.png _site/assets/screenshots/
           cp assets/fonts/*.woff _site/assets/fonts/
           cp docs/assets/social.png _site/assets/social.png
 

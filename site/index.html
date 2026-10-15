@@ -54,7 +54,8 @@
   .btn.primary:hover { filter: brightness(0.95); }
   .btn.secondary { background: var(--surface); box-shadow: inset 0 0 0 1.5px var(--line); }
   .btn.secondary:hover { background: var(--sunken); }
-  .hero-shot { justify-self: center; width: auto; max-height: min(640px, 78vh); filter: drop-shadow(0 30px 40px rgb(0 0 0 / .25)); }
+  .hero picture { justify-self: center; }
+  .hero-shot { width: auto; max-height: min(660px, 80vh); filter: drop-shadow(0 30px 40px rgb(0 0 0 / .22)); }
 
   section { padding: 72px 0; border-top: 1px solid var(--line); }
   h2 { font-size: clamp(32px, 4.4vw, 48px); font-weight: 800; letter-spacing: -0.03em; line-height: 1.02; text-wrap: balance; }
@@ -74,7 +75,9 @@
   .feature ul { margin-top: 16px; padding-left: 0; list-style: none; display: grid; gap: 10px; }
   .feature li { padding-left: 26px; position: relative; color: var(--soft); }
   .feature li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 12px; height: 12px; border-radius: 50%; background: var(--yellow); box-shadow: inset 0 0 0 3px #1a1b1d; }
-  .shot { border-radius: 14px; }
+  .shot { width: 100%; height: auto; border-radius: 14px; box-shadow: 0 0 0 1px var(--line), 0 24px 50px rgb(20 22 24 / .14); background: var(--surface); }
+  .phone { justify-self: center; width: auto; max-height: 560px; filter: drop-shadow(0 24px 34px rgb(0 0 0 / .2)); }
+  .feature picture { display: grid; }
 
   pre { margin-top: 28px; background: #151618; color: #e8e9e5; border-radius: 14px; padding: 22px 24px; overflow-x: auto; font: 15px/1.6 ui-monospace, "DejaVu Sans Mono", monospace; }
   pre .p { color: var(--yellow); }
@@ -119,7 +122,10 @@
           <a class="btn secondary" href="https://github.com/achedon12/guestroll">Star on GitHub</a>
         </div>
       </div>
-      <img class="hero-shot" src="assets/screenshots/guest-phone.png" alt="The guest page on a phone: the camera in the event's color, a counter of photos sent, and the guest's own prints." width="642" height="1342" />
+      <picture>
+          <source srcset="assets/img/guest-dark.webp" media="(prefers-color-scheme: dark)" />
+          <img class="hero-shot" src="assets/img/guest-light.webp" alt="The guest page on a phone: the camera in the event's color, a counter of photos sent, and the guest's own prints." width="1252" height="2614" decoding="async" />
+        </picture>
     </div>
 
     <section id="how" aria-labelledby="how-title">
@@ -146,7 +152,10 @@
             <li>Optional access code per event, and a new link in one click if the code leaks.</li>
           </ul>
         </div>
-        <img class="shot" src="assets/screenshots/guest-dark.png" alt="The guest page in the dark theme" loading="lazy" width="840" height="1907" />
+        <picture>
+          <source srcset="assets/img/code-dark.webp" media="(prefers-color-scheme: dark)" />
+          <img class="phone" src="assets/img/code-light.webp" alt="An album protected by an access code, shown in Italian, the album's language" width="1252" height="2614" loading="lazy" decoding="async" />
+        </picture>
       </div>
 
       <div class="feature">
@@ -159,7 +168,10 @@
             <li>Stats: uploads per hour, views, downloads, top photographers.</li>
           </ul>
         </div>
-        <img class="shot" src="assets/screenshots/moderation.png" alt="The moderation contact sheet with three photos selected" loading="lazy" width="1800" height="1145" />
+        <picture>
+          <source srcset="assets/img/moderation-dark.webp" media="(prefers-color-scheme: dark)" />
+          <img class="shot" src="assets/img/moderation-light.webp" alt="The contact sheet: pending photos, three selected, with approve, hide and delete" width="2304" height="950" loading="lazy" decoding="async" />
+        </picture>
       </div>
 
       <div class="feature">
@@ -171,7 +183,25 @@
             <li>PNG up to 4096 px, SVG for the print shop, a printable A4 table card.</li>
           </ul>
         </div>
-        <img class="shot" src="assets/screenshots/share.png" alt="The QR code designer" loading="lazy" width="1800" height="1145" />
+        <picture>
+          <source srcset="assets/img/qr-dark.webp" media="(prefers-color-scheme: dark)" />
+          <img class="shot" src="assets/img/qr-light.webp" alt="The QR code designer: rounded dots, a logo in the middle and a caption, with the settings beside it" width="2240" height="1452" loading="lazy" decoding="async" />
+        </picture>
+      </div>
+
+      <div class="feature">
+        <div class="feature-text">
+          <h3>Know how the night went.</h3>
+          <ul>
+            <li>Photos, guests, page views, downloads and storage, at a glance.</li>
+            <li>Uploads hour by hour, and who took the most photos.</li>
+            <li>Every event in one table, with what's waiting for approval.</li>
+          </ul>
+        </div>
+        <picture>
+          <source srcset="assets/img/dashboard-dark.webp" media="(prefers-color-scheme: dark)" />
+          <img class="shot" src="assets/img/dashboard-light.webp" alt="The admin dashboard: figures, uploads over time and top photographers" width="2304" height="1280" loading="lazy" decoding="async" />
+        </picture>
       </div>
 
       <div class="feature">
@@ -183,7 +213,7 @@
             <li>With moderation on, nothing reaches the screen before you approve it.</li>
           </ul>
         </div>
-        <img class="shot" src="assets/screenshots/wall.png" alt="The live wall showing a print credited to its photographer" loading="lazy" width="1800" height="1145" />
+        <img class="shot" src="assets/img/wall.webp" alt="The live wall: a photo shown as a print, credited to its photographer" width="2400" height="1350" loading="lazy" decoding="async" />
       </div>
 
       <ul class="facts" aria-label="Also included">
