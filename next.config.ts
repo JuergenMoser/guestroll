@@ -11,6 +11,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   output: "standalone",
   poweredByHeader: false,
+  agentRules: false,
   // Native modules must stay out of the bundle so the standalone build ships their binaries.
   serverExternalPackages: ["better-sqlite3", "sharp", "heic-convert"],
   async headers() {
