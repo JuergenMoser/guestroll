@@ -29,6 +29,9 @@ always run on their own at startup; take a backup first all the same
   backup, the new image, a health check, automatic rollback, and an update
   history listing the migrations each update applied.
 
+- Demo mode (`DEMO_MODE=true`): seeded events, a shared account, a nightly
+  reset, nothing sent out. `docker-compose.demo.yml` runs one.
+
 ### Security
 
 - Every page carries a nonce-based Content-Security-Policy.

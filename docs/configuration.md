@@ -114,6 +114,13 @@ voice note, and the generated session secret.
 A failed backup emails the owners and the instance address, and notifies
 webhooks subscribed to *A scheduled backup failed*.
 
+## Demo
+
+| Variable | Default | Description |
+|---|---|---|
+| `DEMO_MODE` | `false` | A public demo: seeded content, the `demo` account, nightly reset, nothing sent out. See [Deployment](deployment.md#a-public-demo). |
+| `DEMO_RESET_CRON` | `0 4 * * *` | When the demo goes back to its seed, in `TZ`. |
+
 ## Updates
 
 | Variable | Default | Description |

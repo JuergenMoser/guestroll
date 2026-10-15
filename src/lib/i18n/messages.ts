@@ -605,6 +605,12 @@ const en = {
     download: "Download the guestbook",
     empty: "No messages here yet.",
   },
+  demo: {
+    title: "Live demo.",
+    signIn: "Admin: /admin, {username} / {password}.",
+    gallery: "Gallery link password: {password}.",
+    reset: "Everything resets at {time} UTC; emails and webhooks are off.",
+  },
 };
 
 export type Messages = typeof en;
@@ -1218,6 +1224,12 @@ const fr: DeepPartialStrings<Messages> = {
     download: "Télécharger le livre d'or",
     empty: "Aucun message ici pour l'instant.",
   },
+  demo: {
+    title: "Démo en ligne.",
+    signIn: "Admin : /admin, {username} / {password}.",
+    gallery: "Mot de passe du lien de galerie : {password}.",
+    reset: "Tout est remis à zéro à {time} UTC ; e-mails et webhooks sont coupés.",
+  },
 };
 
 const it: DeepPartialStrings<Messages> = {
@@ -1827,6 +1839,12 @@ const it: DeepPartialStrings<Messages> = {
     download: "Scarica il libro degli ospiti",
     empty: "Ancora nessun messaggio qui.",
   },
+  demo: {
+    title: "Demo dal vivo.",
+    signIn: "Admin: /admin, {username} / {password}.",
+    gallery: "Password del link alla galleria: {password}.",
+    reset: "Tutto si azzera alle {time} UTC; e-mail e webhook sono disattivati.",
+  },
 };
 
 const es: DeepPartialStrings<Messages> = {
@@ -2435,6 +2453,12 @@ const es: DeepPartialStrings<Messages> = {
     deleteConfirm: "¿Eliminar definitivamente {n} mensajes?",
     download: "Descargar el libro de visitas",
     empty: "Todavía no hay mensajes aquí.",
+  },
+  demo: {
+    title: "Demo en vivo.",
+    signIn: "Admin: /admin, {username} / {password}.",
+    gallery: "Contraseña del enlace de galería: {password}.",
+    reset: "Todo se reinicia a las {time} UTC; correos y webhooks están desactivados.",
   },
 };
 

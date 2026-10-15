@@ -1,0 +1,27 @@
+# A public demo: seeded events and photos, a shared `demo` / `guestroll-demo`
+# admin account, everything reset every night at 4:00 UTC, and nothing sent out
+# (no email, no webhooks, no update checks, no backups).
+#   docker compose -f docker-compose.demo.yml up -d
+# Put it behind a TLS reverse proxy like any instance (cameras need HTTPS).
+services:
+  guestroll-demo:
+    image: ${GUESTROLL_IMAGE:-ghcr.io/achedon12/guestroll:latest}
+    container_name: guestroll-demo
+    restart: unless-stopped
+    environment:
+      DEMO_MODE: "true"
+      DEMO_RESET_CRON: "0 4 * * *"
+      PUBLIC_URL: ${PUBLIC_URL:-https://demo.example.com}
+      # The operator's own account, apart from the public one.
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD for the operator account}
+      TZ: UTC
+      # Tighter than an event: the demo is public.
+      MAX_UPLOAD_MB: "8"
+      RATE_LIMIT_UPLOADS_PER_MINUTE: "10"
+    ports:
+      - "${HOST_BIND:-127.0.0.1}:${HOST_PORT:-3000}:3000"
+    volumes:
+      - guestroll-demo-data:/data
+
+volumes:
+  guestroll-demo-data:

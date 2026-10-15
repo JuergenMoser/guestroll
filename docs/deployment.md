@@ -113,6 +113,23 @@ DATA_DIR=/var/lib/guestroll ADMIN_PASSWORD=… PUBLIC_URL=… node server.js
 
 Run it under systemd or another supervisor, as an unprivileged user that owns `DATA_DIR`.
 
+## A public demo
+
+`DEMO_MODE=true` turns an instance into a demo anyone can try:
+`docker compose -f docker-compose.demo.yml up -d`.
+
+- On first start it seeds three events (a wedding with challenges, a
+  guestbook, favorites, frames and a mosaic wall; a birthday with moderation;
+  a conference) with generated photos, messages and a gallery link.
+- A shared owner account, `demo` / `guestroll-demo`, is shown on the login
+  page and in a banner on every page, with the gallery link's password.
+- Everything is reset on `DEMO_RESET_CRON` (every night at 4:00 UTC): visitors'
+  events, photos and accounts are gone, the seed runs again.
+- Nothing leaves the instance: emails and webhooks stay queued, the update
+  check is off, and email, webhook, backup, update, password, two-step and
+  account settings answer `403`. `ADMIN_PASSWORD` remains the operator's own
+  `admin` account.
+
 ## Backups
 
 The simplest way: **Admin → Settings → Backup and retention → Download a

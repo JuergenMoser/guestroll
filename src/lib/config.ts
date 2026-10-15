@@ -120,8 +120,17 @@ export const config = {
       forcePathStyle: bool("BACKUP_S3_FORCE_PATH_STYLE", true),
     },
   },
+  /**
+   * A public demo: seeded content, a shared `demo` account, a nightly reset,
+   * and everything that leaves the instance (email, webhooks, updates,
+   * backups) switched off.
+   */
+  demo: {
+    enabled: bool("DEMO_MODE", false),
+    resetCron: process.env.DEMO_RESET_CRON?.trim() || "0 4 * * *",
+  },
   /** Ask GitHub every 12 hours whether a newer release exists. */
-  updateCheck: bool("UPDATE_CHECK", true),
+  updateCheck: bool("UPDATE_CHECK", true) && !bool("DEMO_MODE", false),
   /** The optional updater container (docker-compose profile `updater`): where it listens, and the token they share. */
   updater: {
     url: process.env.UPDATER_URL?.replace(/\/+$/, "") || "",

@@ -8,12 +8,12 @@ import { ApiError, api } from "@/lib/client/api";
 import { errorText } from "@/lib/i18n/errors";
 
 /** Username and password, then a code from the authenticator app when the account has one. */
-export function LoginForm() {
+export function LoginForm({ demo }: { demo?: { username: string; password: string } }) {
   const t = useT();
   const router = useRouter();
   const [step, setStep] = useState<"password" | "code">("password");
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
+  const [username, setUsername] = useState(demo?.username ?? "");
+  const [password, setPassword] = useState(demo?.password ?? "");
   const [code, setCode] = useState("");
   const [recovery, setRecovery] = useState(false);
   const [error, setError] = useState<string>();

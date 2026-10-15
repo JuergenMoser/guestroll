@@ -3,6 +3,7 @@ import { LoginForm } from "@/components/admin/LoginForm";
 import { Brand } from "@/components/Brand";
 import { getAdmin } from "@/lib/auth/admin";
 import { config } from "@/lib/config";
+import { DEMO_PASSWORD, DEMO_USERNAME } from "@/lib/demo/seed";
 import { getT } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
@@ -20,7 +21,7 @@ export default async function LoginPage() {
             <p className="text-ink-muted">{t("admin.loginHint")}</p>
           </div>
         </div>
-        <LoginForm />
+        <LoginForm demo={config.demo.enabled ? { username: DEMO_USERNAME, password: DEMO_PASSWORD } : undefined} />
       </div>
     </main>
   );

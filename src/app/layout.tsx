@@ -5,6 +5,9 @@ import { config } from "@/lib/config";
 import { messages } from "@/lib/i18n/messages";
 import { getLocale } from "@/lib/i18n/server";
 import { getTheme } from "@/lib/theme/server";
+import { DemoBanner } from "@/components/DemoBanner";
+import { nextDemoReset } from "@/lib/demo/schedule";
+
 import { baseUrl } from "@/lib/urls";
 import "./globals.css";
 
@@ -44,6 +47,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} className={bricolage.variable} data-theme={theme === "system" ? undefined : theme}>
       <body className="min-h-dvh">
+        {config.demo.enabled && <DemoBanner nextReset={nextDemoReset()} />}
         <I18nProvider messages={messages[locale]}>{children}</I18nProvider>
       </body>
     </html>

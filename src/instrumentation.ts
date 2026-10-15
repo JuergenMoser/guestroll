@@ -17,8 +17,14 @@ export async function register() {
         (error: Error) => console.error(`[storage] S3 bucket NOT usable: ${error.message}. Uploads will fail until this is fixed.`),
       );
     }
-    const { startBackupSchedule } = await import("@/lib/backupSchedule");
-    startBackupSchedule();
+    const { config } = await import("@/lib/config");
+    if (config.demo.enabled) {
+      const { startDemo } = await import("@/lib/demo/schedule");
+      await startDemo();
+    } else {
+      const { startBackupSchedule } = await import("@/lib/backupSchedule");
+      startBackupSchedule();
+    }
     const { startScheduler } = await import("@/lib/scheduler");
     startScheduler();
   }

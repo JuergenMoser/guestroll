@@ -16,6 +16,8 @@ export async function tick(now = Date.now()): Promise<void> {
   await storageAlert(now);
   await runRetention(now);
   await cleanTempFiles();
+  // A public demo sends nothing out: queued mails and webhooks stay queued, reset at night.
+  if (config.demo.enabled) return;
   // Mails are queued even without SMTP, so configuring it later still delivers them.
   if (mailEnabled()) await processOutbox(undefined, now);
   await maybeCheckForUpdate(now);

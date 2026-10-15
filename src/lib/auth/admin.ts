@@ -37,6 +37,11 @@ function printGenerated(username: string, password: string) {
 
 let bootstrapped = false;
 
+/** The demo's nightly reset replaces the database: bootstrap must run again on the new one. */
+export function forgetBootstrap(): void {
+  bootstrapped = false;
+}
+
 /**
  * Runs once per process. The first start creates the owner account: from
  * ADMIN_PASSWORD, from the single password of a pre-accounts install, or
