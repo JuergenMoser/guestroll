@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  canDownloadAlbum,
   canEnterEvent,
   canJoinFreely,
   canViewPhoto,
@@ -85,5 +86,28 @@ describe("canViewPhoto", () => {
 
   it("lets the admin see everything, hidden included", () => {
     expect(canViewPhoto(event(), photo({ status: "hidden" }), admin, "original")).toBe(true);
+  });
+});
+
+describe("gallery links", () => {
+  const link = (allowDownload: boolean): Viewer => ({ isAdmin: false, unlocked: [], shares: [{ eventId: "event-1", allowDownload }] });
+
+  it("show the visible photos of their event only", () => {
+    expect(canViewPhoto(event(), photo(), link(false), "display")).toBe(true);
+    expect(canViewPhoto(event(), photo({ status: "pending" }), link(true), "thumb")).toBe(false);
+    expect(canViewPhoto(event(), photo({ status: "hidden" }), link(true), "thumb")).toBe(false);
+    expect(canViewPhoto(event({ id: "event-2" }), photo({ eventId: "event-2" }), link(true), "thumb")).toBe(false);
+  });
+
+  it("serve originals and the ZIP only when downloads are allowed", () => {
+    expect(canViewPhoto(event(), photo(), link(false), "original")).toBe(false);
+    expect(canViewPhoto(event(), photo(), link(true), "original")).toBe(true);
+    expect(canDownloadAlbum(event(), link(false))).toBe(false);
+    expect(canDownloadAlbum(event(), link(true))).toBe(true);
+    expect(canDownloadAlbum(event(), guest())).toBe(false);
+  });
+
+  it("don't let a guest join or upload", () => {
+    expect(canEnterEvent(event(), link(true))).toBe(false);
   });
 });

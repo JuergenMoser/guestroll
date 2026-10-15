@@ -6,6 +6,8 @@ const PORT = Number(process.env.E2E_PORT ?? 3210);
 // A fresh data folder per run: the suite never touches a developer's data.
 const DATA_DIR = path.join(os.tmpdir(), `guestroll-e2e-${Date.now()}`);
 export const ADMIN_PASSWORD = "e2e-admin-password";
+// The SMTP sink started by tests/e2e/api/mail.spec.ts.
+export const SMTP_PORT = Number(process.env.E2E_SMTP_PORT ?? 2626);
 
 export default defineConfig({
   testDir: "tests/e2e",
@@ -42,6 +44,11 @@ export default defineConfig({
       RATE_LIMIT_LOGIN_PER_MINUTE: "50",
       // Small, so the size limit can be tested without sending 25 MB.
       MAX_UPLOAD_MB: "2",
+      SMTP_HOST: "127.0.0.1",
+      SMTP_PORT: String(SMTP_PORT),
+      SMTP_FROM: "Guestroll <photos@example.test>",
+      ADMIN_EMAIL: "host@example.test",
+      PUBLIC_URL: `http://127.0.0.1:${PORT}`,
     },
   },
 });

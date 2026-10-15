@@ -48,3 +48,24 @@ describe("parseGuestName", () => {
     expect(parseGuestName(42)).toBeNull();
   });
 });
+
+describe("parseShareLinkInput", () => {
+  it("generates the password when none is given, and defaults to 30 days with downloads", async () => {
+    const { parseShareLinkInput } = await import("@/lib/validation");
+    expect(parseShareLinkInput({})).toEqual({ ok: true, value: { password: null, label: "", allowDownload: true, expiresInDays: 30 } });
+  });
+
+  it("refuses a short password and an out-of-range validity", async () => {
+    const { parseShareLinkInput } = await import("@/lib/validation");
+    const res = parseShareLinkInput({ password: "short", expiresInDays: -1 });
+    expect(res.ok).toBe(false);
+    if (!res.ok) expect(Object.keys(res.errors).sort()).toEqual(["expiresInDays", "password"]);
+  });
+
+  it("accepts the new event automation fields", async () => {
+    const { parseEventInput } = await import("@/lib/validation");
+    const res = parseEventInput({ collectGuestEmails: true, emailGuestsGallery: true, galleryLinkDays: 0, galleryMailIncludesPassword: false }, true);
+    expect(res).toEqual({ ok: true, value: { collectGuestEmails: true, emailGuestsGallery: true, galleryLinkDays: 0, galleryMailIncludesPassword: false } });
+    expect(parseEventInput({ galleryLinkDays: 99999 }, true).ok).toBe(false);
+  });
+});

@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { admin, createEvent, photo } from "../helpers";
+import { admin, client, createEvent, joinAndUpload, photo } from "../helpers";
 
 test.describe("guest page on a phone", () => {
   test("name, shutter, and the print comes out", async ({ page, baseURL }) => {
@@ -84,5 +84,23 @@ test.describe("guest page on a phone", () => {
     await page.getByRole("button", { name: "Stay anonymous" }).click();
     const overflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
     expect(overflow).toBeLessThanOrEqual(0);
+  });
+});
+
+test.describe("gallery link on a phone", () => {
+  test("asks for the password, then shows the album", async ({ page, baseURL }) => {
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { name: "Linked album" });
+    await joinAndUpload(await client(baseURL!), event.slug, 2);
+    const { share, password } = await (await host.post(`/api/admin/events/${event.id}/shares`, { data: {} })).json();
+
+    await page.goto(`/g/${share.token}`);
+    await page.getByLabel("Password").fill("wrong-password");
+    await page.getByRole("button", { name: "Open the album" }).click();
+    await expect(page.getByRole("alert")).toBeVisible();
+    await page.getByLabel("Password").fill(password);
+    await page.getByRole("button", { name: "Open the album" }).click();
+    await expect(page.getByText("2 photos")).toBeVisible();
+    await expect(page.getByRole("link", { name: "Download all photos" })).toBeVisible();
   });
 });
