@@ -10,7 +10,7 @@ export interface ProbedVideo {
 }
 
 /**
- * Reads a received video's container and length, from its metadata only: no
+ * Reads a received video's container and length, from its packet tables: no
  * frame is decoded, so a minute of 4K costs a few reads. What doesn't parse as
  * MP4, MOV or WebM with a video track is refused, whatever its name claimed.
  */
@@ -20,8 +20,9 @@ export async function probeVideo(path: string): Promise<ProbedVideo> {
     const format = await input.getFormat().catch(() => null);
     const mediaType = format === MP4 ? "video/mp4" : format === QTFF ? "video/quicktime" : format === WEBM ? "video/webm" : null;
     if (!mediaType || !(await input.getPrimaryVideoTrack().catch(() => null))) throw new InvalidVideoError();
-    // Phones write the length in the header; a file without one is read to its end.
-    const seconds = (await input.getDurationFromMetadata().catch(() => null)) ?? (await input.computeDuration().catch(() => NaN));
+    // From the packets' own timestamps, what a player will play: the length the
+    // header declares is the uploader's word, and could say 10 s of a 10 min file.
+    const seconds = await input.computeDuration().catch(() => NaN);
     if (!Number.isFinite(seconds) || seconds <= 0) throw new InvalidVideoError();
     return { mediaType, durationMs: Math.round(seconds * 1000) };
   } finally {

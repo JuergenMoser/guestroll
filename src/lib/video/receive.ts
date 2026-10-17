@@ -34,18 +34,21 @@ const MAX_AT_ONCE = 4;
 const STALE_MS = 3600_000;
 
 const incoming = () => path.join(/*turbopackIgnore: true*/ config.dataDir, "incoming");
-let receiving = 0;
+// On globalThis, like the upload memory budget: a module evaluated twice (dev
+// reloads, a second bundle importing it) would otherwise count apart, and the
+// cap would hold per copy instead of per server.
+const slots = ((globalThis as unknown as { guestrollVideoSlots?: { receiving: number } }).guestrollVideoSlots ??= { receiving: 0 });
 
-export const videosReceiving = () => receiving;
+export const videosReceiving = () => slots.receiving;
 
 /** Null when too many videos are arriving already: the guest's queue waits its turn. */
 export function videoSlot(): { release: () => void } | null {
-  if (receiving >= MAX_AT_ONCE) return null;
-  receiving++;
+  if (slots.receiving >= MAX_AT_ONCE) return null;
+  slots.receiving++;
   let released = false;
   return {
     release: () => {
-      if (!released) receiving--;
+      if (!released) slots.receiving--;
       released = true;
     },
   };

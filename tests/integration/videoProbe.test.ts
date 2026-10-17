@@ -26,6 +26,12 @@ describe("probeVideo", () => {
     expect(webm.durationMs).toBeCloseTo(1000, -2);
   });
 
+  it("measures what plays, not what the header claims", async () => {
+    // 3 s of video whose headers were edited to announce half a second.
+    const lying = await probeVideo(fixture("header-lies.mp4"));
+    expect(lying.durationMs).toBeCloseTo(3000, -2);
+  });
+
   it("refuses what isn't a video, whatever it's called", async () => {
     await expect(probeVideo(tempFile("not a video at all"))).rejects.toBeInstanceOf(InvalidVideoError);
     await expect(probeVideo(fixture("sample.heic"))).rejects.toBeInstanceOf(InvalidVideoError);
