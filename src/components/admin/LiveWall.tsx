@@ -192,7 +192,12 @@ function SingleSlide({ slide, caption }: { slide: Slide | null; caption: (p: Pho
       <img key={`bg-${photo.id}`} src={mediaUrl(photo.id, "display")} alt="" className="absolute inset-0 size-full scale-110 object-cover opacity-25 blur-3xl" />
       {/* A print: white border, wider at the bottom where the photographer is credited. */}
       <figure key={photo.id} className="relative flex max-h-full animate-[wall-in_700ms_ease-out] flex-col bg-white p-[1.2vh] pb-0 shadow-2xl">
-        <img src={mediaUrl(photo.id, "display")} alt="" className="max-h-[calc(100dvh-14rem)] max-w-[80vw] object-contain" />
+        {photo.video ? (
+          // Muted: a projector's speakers would talk over the party.
+          <video src={mediaUrl(photo.id, "play")} poster={mediaUrl(photo.id, "display")} autoPlay muted loop playsInline className="max-h-[calc(100dvh-14rem)] max-w-[80vw] object-contain" />
+        ) : (
+          <img src={mediaUrl(photo.id, "display")} alt="" className="max-h-[calc(100dvh-14rem)] max-w-[80vw] object-contain" />
+        )}
         <figcaption className="flex h-[7vh] min-h-12 items-center justify-center px-4 text-[clamp(1rem,2.4vh,1.75rem)] font-semibold text-[#1a1b1d]">{caption(photo)}</figcaption>
       </figure>
     </div>

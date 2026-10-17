@@ -47,6 +47,8 @@ export default defineConfig({
       METRICS_TOKEN: "e2e-metrics-token-0123456789",
       // Small, so the size limit can be tested without sending 25 MB.
       MAX_UPLOAD_MB: "2",
+      // The 2 s clip of tests/fixtures is then too long, the 1 and 1.5 s ones fit.
+      MAX_VIDEO_SECONDS: "1",
       SMTP_HOST: "127.0.0.1",
       SMTP_PORT: String(SMTP_PORT),
       SMTP_FROM: "Guestroll <photos@example.test>",

@@ -54,7 +54,8 @@ Always set `TRUST_PROXY=true` behind a proxy, and **only** then: it makes
 Guestroll read the client IP from `X-Forwarded-For`, which anyone could forge
 without a proxy in front.
 
-Raise the proxy's body size limit above `MAX_UPLOAD_MB` (25 MB by default).
+Raise the proxy's body size limit above `MAX_UPLOAD_MB` (25 MB by default), and
+above `MAX_VIDEO_MB` (200 MB) if your events accept videos.
 
 ### Caddy
 

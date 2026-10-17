@@ -28,8 +28,11 @@ export function storage(): StorageDriver {
 // growth: a full disk would corrupt more than this album.
 const MIN_FREE_BYTES = 512 * 1024 * 1024;
 
-/** Whether guest uploads should stop for lack of disk. Buckets report no capacity: never full. */
-export async function storageFull(): Promise<boolean> {
+/**
+ * Whether guest uploads should stop for lack of disk. Buckets report no capacity: never full.
+ * `incoming`: what the upload may still write, for a video as large as allowed.
+ */
+export async function storageFull(incoming = 0): Promise<boolean> {
   const disk = await storage().capacity();
-  return disk !== null && disk.free < MIN_FREE_BYTES;
+  return disk !== null && disk.free < MIN_FREE_BYTES + incoming;
 }

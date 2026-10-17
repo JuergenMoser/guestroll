@@ -1,3 +1,4 @@
+import fsp from "node:fs/promises";
 import { NextResponse } from "next/server";
 import { track } from "@/lib/activity";
 import { ensureGuestId, getGuestSession } from "@/lib/auth/session";
@@ -28,7 +29,9 @@ import {
 import { storageFull } from "@/lib/storage";
 import { getSpot } from "@/lib/spots";
 import { isBooth } from "@/lib/booth";
-import { deletePhotoFiles, writePhotoFiles } from "@/lib/storage/files";
+import { deletePhotoFiles, writePhotoFiles, writeVideoFiles } from "@/lib/storage/files";
+import { InvalidVideoError, probeVideo } from "@/lib/video/probe";
+import { BadVideoUploadError, isVideoUpload, readVideoUpload, videoSlot, videosReceiving } from "@/lib/video/receive";
 
 // Multipart framing around a single file stays far below this.
 const MULTIPART_OVERHEAD = 64 * 1024;
@@ -104,6 +107,22 @@ export async function POST(
     }
     if (await storageFull()) return apiError("storage_full");
 
+    if (isVideoUpload(request)) {
+      if (!event.allowVideos || booth) return apiError("videos_off");
+      const slot = videoSlot();
+      if (!slot) return rateLimited(5_000);
+      // Each video being received may still write up to the limit: count all of them.
+      if (await storageFull(config.maxVideoBytes * videosReceiving())) {
+        slot.release();
+        return apiError("storage_full");
+      }
+      try {
+        return await receiveVideo(request, event, guestId, session, viewer);
+      } finally {
+        slot.release();
+      }
+    }
+
     const hold = uploadMemory.hold();
     try {
       return await receive(request, event, guestId, session, viewer, hold);
@@ -162,6 +181,75 @@ async function receive(
   }
 
   return await store(event, guestId, session, viewer, processed, challengeId, getSpot(event.id, new URL(request.url).searchParams.get("at"))?.id ?? null);
+}
+
+async function receiveVideo(
+  request: Request,
+  event: EventRow,
+  guestId: string,
+  session: Awaited<ReturnType<typeof getGuestSession>>,
+  viewer: Viewer,
+) {
+  let upload;
+  try {
+    upload = await readVideoUpload(request);
+  } catch (error) {
+    if (error instanceof ServerBusyError) return rateLimited(2_000);
+    if (error instanceof BodyTooLargeError) return apiError("too_large");
+    if (error instanceof BadVideoUploadError) return apiError("bad_request");
+    throw error;
+  }
+  try {
+    let video;
+    try {
+      video = await probeVideo(upload.path);
+    } catch (error) {
+      if (error instanceof InvalidVideoError) return apiError("invalid_video");
+      throw error;
+    }
+    // A second of slack: the sound track often runs a little past the picture,
+    // and the phone measured the picture.
+    if (video.durationMs > config.maxVideoSeconds * 1000 + 1000) return apiError("video_too_long");
+
+    let poster;
+    try {
+      poster = await processPhoto(upload.poster);
+    } catch (error) {
+      // The phone drew the poster: an unreadable one means a broken upload, not a bad photo.
+      if (error instanceof InvalidImageError) return apiError("invalid_video");
+      if (error instanceof ImageQueueFullError) return rateLimited(2_000);
+      throw error;
+    }
+
+    const url = new URL(request.url);
+    const picked = url.searchParams.get("challenge");
+    const challengeId = readChallenges(event.challenges).some((c) => c.id === picked) ? picked : null;
+    const id = newId();
+    await writeVideoFiles(event.id, id, video.mediaType, poster.files, upload.path);
+    try {
+      const photo = insertPhoto({
+        id,
+        eventId: event.id,
+        guestId,
+        guestName: event.askGuestName ? (session.name ?? null) : null,
+        width: poster.width,
+        height: poster.height,
+        bytes: upload.bytes,
+        mediaType: video.mediaType,
+        durationMs: video.durationMs,
+        status: event.moderation === "pre" ? "pending" : "visible",
+        challengeId,
+        spotId: getSpot(event.id, url.searchParams.get("at"))?.id ?? null,
+      });
+      track("upload", event.id, guestId);
+      return NextResponse.json({ photo: toPhotoDto(photo, viewer) }, { status: 201 });
+    } catch (error) {
+      await deletePhotoFiles(event.id, id);
+      throw error;
+    }
+  } finally {
+    await fsp.rm(upload.path, { force: true });
+  }
 }
 
 async function store(

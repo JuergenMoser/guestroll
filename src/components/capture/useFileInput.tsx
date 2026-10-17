@@ -6,7 +6,8 @@ import { useCallback, useRef, type ChangeEvent } from "react";
  * A hidden `<input type="file">` driven by any button. `capture="environment"`
  * makes mobile browsers open the rear camera directly instead of a file chooser.
  */
-export function useFileInput(onFiles: (files: File[]) => void, options: { camera: boolean; multiple: boolean }) {
+/** `video`: the event takes videos too; the camera then offers both modes. */
+export function useFileInput(onFiles: (files: File[]) => void, options: { camera: boolean; multiple: boolean; video?: boolean }) {
   const ref = useRef<HTMLInputElement>(null);
 
   const onChange = useCallback(
@@ -23,7 +24,7 @@ export function useFileInput(onFiles: (files: File[]) => void, options: { camera
     <input
       ref={ref}
       type="file"
-      accept="image/*"
+      accept={options.video ? "image/*,video/*" : "image/*"}
       className="sr-only"
       tabIndex={-1}
       aria-hidden

@@ -1,3 +1,5 @@
+import fs from "node:fs";
+import path from "node:path";
 import { expect, test } from "@playwright/test";
 import sharp from "sharp";
 import { admin, client, createEvent, joinAndUpload, photo } from "../helpers";
@@ -228,5 +230,47 @@ test.describe("deleting a photo on a phone", () => {
     await page.getByRole("button", { name: "Delete for good?" }).click();
     await expect(page.getByText("Your photos will appear here.")).toBeVisible();
     await expect(page.getByText("00", { exact: true })).toBeVisible();
+  });
+});
+
+test.describe("a photo left unsent", () => {
+  test("is sent on the next visit", async ({ page, baseURL }) => {
+    const event = await createEvent(await admin(baseURL!), { captureMode: "camera" });
+    await page.goto(`/e/${event.slug}`);
+    await page.getByRole("button", { name: "Stay anonymous" }).click();
+
+    // The upload never gets an answer, like a phone locked mid-send: the page goes away with it.
+    await page.route(`**/api/e/${event.slug}/photos*`, (route) => (route.request().method() === "POST" ? undefined : route.continue()));
+    const chooser = page.waitForEvent("filechooser");
+    await page.getByRole("button", { name: "Take a photo" }).click();
+    await (await chooser).setFiles({ name: "p.jpg", mimeType: "image/jpeg", buffer: await photo() });
+    await expect(page.getByText(/Uploading 1/)).toBeVisible();
+    await page.unrouteAll({ behavior: "ignoreErrors" });
+
+    await page.reload();
+    await expect(page.getByText("01", { exact: true })).toBeVisible();
+    await expect(page.getByText("Your photos will appear here.")).toHaveCount(0);
+    // Sent once, not once per visit.
+    await page.reload();
+    await expect(page.getByText("01", { exact: true })).toBeVisible();
+  });
+});
+
+test.describe("videos", () => {
+  test("a guest films, and the album plays it", async ({ page, baseURL }) => {
+    const event = await createEvent(await admin(baseURL!), { captureMode: "camera", allowVideos: true });
+    await page.goto(`/e/${event.slug}`);
+    await page.getByRole("button", { name: "Stay anonymous" }).click();
+
+    const chooser = page.waitForEvent("filechooser");
+    await page.getByRole("button", { name: "Take a photo or video" }).click();
+    const fileChooser = await chooser;
+    expect(await fileChooser.element().getAttribute("accept")).toBe("image/*,video/*");
+    await fileChooser.setFiles({ name: "clip.webm", mimeType: "video/webm", buffer: fs.readFileSync(path.join(__dirname, "../../fixtures/clip.webm")) });
+
+    await expect(page.getByText("01", { exact: true })).toBeVisible();
+    await expect(page.getByLabel("Video").first()).toBeVisible();
+    await page.getByRole("list").last().getByRole("button").first().click();
+    await expect(page.locator("video")).toHaveAttribute("src", /v=play/);
   });
 });

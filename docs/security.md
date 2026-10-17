@@ -190,6 +190,21 @@ links unchanged.
   a burst of fast ones is asked to retry); at most 3 images decoded at once
   with 12 waiting; and a refusal once the disk has less than 512 MB free.
   Guests' phones retry a busy server on their own.
+- **Videos** (only for events that accept them) are not re-encoded: the server
+  has no decoder, and a video keeps its metadata, the phone's location
+  included when the phone recorded one. Tell your guests if that matters.
+  Their container and length are read from the file itself (MP4, MOV or WebM
+  with a video track, at most `MAX_VIDEO_SECONDS`), whatever the name or
+  `Content-Type` claim. The video streams to disk as it arrives, capped at
+  `MAX_VIDEO_MB`; at most 4 are received at once, each needing room for a
+  full-size video on the disk on top of the 512 MB margin. One that stops
+  sending for 30 seconds, averages under 32 KB/s past its first minute, or
+  runs past 30 minutes is dropped, so a trickle of bytes can't hold a slot.
+  A video's poster is drawn by the guest's phone and may not match the video:
+  with moderation on, the contact sheet approves a pending video only once
+  the host has watched it. Videos play for whoever may see their poster: in
+  a shared album, other guests can watch them in full, as there is no smaller
+  copy to give instead.
 
 ## Authentication
 

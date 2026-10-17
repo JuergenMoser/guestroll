@@ -5,17 +5,17 @@ import type { EventRow, MessageRow, PhotoRow } from "@/lib/db/schema";
 import { audioKey } from "@/lib/messages";
 import { storage } from "@/lib/storage";
 import { slugify } from "@/lib/security/ids";
-import { openPhotoStream } from "@/lib/storage/files";
+import { fileExt, openPhotoStream } from "@/lib/storage/files";
 
-/** `0001-camille-1a2b3c4d.jpg`: sorts in the order photos were taken, says who took them. Shared by the ZIP and the cloud export. */
-export function photoFileName(index: number, photo: Pick<PhotoRow, "id" | "guestName">): string {
+/** `0001-camille-1a2b3c4d.jpg` (or `.mp4`): sorts in the order photos were taken, says who took them. Shared by the ZIP and the cloud export. */
+export function photoFileName(index: number, photo: Pick<PhotoRow, "id" | "guestName" | "mediaType">): string {
   const author = slugify(photo.guestName ?? "") || "guest";
-  return `${String(index + 1).padStart(4, "0")}-${author}-${photo.id.slice(0, 8)}.jpg`;
+  return `${String(index + 1).padStart(4, "0")}-${author}-${photo.id.slice(0, 8)}.${fileExt("original", photo.mediaType)}`;
 }
 
 /**
  * Streams the ZIP as it is built: a 2 GB album never sits in memory, and the
- * download starts immediately. JPEGs are already compressed, so `store` skips
+ * download starts immediately. JPEGs and videos are already compressed, so `store` skips
  * a pointless deflate pass.
  */
 export function archiveResponse(event: EventRow, rows: PhotoRow[], suffix?: string): Response {
@@ -25,7 +25,7 @@ export function archiveResponse(event: EventRow, rows: PhotoRow[], suffix?: stri
   // opening them all at once would hold one HTTP connection per photo.
   void (async () => {
     for (const [i, photo] of rows.entries()) {
-      const opened = await openPhotoStream(event.id, photo.id, "original").catch(() => null);
+      const opened = await openPhotoStream(event.id, photo.id, "original", photo.mediaType).catch(() => null);
       if (!opened) continue;
       zip.append(opened.stream, { name: photoFileName(i, photo) });
       await new Promise<void>((resolve, reject) => {

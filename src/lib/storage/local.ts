@@ -44,10 +44,11 @@ export function localDriver(root: string): StorageDriver {
     async read(key) {
       return fsp.readFile(/*turbopackIgnore: true*/ resolve(key)).catch(() => null);
     },
-    async open(key) {
+    async open(key, range) {
       const file = resolve(key);
       const stat = await fsp.stat(/*turbopackIgnore: true*/ file).catch(() => null);
       if (!stat?.isFile()) return null;
+      if (range) return { stream: fs.createReadStream(/*turbopackIgnore: true*/ file, range), size: range.end - range.start + 1 };
       return { stream: fs.createReadStream(/*turbopackIgnore: true*/ file), size: stat.size };
     },
     async delete(key) {

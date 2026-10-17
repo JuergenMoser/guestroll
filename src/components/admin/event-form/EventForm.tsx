@@ -78,7 +78,7 @@ export function EventForm({ event }: { event?: AdminEvent }) {
     <form onSubmit={submit}>
       <DetailsSection {...sectionProps} />
       <AccessSection {...sectionProps} hasCode={Boolean(event?.hasAccessCode) && !form.removeCode} />
-      <UploadsSection {...sectionProps} />
+      <UploadsSection {...sectionProps} videoMaxSeconds={event?.videoMaxSeconds} />
       <LookSection {...sectionProps} />
       <GuestsSection {...sectionProps} />
       <ChallengesSection {...sectionProps} />

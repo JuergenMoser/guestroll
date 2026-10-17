@@ -16,7 +16,8 @@ export async function analysePending(limit = 20): Promise<number> {
   const pending = getDb()
     .select({ id: photos.id, eventId: photos.eventId, createdAt: photos.createdAt })
     .from(photos)
-    .where(isNull(photos.hash))
+    // Videos are never analysed: two clips of the same table are not a duplicate.
+    .where(and(isNull(photos.hash), isNull(photos.mediaType)))
     .orderBy(asc(photos.createdAt), asc(photos.id))
     .limit(limit)
     .all();

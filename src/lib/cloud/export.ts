@@ -7,7 +7,7 @@ import { cloudExports, type CloudExportRow } from "@/lib/db/schema";
 import { getEventById } from "@/lib/events";
 import { listForArchive } from "@/lib/photos";
 import { newId } from "@/lib/security/ids";
-import { openPhotoStream } from "@/lib/storage/files";
+import { fileMime, openPhotoStream } from "@/lib/storage/files";
 import { getCloudSettings } from "./settings";
 import { ensureFolders, putFile } from "./webdav";
 
@@ -80,8 +80,8 @@ async function runOne(job: CloudExportRow): Promise<void> {
     const folder = [...cloud.folder.split("/").filter(Boolean), eventFolder(event)];
     await ensureFolders(cloud, folder);
     for (const [i, photo] of photos.entries()) {
-      const file = await openPhotoStream(event.id, photo.id, "original");
-      if (file) await putFile(cloud, [...folder, photoFileName(i, photo)], file, "image/jpeg");
+      const file = await openPhotoStream(event.id, photo.id, "original", photo.mediaType);
+      if (file) await putFile(cloud, [...folder, photoFileName(i, photo)], file, fileMime("original", photo.mediaType));
       update({ done: i + 1 });
     }
     update({ status: "done", finishedAt: Date.now() });

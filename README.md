@@ -47,7 +47,8 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 
 **For guests**
 - 📷 Camera opens directly from the QR code. iPhone and Android, no install.
-- 🔁 Uploads keep going on a weak 4G connection: resized on the phone, queued, retried, resumed when back online.
+- 🔁 Uploads keep going on a weak 4G connection: resized on the phone, queued, retried, resumed when back online, and kept on the phone until sent, even if the guest closes the page.
+- 🎬 **Videos**, if the hosts turn them on: short clips filmed or picked from the library, kept as filmed, played in the album and on the wall.
 - 🙋 Optional name prompt so the hosts know who took what.
 - 🖼️ **Frames and filters** applied on the phone: an instant-print border with the event name, the event's color, or a logo stamp; black & white, warm, vintage, vivid.
 - 📝 **Guestbook**: a few words or a voice note for the hosts, moderated, exported as a ZIP.

@@ -1,5 +1,10 @@
 import type { Readable } from "node:stream";
 
+export interface ByteRange {
+  start: number;
+  end: number;
+}
+
 /**
  * What the app needs from a place to keep files. Keys are relative paths like
  * `<eventId>/<photoId>.thumb.webp`, always built by `keys.ts` from ids we
@@ -12,7 +17,12 @@ export interface StorageDriver {
   putFile(key: string, path: string, contentType: string): Promise<void>;
   /** Null when the file doesn't exist. */
   read(key: string): Promise<Buffer | null>;
-  open(key: string): Promise<{ stream: Readable; size: number } | null>;
+  /**
+   * `range` (inclusive bounds, within the file: the caller checks them) streams
+   * that slice only, and `size` is then the slice's. Browsers seek in a video
+   * with such requests, and Safari won't play one served whole.
+   */
+  open(key: string, range?: ByteRange): Promise<{ stream: Readable; size: number } | null>;
   delete(key: string): Promise<void>;
   /** Removes everything under `prefix/`, e.g. a deleted event's folder. */
   deletePrefix(prefix: string): Promise<void>;

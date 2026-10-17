@@ -11,6 +11,11 @@ describe("parseEventInput", () => {
     expect(parseEventInput({ uploadsOpen: false }, true)).toEqual({ ok: true, value: { uploadsOpen: false } });
   });
 
+  it("takes the videos switch as a boolean only", () => {
+    expect(parseEventInput({ allowVideos: true }, true)).toEqual({ ok: true, value: { allowVideos: true } });
+    expect(parseEventInput({ allowVideos: "yes" }, true).ok).toBe(false);
+  });
+
   it("rejects a short access code and accepts null to remove it", () => {
     const short = parseEventInput({ accessCode: "12345" }, true);
     expect(short.ok).toBe(false);

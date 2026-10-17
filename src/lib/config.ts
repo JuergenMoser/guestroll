@@ -60,6 +60,10 @@ export const config = {
 
   maxUploadBytes: int("MAX_UPLOAD_MB", 25, 1) * 1024 * 1024,
   maxImagePixels: int("MAX_IMAGE_MEGAPIXELS", 80, 1) * 1_000_000,
+  // A phone films 1080p at about 2 MB a second, 4K at 6: a minute of 1080p fits.
+  // Videos are kept as filmed, never re-encoded: the server has no ffmpeg to spare.
+  maxVideoBytes: int("MAX_VIDEO_MB", 200, 1) * 1024 * 1024,
+  maxVideoSeconds: int("MAX_VIDEO_SECONDS", 60, 1),
   defaultCaptureMode: oneOf("DEFAULT_CAPTURE_MODE", CAPTURE_MODES, "camera"),
 
   /**

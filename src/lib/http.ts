@@ -17,6 +17,9 @@ export type ErrorCode =
   | "uploads_closed"
   | "quota_reached"
   | "invalid_image"
+  | "invalid_video"
+  | "video_too_long"
+  | "videos_off"
   | "invalid_code"
   | "storage_full";
 
@@ -30,6 +33,9 @@ const STATUS: Record<ErrorCode, number> = {
   uploads_closed: 403,
   quota_reached: 403,
   invalid_image: 415,
+  invalid_video: 415,
+  video_too_long: 413,
+  videos_off: 403,
   invalid_code: 401,
   storage_full: 507,
 };

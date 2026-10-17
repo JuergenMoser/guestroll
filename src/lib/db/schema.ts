@@ -19,6 +19,8 @@ export const events = sqliteTable("events", {
   moderation: text("moderation", { enum: ["post", "pre"] }).notNull().default("post"),
   captureMode: text("capture_mode", { enum: ["camera", "picker", "both"] }).notNull().default("camera"),
   askGuestName: integer("ask_guest_name", { mode: "boolean" }).notNull().default(true),
+  /** Guests may send short videos too (see MAX_VIDEO_SECONDS / MAX_VIDEO_MB). Off by default: they weigh 50 photos each. */
+  allowVideos: integer("allow_videos", { mode: "boolean" }).notNull().default(false),
   /** Guests may pick a filter before shooting; applied in the browser, before the upload. */
   captureFilters: integer("capture_filters", { mode: "boolean" }).notNull().default(false),
   /** Drawn around every guest photo in the browser: `none`, `print` (instant-print border), `border` (event color), `stamp` (the logo in a corner). */
@@ -72,6 +74,12 @@ export const photos = sqliteTable(
     width: integer("width").notNull(),
     height: integer("height").notNull(),
     bytes: integer("bytes").notNull(),
+    /**
+     * Null for a photo. For a video, its container: the `original` file is then
+     * the video itself (see `photoKey`), `display` and `thumb` its poster frame.
+     */
+    mediaType: text("media_type", { enum: ["video/mp4", "video/quicktime", "video/webm"] }),
+    durationMs: integer("duration_ms"),
     status: text("status", { enum: ["visible", "pending", "hidden"] }).notNull(),
     downloads: integer("downloads").notNull().default(0),
     /** The hosts' pick: a "best of" ZIP, gallery links limited to it, the wall and slideshow. */

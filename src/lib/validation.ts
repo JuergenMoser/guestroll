@@ -32,6 +32,7 @@ export interface EventInput {
   guestbookInGallery: boolean;
   sharedAlbum: "off" | "during" | "after";
   captureFilters: boolean;
+  allowVideos: boolean;
   frame: Frame;
   /** JSON, already normalised by `parseChallenges`. */
   challenges: string;
@@ -105,6 +106,7 @@ export function parseEventInput(body: unknown, partial: boolean): ValidationResu
     "guestbookVoice",
     "guestbookInGallery",
     "captureFilters",
+    "allowVideos",
   ] as const) {
     if (!has(key)) continue;
     if (typeof src[key] === "boolean") out[key] = src[key] as boolean;

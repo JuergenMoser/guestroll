@@ -6,6 +6,16 @@
 
 export type PhotoVariant = "thumb" | "display" | "original";
 
+/**
+ * What a viewer asks of a photo: one of its files, or `play`, watching a video.
+ * `play` streams the video as filmed (there is no smaller copy: the server never
+ * re-encodes), yet is granted like `display`: whoever may see a video's poster
+ * may watch it, gallery links without downloads and shared albums included.
+ * Refusing would leave them a still image of a video. `original` stays the
+ * download, and keeps its own stricter rule.
+ */
+export type MediaAccess = PhotoVariant | "play";
+
 export interface PolicyEvent {
   id: string;
   accessCodeHash: string | null;
@@ -22,6 +32,8 @@ export interface PolicyPhoto {
   guestId: string;
   status: "visible" | "pending" | "hidden";
   favorite?: boolean;
+  /** Set for a video; only videos can be played. */
+  mediaType?: string | null;
 }
 
 /** A gallery link this browser unlocked with its password (still active). */
@@ -98,8 +110,9 @@ export function albumShared(event: PolicyEvent, now = Date.now()): boolean {
  * event's admins see everything, and a gallery link the admin created (unlocked with
  * its password) shows the visible photos, originals only if it allows downloads.
  */
-export function canViewPhoto(event: PolicyEvent, photo: PolicyPhoto, viewer: Viewer, variant: PhotoVariant): boolean {
+export function canViewPhoto(event: PolicyEvent, photo: PolicyPhoto, viewer: Viewer, variant: MediaAccess): boolean {
   if (photo.eventId !== event.id) return false;
+  if (variant === "play" && !photo.mediaType) return false;
   if (isEventAdmin(event.id, viewer)) return true;
   // Several links to one event can be unlocked in one browser: any of them may grant the photo.
   if (sharesFor(event, viewer).some((s) => shareShows(s, photo) && (variant !== "original" || s.allowDownload))) return true;

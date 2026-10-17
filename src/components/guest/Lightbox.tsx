@@ -66,7 +66,12 @@ export function Lightbox({ photos, index, onIndex, canDownload, onDelete }: Ligh
         </div>
       </div>
       <div className="relative flex min-h-0 flex-1 items-center justify-center px-2 pb-6">
-        <img key={photo.id} src={mediaUrl(photo.id, "display")} alt="" className="max-h-full max-w-full object-contain" />
+        {photo.video ? (
+          // No autoplay: the sound of a toast in a quiet room is the guest's call.
+          <video key={photo.id} src={mediaUrl(photo.id, "play")} poster={mediaUrl(photo.id, "display")} controls playsInline preload="metadata" className="max-h-full max-w-full" />
+        ) : (
+          <img key={photo.id} src={mediaUrl(photo.id, "display")} alt="" className="max-h-full max-w-full object-contain" />
+        )}
         {photos.length > 1 && (
           <>
             <button type="button" onClick={() => go(-1)} aria-label={t("common.previous")} className="absolute left-2 grid size-11 place-items-center rounded-full bg-white/10 hover:bg-white/20">

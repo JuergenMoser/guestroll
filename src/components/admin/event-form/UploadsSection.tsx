@@ -9,7 +9,7 @@ import type { SectionProps } from "./state";
 // Most common first: the camera-only mode is the reason the app exists.
 const MODE_ORDER: CaptureMode[] = ["camera", "both", "picker"];
 
-export function UploadsSection({ form, set, errors }: SectionProps) {
+export function UploadsSection({ form, set, errors, videoMaxSeconds }: SectionProps & { videoMaxSeconds?: number }) {
   const t = useT();
   return (
     <FormSection id="uploads" title={t("admin.form.sections.uploads")} description={t("admin.form.sectionHints.uploads")}>
@@ -35,6 +35,12 @@ export function UploadsSection({ form, set, errors }: SectionProps) {
           )}
         </Field>
       </div>
+      <Switch
+        label={t("admin.form.allowVideos")}
+        hint={[t("admin.form.allowVideosHint"), videoMaxSeconds ? t("admin.form.allowVideosLimit", { n: videoMaxSeconds }) : ""].join(" ").trim()}
+        checked={form.allowVideos}
+        onChange={(v) => set("allowVideos", v)}
+      />
       <Field label={t("admin.form.moderation")}>
         {(id) => (
           <Select id={id} value={form.moderation} onChange={(e) => set("moderation", e.target.value as SectionProps["form"]["moderation"])}>

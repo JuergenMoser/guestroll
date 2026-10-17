@@ -1,5 +1,7 @@
+import fs from "node:fs";
+import path from "node:path";
 import { expect, test, type Page } from "@playwright/test";
-import { ADMIN_PASSWORD, admin, client, createEvent, joinAndUpload, signIn as signInApi, uniqueSuffix } from "../helpers";
+import { ADMIN_PASSWORD, admin, client, createEvent, joinAndUpload, photo, signIn as signInApi, uniqueSuffix } from "../helpers";
 
 async function signIn(page: Page) {
   await page.goto("/admin");
@@ -75,6 +77,34 @@ test.describe("admin in a browser", () => {
     await expect(page.getByText("No photos here.")).toBeVisible();
     await page.getByRole("tab", { name: "Visible" }).click();
     await expect(page.locator("ul[role=list] li")).toHaveCount(2);
+  });
+
+  test("a pending video is approved only once watched", async ({ page, baseURL }) => {
+    const host = await admin(baseURL!);
+    const event = await createEvent(host, { moderation: "pre", allowVideos: true });
+    const guest = await client(baseURL!);
+    await guest.post(`/api/e/${event.slug}/join`);
+    const poster = await photo();
+    const clip = fs.readFileSync(path.join(__dirname, "../../fixtures/clip.webm"));
+    const sent = await guest.post(`/api/e/${event.slug}/photos`, {
+      headers: { "Content-Type": "application/vnd.guestroll.video", "X-Poster-Bytes": String(poster.length) },
+      data: Buffer.concat([poster, clip]),
+    });
+    expect(sent.status()).toBe(201);
+
+    await signIn(page);
+    await page.goto(`/admin/events/${event.id}`);
+    await page.getByRole("button", { name: "Select all" }).click();
+    await page.getByRole("button", { name: "Approve" }).click();
+    await expect(page.getByText("1 video(s) not approved")).toBeVisible();
+    await expect(page.locator("ul[role=list] li")).toHaveCount(1);
+
+    await page.getByRole("button", { name: "Watch the video" }).click();
+    await expect(page.locator("video")).toHaveAttribute("src", /v=play/);
+    await page.getByRole("button", { name: "Close" }).click();
+    // Still selected: what couldn't be approved stays picked for the next try.
+    await page.getByRole("button", { name: "Approve" }).click();
+    await expect(page.getByText("No photos here.")).toBeVisible();
   });
 
   test("the live wall shows a visible photo with its author", async ({ page, baseURL }) => {

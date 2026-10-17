@@ -30,6 +30,7 @@ export interface EventFormState {
   guestbookInGallery: boolean;
   sharedAlbum: "off" | "during" | "after";
   captureFilters: boolean;
+  allowVideos: boolean;
   frame: Frame;
   /** New rows have an empty id: the server assigns one. */
   challenges: Challenge[];
@@ -78,6 +79,7 @@ export function initialState(event?: AdminEvent): EventFormState {
     guestbookInGallery: event?.guestbookInGallery ?? false,
     sharedAlbum: event?.sharedAlbum ?? "off",
     captureFilters: event?.captureFilters ?? false,
+    allowVideos: event?.allowVideos ?? false,
     frame: event?.frame ?? "none",
   };
 }

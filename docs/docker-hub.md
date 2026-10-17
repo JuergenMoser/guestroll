@@ -106,6 +106,7 @@ Everything is an environment variable; all are optional.
 | `DETECT_BROWSER_LOCALE` | `true` | `false` to always start in `DEFAULT_LOCALE` |
 | `TRUST_PROXY` | `false` | `true` behind a reverse proxy you control |
 | `MAX_UPLOAD_MB` | `25` | Largest accepted photo |
+| `MAX_VIDEO_MB` / `MAX_VIDEO_SECONDS` | `200` / `60` | Largest and longest accepted video, for events that take them |
 | `SESSION_SECRET` | generated | 32+ characters; stored in `/data` when generated |
 | `SMTP_HOST` / `SMTP_PORT` | none / `587` | Your SMTP server; turns email on (also settable in the admin) |
 | `SMTP_USER` / `SMTP_PASSWORD` / `SMTP_FROM` | none | Credentials and sender |

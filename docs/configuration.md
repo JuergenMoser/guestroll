@@ -111,6 +111,8 @@ provider.
 |---|---|---|
 | `MAX_UPLOAD_MB` | `25` | Largest accepted photo. Phones resize before sending, so most uploads weigh 1–4 MB. Raise your reverse proxy's body limit above this. |
 | `MAX_IMAGE_MEGAPIXELS` | `80` | Images above this are refused before decoding, which protects memory from "decompression bombs". |
+| `MAX_VIDEO_MB` | `200` | Largest accepted video, for events that take videos. Videos are kept as filmed, never re-encoded: a phone films about 2 MB a second in 1080p, 6 in 4K. Raise your reverse proxy's body limit above this too. |
+| `MAX_VIDEO_SECONDS` | `60` | Longest accepted video. Checked on the phone before sending, and again by the server. |
 | `DEFAULT_CAPTURE_MODE` | `camera` | Capture mode preselected for new events: `camera`, `picker` or `both`. |
 
 ## Rate limits

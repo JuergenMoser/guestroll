@@ -15,8 +15,11 @@ Errors are JSON: `{ "error": "<code>", "details"?: { field: message } }`.
 | `uploads_closed` | 403 | Uploads are off or past their closing time |
 | `quota_reached` | 403 | The guest reached the per-guest limit |
 | `not_found` | 404 | Doesn't exist, or exists but isn't yours |
-| `too_large` | 413 | Body above `MAX_UPLOAD_MB` |
+| `videos_off` | 403 | A video sent to an event that takes photos only |
+| `too_large` | 413 | Body above `MAX_UPLOAD_MB` (`MAX_VIDEO_MB` for a video) |
+| `video_too_long` | 413 | A video longer than `MAX_VIDEO_SECONDS` |
 | `invalid_image` | 415 | Not a supported image |
+| `invalid_video` | 415 | Not an MP4, MOV or WebM with a video track |
 | `rate_limited` | 429 | Slow down; see `Retry-After` |
 
 ## Guest routes
@@ -30,10 +33,11 @@ Authenticated by the `gr_guest` cookie.
 | `POST /api/e/:slug/guest` | `{ name }` | `{ name }`. Stored in the cookie. |
 | `POST /api/e/:slug/booth` | `{ key }` | `{ ok }`: sets this device up as the event's booth; `403` for a wrong or replaced key |
 | `POST /api/e/:slug/photos?at=<spot id>` | multipart, field `photo`, optional `challenge` (a challenge id) | `201 { photo: PhotoDto }`; an unknown challenge, or a place of another event, is ignored |
+| `POST /api/e/:slug/photos?at=&challenge=` (video) | `Content-Type: application/vnd.guestroll.video`, `X-Poster-Bytes: <n>`; the body is the poster frame (a JPEG, `n` bytes), then the video | `201 { photo: PhotoDto }` with `video: { durationMs }`. The event must accept videos. Not multipart, so the video streams to disk instead of memory. |
 | `DELETE /api/e/:slug/photos/:id` | | `{ ok }`: the guest's own photo, files included; `404` otherwise |
 | `GET /api/e/:slug/photos?before=<ms>&scope=all` | | `{ photos: PhotoDto[], nextCursor }`: the guest's own photos; with `scope=all` and a shared album, the others' approved ones too |
 | `GET /api/e/:slug/logo?v=<n>` | | The event logo (PNG), public with the slug |
-| `GET /api/media/:id?v=thumb\|display\|original[&download=1]` | | The image, if the viewer may see it |
+| `GET /api/media/:id?v=thumb\|display\|original\|play[&download=1]` | | The image, if the viewer may see it. For a video, `thumb` and `display` are its poster, `original` the video as filmed, and `play` the same video for whoever may see its poster. `original` and `play` honour `Range`. |
 
 | `POST /api/e/:slug/contact` | `{ email }` | `{ email }`. Only on events that collect emails. |
 | `DELETE /api/e/:slug/contact` | | `{ ok }`, the address is deleted |
@@ -148,7 +152,7 @@ Event fields: `name`, `description`, `eventDate` (`YYYY-MM-DD`), `accentColor`
 `captureMode` (`camera`|`picker`|`both`), `askGuestName`, `maxPhotosPerGuest`,
 `defaultLocale` (`en`|`fr`|`it`|`es`|`null`), `collectGuestEmails`,
 `notifyAdminSummary`, `emailGuestsGallery`, `galleryLinkDays` (0–3650),
-`galleryLinkDownload`, `galleryMailIncludesPassword`, `galleryLinkFavorites`, `guestbookEnabled`, `guestbookVoice`, `guestbookInGallery`, `challenges` (list of `{ id?, label }` or strings; ids are kept, new ones assigned), `wallStyle` (object, see `src/lib/wall.ts`), `frame` (`none`\|`print`\|`border`\|`stamp`), `captureFilters`, `qrStyle` (object, see
+`galleryLinkDownload`, `galleryMailIncludesPassword`, `galleryLinkFavorites`, `guestbookEnabled`, `guestbookVoice`, `guestbookInGallery`, `challenges` (list of `{ id?, label }` or strings; ids are kept, new ones assigned), `wallStyle` (object, see `src/lib/wall.ts`), `frame` (`none`\|`print`\|`border`\|`stamp`), `captureFilters`, `allowVideos`, `qrStyle` (object, see
 `src/lib/qr/style.ts`).
 
 ## Health

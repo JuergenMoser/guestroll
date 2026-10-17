@@ -102,6 +102,14 @@ describe("gallery links", () => {
     expect(canViewPhoto(event({ id: "event-2" }), photo({ eventId: "event-2" }), link(true), "thumb")).toBe(false);
   });
 
+  it("play videos whatever their download setting, and play nothing else", () => {
+    const video = photo({ mediaType: "video/mp4" });
+    expect(canViewPhoto(event(), video, link(false), "play")).toBe(true);
+    expect(canViewPhoto(event(), video, link(false), "original")).toBe(false);
+    expect(canViewPhoto(event(), photo(), link(true), "play")).toBe(false);
+    expect(canViewPhoto(event(), photo({ mediaType: "video/mp4", status: "pending" }), link(true), "play")).toBe(false);
+  });
+
   it("serve originals and the ZIP only when downloads are allowed", () => {
     expect(canViewPhoto(event(), photo(), link(false), "original")).toBe(false);
     expect(canViewPhoto(event(), photo(), link(true), "original")).toBe(true);

@@ -18,6 +18,8 @@ export interface PhotoDto {
   favorite?: boolean;
   challengeId: string | null;
   createdAt: number;
+  /** Set for a video: play it from `/api/media/<id>?v=play`, its grid images are its poster. */
+  video?: { durationMs: number };
   /** Admins only: probably blurry, by the event's own standard (see `blurryThreshold`). */
   blurry?: boolean;
   /** Admins only: the earlier photo of the event this one repeats. */
@@ -37,6 +39,7 @@ export function toPhotoDto(photo: PhotoRow, viewer: Pick<Viewer, "admin" | "gues
     status: photo.status,
     mine: viewer.guestId !== undefined && photo.guestId === viewer.guestId,
     challengeId: photo.challengeId,
+    ...(photo.mediaType ? { video: { durationMs: photo.durationMs ?? 0 } } : {}),
     // The hosts' picks and counters stay theirs: guests and links never see them.
     ...(isEventAdmin(photo.eventId, viewer)
       ? {
@@ -54,7 +57,9 @@ export function getPhoto(id: string): PhotoRow | undefined {
   return getDb().select().from(photos).where(eq(photos.id, id)).get();
 }
 
-type NewPhoto = Omit<PhotoRow, "downloads" | "createdAt" | "favorite" | "challengeId" | "spotId" | "sharpness" | "hash" | "duplicateOf"> & {
+type NewPhoto = Omit<PhotoRow, "downloads" | "createdAt" | "favorite" | "challengeId" | "spotId" | "sharpness" | "hash" | "duplicateOf" | "mediaType" | "durationMs"> & {
+  mediaType?: PhotoRow["mediaType"];
+  durationMs?: number | null;
   challengeId?: string | null;
   spotId?: string | null;
   analysis?: Analysis;

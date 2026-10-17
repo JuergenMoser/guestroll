@@ -125,6 +125,7 @@ and photos per challenge.
 | | Close uploads automatically at | For example the morning after. |
 | | Capture mode | Camera only (the default), library only, or both. |
 | | Photos per guest | 0 for no limit. Guests see a counter of photos left. |
+| | Accept videos | Off by default. Guests can then film or pick short clips (60 seconds and 200 MB at most, see `MAX_VIDEO_SECONDS` and `MAX_VIDEO_MB`), which count toward their photo limit. Videos are kept as filmed: each one weighs as much as dozens of photos. With moderation on, watch each pending video (▶ on its tile) before approving it: approving a selection skips the ones you haven't watched. |
 | | Moderation | Publish immediately and hide later, or approve each photo first. |
 | Guests | Album language | Automatic (each guest's phone) or one fixed language. Guests can still switch. |
 | | Guests see each other's photos | No (the default: each guest sees only their own), yes during and after the event, or yes once it is over. Guests then get a *The whole album* tab with the approved photos, in screen size: pending and hidden photos and the originals stay yours. |

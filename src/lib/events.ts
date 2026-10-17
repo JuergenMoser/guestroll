@@ -37,6 +37,8 @@ export interface PublicEvent {
   sharedAlbum: EventRow["sharedAlbum"];
   /** The setting applied now: with `after`, false until the event has ended. */
   albumShared: boolean;
+  /** Null when the event takes photos only. */
+  videos: { maxSeconds: number; maxBytes: number } | null;
 }
 
 export function toPublicEvent(event: EventRow): PublicEvent {
@@ -62,6 +64,7 @@ export function toPublicEvent(event: EventRow): PublicEvent {
     frame: event.frame,
     sharedAlbum: event.sharedAlbum,
     albumShared: albumShared(event),
+    videos: event.allowVideos ? { maxSeconds: config.maxVideoSeconds, maxBytes: config.maxVideoBytes } : null,
   };
 }
 
@@ -70,6 +73,8 @@ export type AdminEvent = Omit<EventRow, "accessCodeHash" | "qrStyle" | "challeng
   qrStyle: QrStyle;
   challenges: Challenge[];
   wallStyle: WallStyle;
+  /** The server's limit, for the form to say what "short" means. */
+  videoMaxSeconds: number;
 };
 
 export function toAdminEvent({ accessCodeHash, qrStyle, challenges, wallStyle, ...event }: EventRow): AdminEvent {
@@ -79,6 +84,7 @@ export function toAdminEvent({ accessCodeHash, qrStyle, challenges, wallStyle, .
     hasAccessCode: accessCodeHash !== null,
     qrStyle: parseQrStyle(qrStyle ? JSON.parse(qrStyle) : null),
     challenges: readChallenges(challenges),
+    videoMaxSeconds: config.maxVideoSeconds,
   };
 }
 

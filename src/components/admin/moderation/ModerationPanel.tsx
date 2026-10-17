@@ -2,6 +2,7 @@
 
 import { Download } from "lucide-react";
 import { useState } from "react";
+import { Lightbox } from "@/components/guest/Lightbox";
 import { PhotoGrid } from "@/components/guest/PhotoGrid";
 import { useT } from "@/components/I18nProvider";
 import { Button, buttonClass, EmptyState, SegmentedControl, Select } from "@/components/ui";
@@ -22,6 +23,17 @@ export function ModerationPanel({ eventId, pendingCount, challenges = [], spots 
   const { photos, cursor, loading, setLoading, reload, loadMore } = useAdminPhotos(eventId, filter, challengeId, spotId);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [busy, setBusy] = useState(false);
+  const [playing, setPlaying] = useState<number | null>(null);
+  // A video's poster is drawn by the guest's phone and can show anything: a
+  // video is approved once watched, never on its poster alone.
+  const [watched, setWatched] = useState<ReadonlySet<string>>(new Set());
+  const [unwatched, setUnwatched] = useState(0);
+
+  const play = (index: number | null) => {
+    setPlaying(index);
+    const photo = index === null ? undefined : photos[index];
+    if (photo?.video) setWatched((w) => new Set(w).add(photo.id));
+  };
 
   const toggle = (id: string) =>
     setSelected((s) => {
@@ -32,7 +44,13 @@ export function ModerationPanel({ eventId, pendingCount, challenges = [], spots 
     });
 
   async function act(action: BulkAction) {
-    const ids = [...selected];
+    let ids = [...selected];
+    if (action === "approve") {
+      const blind = new Set(photos.filter((p) => p.video && p.status === "pending" && !watched.has(p.id)).map((p) => p.id));
+      setUnwatched(ids.filter((id) => blind.has(id)).length);
+      ids = ids.filter((id) => !blind.has(id));
+      if (ids.length === 0) return;
+    } else setUnwatched(0);
     if (action === "delete" && !window.confirm(t("admin.moderation.deleteConfirm", { n: ids.length }))) return;
     setBusy(true);
     await api(`/api/admin/events/${eventId}/photos`, { body: { action, ids } }).catch(() => {});
@@ -115,6 +133,12 @@ export function ModerationPanel({ eventId, pendingCount, challenges = [], spots 
         </div>
       </div>
 
+      {unwatched > 0 && (
+        <p role="alert" className="text-sm font-medium text-danger">
+          {t("admin.moderation.watchFirst", { n: unwatched })}
+        </p>
+      )}
+
       {(filter === "blurry" || filter === "duplicates") && <p className="text-sm text-ink-muted">{t("admin.moderation.flagHint")}</p>}
 
       {!loading && photos.length === 0 ? (
@@ -122,7 +146,7 @@ export function ModerationPanel({ eventId, pendingCount, challenges = [], spots 
           {t(filter === "favorites" ? "admin.moderation.noFavorites" : filter === "blurry" ? "admin.moderation.noBlurry" : filter === "duplicates" ? "admin.moderation.noDuplicates" : "admin.moderation.empty")}
         </EmptyState>
       ) : (
-        <PhotoGrid photos={photos} selected={selected} onToggle={toggle} variant="sheet" />
+        <PhotoGrid photos={photos} selected={selected} onToggle={toggle} onPlay={play} variant="sheet" />
       )}
 
       {cursor !== null && (
@@ -132,6 +156,8 @@ export function ModerationPanel({ eventId, pendingCount, challenges = [], spots 
           </Button>
         </div>
       )}
+
+      {playing !== null && <Lightbox photos={photos} index={playing} onIndex={play} canDownload={() => true} />}
 
       <SelectionBar count={selected.size} busy={busy} onAction={act} onClear={() => setSelected(new Set())} />
     </div>

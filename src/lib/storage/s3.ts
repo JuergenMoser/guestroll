@@ -110,8 +110,8 @@ export function s3Driver(options: S3Options): StorageDriver {
       const res = await call(url(key), { allow404: true });
       return res.status === 404 ? null : Buffer.from(await res.arrayBuffer());
     },
-    async open(key) {
-      const res = await call(url(key), { allow404: true });
+    async open(key, range) {
+      const res = await call(url(key), { allow404: true, headers: range ? { Range: `bytes=${range.start}-${range.end}` } : undefined });
       if (res.status === 404 || !res.body) return null;
       return { stream: Readable.fromWeb(res.body as import("node:stream/web").ReadableStream), size: Number(res.headers.get("content-length") ?? 0) };
     },

@@ -49,6 +49,15 @@ function contract(name: string, make: () => Promise<{ driver: StorageDriver; cle
       await driver.delete("ev/never-existed.jpg");
     });
 
+    it("streams a slice", async () => {
+      await driver.put("ev/clip.original.mp4", Buffer.from("0123456789"), "video/mp4");
+      const opened = (await driver.open("ev/clip.original.mp4", { start: 2, end: 5 }))!;
+      expect(opened.size).toBe(4);
+      expect((await streamToBuffer(opened.stream)).toString()).toBe("2345");
+      const last = (await driver.open("ev/clip.original.mp4", { start: 9, end: 9 }))!;
+      expect((await streamToBuffer(last.stream)).toString()).toBe("9");
+    });
+
     it("overwrites in place", async () => {
       await driver.put("ev/logo.png", Buffer.from("one"), "image/png");
       await driver.put("ev/logo.png", Buffer.from("two!"), "image/png");

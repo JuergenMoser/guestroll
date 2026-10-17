@@ -31,7 +31,8 @@ const CAPTION = 16;
  * 1600 px, plenty at that size and four times lighter.
  */
 async function photoJpeg(eventId: string, photo: PhotoRow, layout: AlbumLayout): Promise<{ data: Buffer; width: number; height: number } | null> {
-  const variant = layout === 1 ? "original" : "display";
+  // A video's original is the video: its poster frame is all a page can hold.
+  const variant = layout === 1 && !photo.mediaType ? "original" : "display";
   const file = await storage().read(photoKey(eventId, photo.id, variant)).catch(() => null);
   if (!file) return null;
   // pdfkit reads JPEG and PNG only; the display copy is WebP.

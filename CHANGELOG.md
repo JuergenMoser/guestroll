@@ -11,6 +11,22 @@ always run on their own at startup; take a backup first all the same
 
 ## [Unreleased]
 
+### Added
+- Videos, per event and off by default: guests film or pick short clips
+  (`MAX_VIDEO_SECONDS`, 60 s by default, and `MAX_VIDEO_MB`, 200 MB), kept as
+  filmed. The phone draws the poster frame and checks the length before
+  sending; the server checks the container and the length again, and streams
+  the video to disk instead of memory. Videos play in the album, the shared
+  album and gallery links, muted on the wall, and go in the ZIP and the cloud
+  export with their own extension.
+- Photos still waiting to be sent are kept in the guest's browser: a phone
+  locked, an app switched or a tab closed mid-upload sends them on the next
+  visit, from the table they were taken at, instead of losing them.
+
+### Upgrading
+- If your events will accept videos, raise your reverse proxy's body size
+  limit above `MAX_VIDEO_MB` (200 MB by default).
+
 ## [0.5.0] - 2026-10-15
 
 ### Added
