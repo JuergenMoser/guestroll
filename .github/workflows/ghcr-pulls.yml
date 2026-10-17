@@ -1,0 +1,47 @@
+name: GHCR pulls badge
+
+# GitHub counts container pulls but exposes the figure on the package page only:
+# no API returns it. This reads it there and stores it, as a shields.io endpoint
+# file, on the orphan `badges` branch the README badge points to.
+on:
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+
+jobs:
+  update:
+    name: Update the badge
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Read the count and push it
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          page=$(curl -fsSL "https://github.com/${REPO}/pkgs/container/${REPO#*/}")
+          # The number follows the "Total downloads" heading, across a few tags.
+          count=$(printf '%s' "$page" | sed 's/<[^>]*>//g' | grep -A6 'Total downloads' | grep -m1 -oE '[0-9][0-9,.]*[kKmM]?' || true)
+          if [ -z "$count" ]; then
+            echo "::error::No download count on the package page: its markup has changed."
+            exit 1
+          fi
+          echo "GHCR pulls: $count"
+
+          git init -q badges && cd badges
+          git remote add origin "https://x-access-token:${GH_TOKEN}@github.com/${REPO}.git"
+          if git fetch -q --depth 1 origin badges; then git checkout -q FETCH_HEAD; else git checkout -q --orphan badges; fi
+          printf '{"schemaVersion":1,"label":"GHCR pulls","message":"%s","color":"blue"}\n' "$count" > ghcr-pulls.json
+          git add ghcr-pulls.json
+          if git diff --cached --quiet; then echo "Unchanged."; exit 0; fi
+          git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" \
+            commit -q -m "chore: GHCR pulls $count"
+          git push -q origin HEAD:badges
