@@ -11,6 +11,16 @@ always run on their own at startup; take a backup first all the same
 
 ## [Unreleased]
 
+## [0.6.1] - 2026-10-17
+
+### Security
+
+- A video's length is measured from what actually plays, not from the length
+  its header announces: an edited header could slip a video of several
+  minutes past `MAX_VIDEO_SECONDS`.
+- The limit of 4 videos received at once holds for the whole server, however
+  many times its code is loaded.
+
 ## [0.6.0] - 2026-10-17
 
 ### Added
@@ -234,7 +244,8 @@ First release.
 - English, French, Italian and Spanish; light and dark themes.
 - One multi-arch Docker image with a `/data` volume.
 
-[Unreleased]: https://github.com/achedon12/guestroll/compare/v0.6.0...develop
+[Unreleased]: https://github.com/achedon12/guestroll/compare/v0.6.1...develop
+[0.6.1]: https://github.com/achedon12/guestroll/compare/v0.6.0...v0.6.1
 [0.6.0]: https://github.com/achedon12/guestroll/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/achedon12/guestroll/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/achedon12/guestroll/compare/v0.3.0...v0.4.0
