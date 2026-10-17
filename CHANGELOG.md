@@ -11,19 +11,25 @@ always run on their own at startup; take a backup first all the same
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-17
+
 ### Added
+
 - Videos, per event and off by default: guests film or pick short clips
   (`MAX_VIDEO_SECONDS`, 60 s by default, and `MAX_VIDEO_MB`, 200 MB), kept as
   filmed. The phone draws the poster frame and checks the length before
   sending; the server checks the container and the length again, and streams
   the video to disk instead of memory. Videos play in the album, the shared
   album and gallery links, muted on the wall, and go in the ZIP and the cloud
-  export with their own extension.
+  export with their own extension. With moderation on, a pending video is
+  approved once the host has watched it: its poster comes from the guest's
+  phone and may not match.
 - Photos still waiting to be sent are kept in the guest's browser: a phone
   locked, an app switched or a tab closed mid-upload sends them on the next
   visit, from the table they were taken at, instead of losing them.
 
 ### Upgrading
+
 - If your events will accept videos, raise your reverse proxy's body size
   limit above `MAX_VIDEO_MB` (200 MB by default).
 
@@ -228,7 +234,8 @@ First release.
 - English, French, Italian and Spanish; light and dark themes.
 - One multi-arch Docker image with a `/data` volume.
 
-[Unreleased]: https://github.com/achedon12/guestroll/compare/v0.5.0...develop
+[Unreleased]: https://github.com/achedon12/guestroll/compare/v0.6.0...develop
+[0.6.0]: https://github.com/achedon12/guestroll/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/achedon12/guestroll/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/achedon12/guestroll/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/achedon12/guestroll/compare/v0.2.0...v0.3.0
