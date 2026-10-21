@@ -351,4 +351,90 @@ const es: Strings<MailMessages> = {
   },
 };
 
-export const mailMessages: Record<Locale, MailMessages> = { en, fr: fr as MailMessages, it: it as MailMessages, es: es as MailMessages };
+const de: Strings<MailMessages> = {
+  footer: "Gesendet von {app}, dem Fotoalbum für deine Veranstaltungen.",
+  test: {
+    subject: "{app}: Test-E-Mail",
+    title: "Deine E-Mail-Einstellungen funktionieren.",
+    body: "Diese Nachricht wurde von deiner {app}-Instanz gesendet. Benachrichtigungen und E-Mails zum Ende von Veranstaltungen kommen an diese Adresse.",
+  },
+  gallery: {
+    subject: "Die Fotos von {event} sind da",
+    title: "Das Album von {event} ist fertig.",
+    body: "Danke, dass du deine Fotos geteilt hast. Hier ist das Album mit den besten Aufnahmen von allen.",
+    cta: "Album öffnen",
+    password: "Passwort:",
+    passwordFromHosts: "Das Passwort bekommst du von den Veranstaltern.",
+    expires: "Dieser Link funktioniert bis zum {date}.",
+    downloads: "Du kannst die Fotos herunterladen.",
+    linkLabel: "Am Ende der Veranstaltung an die Gäste gesendet",
+  },
+  summary: {
+    subject: "{event}: Die Veranstaltung ist vorbei",
+    title: "{event} ist vorbei.",
+    body: "Die Uploads sind beendet. So ist es gelaufen.",
+    photos: "Fotos",
+    guests: "Fotografen",
+    pending: "Warten auf Freigabe",
+    views: "Seitenaufrufe",
+    messages: "Gästebuch-Nachrichten",
+    topGuests: "Die meisten Fotos",
+    galleryLink: "Gäste, die einen Galerie-Link bekommen haben: {count}.",
+    galleryPassword: "Die Gäste haben {url} ohne das Passwort bekommen. Gib ihnen dieses:",
+    cta: "Veranstaltung öffnen",
+  },
+  pending: {
+    subject: "{event}: {count} Fotos warten auf Freigabe",
+    title: "{count} Fotos warten auf dich.",
+    body: "Gäste haben neue Fotos an {event} gesendet. Sie bleiben ausgeblendet, bis du sie freigibst.",
+    cta: "Fotos prüfen",
+  },
+  failedLogins: {
+    subject: "{app}: {count} fehlgeschlagene Anmeldeversuche",
+    title: "Jemand probiert Admin-Passwörter aus.",
+    body: "In den letzten 15 Minuten wurden {count} falsche Admin-Passwörter eingegeben. Wenn du das nicht warst, achte darauf, dass dein Passwort lang und einzigartig ist; Anmeldeversuche sind begrenzt.",
+    cta: "Verwaltung öffnen",
+  },
+  notice: {
+    guestbook: "{event}: eine neue Gästebuch-Nachricht",
+    from: "Von {name}",
+    voiceNote: "(Sprachnachricht)",
+    testTitle: "{app}: Test-Benachrichtigung",
+    testBody: "Wenn du das lesen kannst, funktioniert der Webhook.",
+  },
+  purge: {
+    subject: "{event} wird am {date} gelöscht",
+    title: "Dieses Album wird am {date} gelöscht.",
+    body: "Deine Instanz löscht Veranstaltungen einige Zeit nach ihrem Ende. Lade die Fotos und das Gästebuch von {event} vorher herunter, wenn du sie behalten möchtest.",
+    cta: "Veranstaltung öffnen",
+  },
+  backupFailed: {
+    subject: "{app}: Das geplante Backup ist fehlgeschlagen",
+    title: "Das Backup von letzter Nacht hat nicht stattgefunden.",
+    body: "Das automatische Backup konnte nicht geschrieben werden. Deine Fotos sind noch da, aber es gibt keine aktuelle Kopie davon: Prüfe, wohin die Backups gehen, und führe dann in den Einstellungen eines von Hand aus.",
+    cta: "Einstellungen öffnen",
+  },
+  invite: {
+    subject: "{inviter} lädt dich zu {app} ein",
+    title: "{app} beitreten",
+    body: "{inviter} gibt dir Zugang zur Verwaltung von {app}, wo die Fotos deiner Veranstaltungen ankommen. Wähle einen Benutzernamen und ein Passwort, um hineinzukommen.",
+    events: "Du verwaltest:",
+    allEvents: "Du verwaltest alle Veranstaltungen, als Eigentümer.",
+    cta: "Einladung annehmen",
+    expires: "Dieser Link funktioniert nur einmal, bis zum {date}.",
+  },
+  update: {
+    subject: "{app} {version} ist verfügbar",
+    title: "Guestroll {version} ist erschienen.",
+    body: "Diese Instanz läuft mit {current}. Die Versionshinweise sagen, was sich geändert hat und was du prüfen solltest; du kannst in den Einstellungen aktualisieren.",
+    cta: "Update ansehen",
+  },
+  storage: {
+    subject: "{app}: Der Datenträger ist zu {percent} % voll",
+    title: "Der Speicherplatz wird knapp.",
+    body: "Der Datenträger mit den Fotos ist zu {percent} % voll ({free} frei). Neue Uploads schlagen fehl, sobald er voll ist: Schaffe Platz oder lade vergangene Veranstaltungen herunter und lösche sie.",
+    cta: "Verwaltung öffnen",
+  },
+};
+
+export const mailMessages: Record<Locale, MailMessages> = { en, fr: fr as MailMessages, it: it as MailMessages, es: es as MailMessages, de: de as MailMessages };

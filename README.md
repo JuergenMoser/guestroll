@@ -54,7 +54,7 @@ Three minutes: a guest taking photos, the hosts' admin, the QR code designer, th
 - 📝 **Guestbook**: a few words or a voice note for the hosts, moderated, exported as a ZIP.
 - 🎯 **Photo challenges**: prompts guests pick before shooting ("The dance floor", "The cake"), with their progress.
 - 🔒 Guests see their own photos and can delete them; the hosts decide whether to share the album with everyone. The album belongs to the hosts.
-- 🌍 English, French, Italian and Spanish, picked from the phone's language, switchable on the page.
+- 🌍 English, French, Italian, Spanish and German, picked from the phone's language, switchable on the page.
 - 🌗 Light and dark themes.
 
 **For hosts**

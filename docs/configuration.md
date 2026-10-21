@@ -33,7 +33,7 @@ These are read by the container or by `docker-compose.yml`, not by the app itsel
 
 ## Languages
 
-Guestroll speaks English (`en`), French (`fr`), Italian (`it`) and Spanish (`es`).
+Guestroll speaks English (`en`), French (`fr`), Italian (`it`), Spanish (`es`) and German (`de`).
 Each visitor gets, in this order:
 
 1. the language they picked with the language menu (kept in their browser);

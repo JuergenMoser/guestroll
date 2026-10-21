@@ -27,7 +27,7 @@ export const events = sqliteTable("events", {
   frame: text("frame", { enum: ["none", "print", "border", "stamp"] }).notNull().default("none"),
   maxPhotosPerGuest: integer("max_photos_per_guest").notNull().default(0),
   /** Language guests see unless they pick one; null follows each guest's browser. */
-  defaultLocale: text("default_locale", { enum: ["en", "fr", "it", "es"] }),
+  defaultLocale: text("default_locale", { enum: ["en", "fr", "it", "es", "de"] }),
   /** JSON, read through `parseQrStyle`: null means the default style. */
   qrStyle: text("qr_style"),
   /** JSON, read through `readWallStyle`: null means the default wall. */
@@ -191,7 +191,7 @@ export const guestContacts = sqliteTable(
       .references(() => events.id, { onDelete: "cascade" }),
     guestId: text("guest_id").notNull(),
     email: text("email").notNull(),
-    locale: text("locale", { enum: ["en", "fr", "it", "es"] }).notNull(),
+    locale: text("locale", { enum: ["en", "fr", "it", "es", "de"] }).notNull(),
     createdAt: integer("created_at").notNull().default(now),
   },
   (t) => [uniqueIndex("guest_contacts_guest_idx").on(t.eventId, t.guestId)],

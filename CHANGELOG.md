@@ -11,6 +11,10 @@ always run on their own at startup; take a backup first all the same
 
 ## [Unreleased]
 
+### Added
+
+- German (`de`): the guest page, the admin and the emails.
+
 ## [0.6.1] - 2026-10-17
 
 ### Security
